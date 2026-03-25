@@ -639,7 +639,7 @@ export function CounselorProfile() {
                 </p>
               </div>
 
-              <Link to="/book" style={{ textDecoration: "none" }}>
+              <Link to="/book" state={{ counselorId: counselor._id || "demo-counselor-1", counselorName: counselor.name }} style={{ textDecoration: "none" }}>
                 <button
                   style={{
                     width: "100%",

@@ -9,12 +9,8 @@ const connectDB = async () => {
   try {
     console.log('Environment variables loaded:');
     console.log('MONGO_STRING:', process.env.MONGO_STRING ? 'Present' : 'Missing');
-    console.log('DATABASE_PASSWORD:', process.env.DATABASE_PASSWORD ? 'Present' : 'Missing');
 
-    const db = process.env.MONGO_STRING.replace('<PASSWORD>', process.env.DATABASE_PASSWORD);
-    
-    console.log('Attempting to connect to MongoDB...');
-    console.log('Connection string:', db.replace(process.env.DATABASE_PASSWORD, '****'));
+    const db = process.env.MONGO_STRING;
 
     await mongoose.connect(db);
     console.log('✅ MongoDB connection successful');
