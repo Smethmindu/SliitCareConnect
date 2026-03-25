@@ -235,7 +235,7 @@ export function MainLayout() {
             }}
           >
             If you are in immediate distress, please call campus emergency
-            services at 911.
+            services at +94 11 754 4801.
           </p>
         </div>
       </footer>
