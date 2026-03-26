@@ -1,5 +1,8 @@
+import { Routes, Route, Link } from "react-router-dom";
 import { Bell, BookOpen, Calendar, Home, LayoutDashboard, LogOut, Menu, MessageSquare, Settings, UserRound } from "lucide-react";
 import Resources from "./pages/Resources";
+import FeedbackPage from "./pages/feedback";
+import Counselors from "./pages/Counselors";
 
 function Sidebar() {
   return (
@@ -30,20 +33,20 @@ function Sidebar() {
           <span>Appointments</span>
         </a>
 
-        <a href="#" className="sidebar-link">
+        <Link to="/counselors" className="sidebar-link">
           <UserRound size={20} />
           <span>Counselors</span>
-        </a>
+        </Link>
 
         <a href="#" className="sidebar-link">
           <MessageSquare size={20} />
           <span>Messages</span>
         </a>
 
-        <a href="#" className="sidebar-link active">
+        <Link to="/" className="sidebar-link active">
           <BookOpen size={20} />
           <span>Resources</span>
-        </a>
+        </Link>
       </nav>
 
       <div className="sidebar-bottom">
@@ -102,7 +105,11 @@ export default function App() {
         <Topbar />
 
         <main className="page-content">
-          <Resources />
+          <Routes>
+            <Route path="/" element={<Resources />} />
+            <Route path="/feedback" element={<FeedbackPage />} />
+            <Route path="/counselors" element={<Counselors />} />
+          </Routes>
         </main>
 
         <Footer />

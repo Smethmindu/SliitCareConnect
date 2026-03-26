@@ -136,3 +136,45 @@ exports.getAverageRating = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
+
+exports.updateFeedback = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { userId, role } = req.user;
+    if (role !== "STUDENT") return res.status(403).json({ message: "Only students can update feedback" });
+
+    const feedback = await Feedback.findById(id);
+    if (!feedback) return res.status(404).json({ message: "Feedback not found" });
+    if (feedback.studentId !== userId) return res.status(403).json({ message: "Not your feedback" });
+
+    const { rating, comment, isAnonymous, survey } = req.body;
+    feedback.rating = rating || feedback.rating;
+    feedback.comment = comment !== undefined ? comment : feedback.comment;
+    feedback.isAnonymous = isAnonymous !== undefined ? isAnonymous : feedback.isAnonymous;
+    if (survey) feedback.survey = survey;
+
+    await feedback.save();
+    return res.status(200).json({ message: "Feedback updated successfully", feedback });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.deleteFeedback = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { userId, role } = req.user;
+    if (role !== "STUDENT") return res.status(403).json({ message: "Only students can delete feedback" });
+
+    const feedback = await Feedback.findById(id);
+    if (!feedback) return res.status(404).json({ message: "Feedback not found" });
+    if (feedback.studentId !== userId) return res.status(403).json({ message: "Not your feedback" });
+
+    await feedback.deleteOne();
+    return res.status(200).json({ message: "Feedback deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};

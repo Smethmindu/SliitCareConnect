@@ -26,4 +26,18 @@ router.get(
   feedbackController.getAverageRating
 );
 
+// Update feedback
+router.put(
+  "/:id",
+  fakeAuth("STUDENT"),
+  feedbackController.updateFeedback
+);
+
+// Delete feedback
+router.delete(
+  "/:id",
+  fakeAuth("STUDENT"),
+  feedbackController.deleteFeedback
+);
+
 module.exports = router;
