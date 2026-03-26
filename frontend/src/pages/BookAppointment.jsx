@@ -14,6 +14,7 @@ import {
   Loader2Icon,
 } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { sendBookingEmail } from "../utils/emailService.js";
 
 // ── Tiny inline calendar ─────────────────────────────────────────────────────
 function InlineCalendar({ selectedDate, onChange }) {
@@ -184,6 +185,23 @@ export function BookAppointment() {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Booking failed.");
+      
+      // Send email notification to counselor
+      try {
+        await sendBookingEmail({
+          counselorName,
+          studentName: "Sarah Jenkins",
+          date: formatDateDisplay(selectedDate),
+          time: selectedTime,
+          sessionType: selectedType,
+          notes,
+        });
+        console.log("Email sent successfully!");
+      } catch (emailError) {
+        console.warn("Booking created but email failed to send:", emailError);
+        // Continue with success even if email fails
+      }
+      
       setSuccess(true);
       setTimeout(() => navigate("/dashboard"), 2000);
     } catch (err) {
