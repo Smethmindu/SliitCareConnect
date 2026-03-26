@@ -28,9 +28,6 @@ export function App() {
         {/* Public / Auth Routes */}
         <Route element={<MainLayout />}>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/about" element={<AboutUs />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
         </Route>
 
         {/* Dashboard Routes */}
@@ -40,17 +37,12 @@ export function App() {
           <Route path="/counselors" element={<CounselorListing />} />
           <Route path="/counselors/:id" element={<CounselorProfile />} />
           <Route path="/appointments/:id" element={<AppointmentDetails />} />
-          <Route path="/messages" element={<MessagesPage />} />
-          <Route path="/settings" element={<ProfileSettings />} />
           <Route path="/counselor-dashboard" element={<CounselorDashboard />} />
           <Route
             path="/counselor-availability"
             element={<CounselorAvailability />}
           />
 
-          <Route path="/feedback" element={<FeedbackPage />} />
-          <Route path="/blog" element={<BlogResources />} />
-          <Route path="/admin" element={<AdminPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
