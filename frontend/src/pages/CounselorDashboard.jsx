@@ -250,7 +250,7 @@ export function CounselorDashboard() {
               {[
                 {
                   icon: UsersIcon,
-                  label: "Active Patients",
+                  label: "Patients",
                   value: "42",
                   color: "#0ea5e9",
                   bg: "#e0f2fe",
@@ -583,7 +583,7 @@ export function CounselorDashboard() {
                   </div>
                 </div>
 
-                {/* Pending Requests (Moved Below Today's Schedule for more width and layout stability) */}
+                {/* Pending Requests */}
                 <div
                   style={{
                     padding: "1.5rem",
@@ -757,7 +757,7 @@ export function CounselorDashboard() {
 
               </motion.div>
 
-              {/* Sidebar Widgets (Quick Actions & Crisis Alerts) */}
+              {/*Quick Actions*/}
               <motion.div
                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.3 }}
                 style={{ display: "flex", flexDirection: "column", gap: "1.5rem", minWidth: 0 }}
@@ -827,36 +827,6 @@ export function CounselorDashboard() {
                   </div>
                 </div>
 
-                <div
-                  style={{
-                    padding: "1.5rem",
-                    backgroundColor: "#fef2f2",
-                    border: "1px solid #fecaca",
-                    borderRadius: "1rem",
-                  }}
-                >
-                  <h3
-                    style={{
-                      fontSize: "1.125rem",
-                      fontWeight: 600,
-                      color: "#991b1b",
-                      marginBottom: "0.5rem",
-                      marginTop: 0,
-                    }}
-                  >
-                    Crisis Alerts
-                  </h3>
-                  <p
-                    style={{
-                      fontSize: "0.875rem",
-                      color: "#b91c1c",
-                      marginBottom: "1rem",
-                      margin: 0,
-                    }}
-                  >
-                    No immediate crisis alerts assigned to you at this time.
-                  </p>
-                </div>
               </motion.div>
             </div>
           </div>

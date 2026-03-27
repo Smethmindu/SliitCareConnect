@@ -94,7 +94,7 @@ export function CounselorListing() {
 
     let matchesFilter = true;
     if (activeFilter !== "All") {
-      // The button titles are like "Academic", their specialties might be "Academic Pressure"
+      
       matchesFilter = counselor.specialties.some((s) =>
         s.toLowerCase().includes(activeFilter.toLowerCase())
       );
@@ -220,7 +220,6 @@ export function CounselorListing() {
               }}
             >
               <option>Highest Rated</option>
-              <option>Earliest Available</option>
               <option>Name (A-Z)</option>
             </select>
           </div>
