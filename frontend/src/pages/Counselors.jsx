@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Star, GraduationCap, Calendar, Video, Phone } from "lucide-react";
+import { Star, GraduationCap, Calendar, Video, Phone, Pencil, Trash2, AlertTriangle } from "lucide-react";
 
 export default function Counselors() {
   const [feedbacks, setFeedbacks] = useState([]);
+  const [deleteConfirmId, setDeleteConfirmId] = useState(null);
 
   // Mock initial counselors data
   const counselors = [
@@ -73,11 +74,9 @@ export default function Counselors() {
   }, []);
 
   const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this feedback?")) {
-      const updated = feedbacks.filter(f => f.id !== id);
-      setFeedbacks(updated);
-      localStorage.setItem("counselor_feedbacks", JSON.stringify(updated));
-    }
+    const updated = feedbacks.filter(f => f.id !== id);
+    setFeedbacks(updated);
+    localStorage.setItem("counselor_feedbacks", JSON.stringify(updated));
   };
 
   const renderStars = (rating) => {
@@ -215,9 +214,13 @@ export default function Counselors() {
                               {renderStars(review.rating)}
                             </div>
                             {review.studentId === "curr_student" && (
-                              <div style={{ display: "flex", gap: "0.5rem" }}>
-                                <Link to={`/feedback?counselorId=${counselor.id}&editId=${review.id}`} style={{ fontSize: "0.75rem", color: "#0ea5e9", textDecoration: "none", cursor: "pointer" }}>Edit</Link>
-                                <span onClick={() => handleDelete(review.id)} style={{ fontSize: "0.75rem", color: "#ef4444", cursor: "pointer" }}>Delete</span>
+                              <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.5rem" }}>
+                                <Link to={`/feedback?counselorId=${counselor.id}&editId=${review.id}`} style={{ display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.375rem 0.75rem", fontSize: "0.75rem", fontWeight: 500, color: "#0ea5e9", backgroundColor: "#e0f2fe", borderRadius: "9999px", textDecoration: "none", transition: "all 0.2s" }}>
+                                  <Pencil size={12} /> Edit
+                                </Link>
+                                <button onClick={() => setDeleteConfirmId(review.id)} style={{ display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.375rem 0.75rem", fontSize: "0.75rem", fontWeight: 500, color: "#ef4444", backgroundColor: "#fee2e2", border: "none", borderRadius: "9999px", cursor: "pointer", transition: "all 0.2s" }}>
+                                  <Trash2 size={12} /> Delete
+                                </button>
                               </div>
                             )}
                           </div>
@@ -239,6 +242,22 @@ export default function Counselors() {
           );
         })}
       </div>
+
+      {deleteConfirmId && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
+          <div style={{ backgroundColor: 'white', padding: '32px', borderRadius: '24px', width: '90%', maxWidth: '400px', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+            <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
+              <AlertTriangle size={24} color="#dc2626" />
+            </div>
+            <h3 style={{ margin: '0 0 12px', fontSize: '20px', fontWeight: 700, color: '#111827' }}>Delete Feedback</h3>
+            <p style={{ margin: '0 0 24px', color: '#4b5563', lineHeight: 1.5 }}>Are you sure you want to delete this feedback? This action cannot be undone.</p>
+            <div style={{ display: 'flex', justifyContent: 'center', width: '100%', gap: '12px' }}>
+              <button onClick={() => setDeleteConfirmId(null)} style={{ flex: 1, padding: '12px', borderRadius: '12px', border: '1px solid #d1d5db', backgroundColor: 'white', color: '#374151', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }}>Cancel</button>
+              <button onClick={() => { handleDelete(deleteConfirmId); setDeleteConfirmId(null); }} style={{ flex: 1, padding: '12px', borderRadius: '12px', border: 'none', backgroundColor: '#ef4444', color: 'white', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }}>Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

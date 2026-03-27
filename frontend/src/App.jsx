@@ -1,14 +1,19 @@
-import { Routes, Route, Link } from "react-router-dom";
-import { Bell, BookOpen, Calendar, Home, LayoutDashboard, LogOut, Menu, MessageSquare, Settings, UserRound } from "lucide-react";
+import { Routes, Route, Link, useLocation } from "react-router-dom";
+import { Bell, BookOpen, Calendar, Home, LayoutDashboard, Leaf, LogOut, Menu, MessageSquare, Settings, UserRound } from "lucide-react";
 import Resources from "./pages/Resources";
 import FeedbackPage from "./pages/feedback";
 import Counselors from "./pages/Counselors";
 
 function Sidebar() {
+  const location = useLocation();
+  const path = location.pathname;
+
   return (
     <aside className="sidebar">
       <div className="brand">
-        <div className="brand-logo">◌</div>
+        <div className="brand-logo">
+          <Leaf size={20} />
+        </div>
         <div className="brand-text">
           <span className="brand-black">SliitCare</span>
           <span className="brand-blue">Connect</span>
@@ -33,7 +38,7 @@ function Sidebar() {
           <span>Appointments</span>
         </a>
 
-        <Link to="/counselors" className="sidebar-link">
+        <Link to="/counselors" className={`sidebar-link ${path === '/counselors' ? 'active' : ''}`}>
           <UserRound size={20} />
           <span>Counselors</span>
         </Link>
@@ -43,7 +48,7 @@ function Sidebar() {
           <span>Messages</span>
         </a>
 
-        <Link to="/" className="sidebar-link active">
+        <Link to="/" className={`sidebar-link ${path === '/' ? 'active' : ''}`}>
           <BookOpen size={20} />
           <span>Resources</span>
         </Link>
@@ -71,10 +76,13 @@ function Topbar() {
         <Menu size={20} />
       </button>
 
-      <div className="topbar-right">
-        <button className="icon-button">
+      <div className="topbar-right" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <button className="icon-button" style={{ position: 'relative' }}>
           <Bell size={18} />
+          <span style={{ position: 'absolute', top: '4px', right: '4px', width: '6px', height: '6px', backgroundColor: '#ef4444', borderRadius: '50%', border: '1px solid white' }}></span>
         </button>
+
+        <div style={{ width: '1px', height: '24px', backgroundColor: '#e5e7eb' }}></div>
 
         <div className="profile-block">
           <div>

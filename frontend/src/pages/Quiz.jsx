@@ -7,6 +7,7 @@ export default function Quiz() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     fetchQuestions();
@@ -27,14 +28,16 @@ export default function Quiz() {
   };
 
   const chooseAnswer = (value) => {
+    setErrorMsg("");
     const updated = [...answers];
     updated[currentIndex] = Number(value);
     setAnswers(updated);
   };
 
   const nextQuestion = async () => {
+    setErrorMsg("");
     if (answers[currentIndex] === null) {
-      alert("Please choose an answer before continuing.");
+      setErrorMsg("Please choose an answer before continuing.");
       return;
     }
 
@@ -56,7 +59,7 @@ export default function Quiz() {
       setResult(data);
     } catch (err) {
       console.error("Quiz submission failed:", err);
-      alert("Failed to submit quiz.");
+      setErrorMsg("Failed to submit quiz. Please try again.");
     }
   };
 
@@ -192,6 +195,12 @@ export default function Quiz() {
           <h3 style={{ fontSize: '28px', lineHeight: 1.4, color: '#1e293b', marginBottom: '40px' }}>
             {questions[currentIndex]?.question}
           </h3>
+
+          {errorMsg && (
+            <div style={{ padding: '12px 20px', backgroundColor: '#fee2e2', color: '#dc2626', borderRadius: '12px', marginBottom: '24px', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '18px' }}>⚠️</span> {errorMsg}
+            </div>
+          )}
 
           <div className="quiz-options" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {questions[currentIndex]?.options.map((option) => (

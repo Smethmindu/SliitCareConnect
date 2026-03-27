@@ -67,9 +67,9 @@ export default function Resources() {
   }, [resources, activeTopic]);
 
   const featuredResource =
-    resources.find((r) => r.type === "BOOK") ||
-    resources.find((r) => r.type === "VIDEO") ||
-    resources[0];
+    filteredResources.find((r) => r.type === "BOOK") ||
+    filteredResources.find((r) => r.type === "VIDEO") ||
+    filteredResources[0];
 
   const getTypeLabel = (type) => {
     if (type === "VIDEO") return "Video";
@@ -127,18 +127,17 @@ export default function Resources() {
         <section className="featured-card">
           <div className="featured-image-wrap">
             <img
-              src="/images/resource-hero.jpg"
+              src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=2120&auto=format&fit=crop"
               alt="Mental wellness"
               className="featured-image"
-              onError={(e) => {
-                e.target.src = "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=2120&auto=format&fit=crop";
-              }}
             />
           </div>
 
           <div className="featured-content">
             <span className="featured-badge">
-              {featuredResource.type === "BOOK" ? "Featured Guide" : "Featured Resource"}
+              {featuredResource.type === "VIDEO" ? "Featured Video" :
+               featuredResource.type === "AUDIO" ? "Featured Audio" :
+               featuredResource.type === "BOOK" ? "Featured Guide" : "Featured Resource"}
             </span>
 
             <h2>{featuredResource.title}</h2>
@@ -148,7 +147,9 @@ export default function Resources() {
             </p>
 
             <button className="primary-btn" onClick={() => openResource(featuredResource)}>
-              Read Full Guide
+              {featuredResource.type === "VIDEO" ? "Watch Video" :
+               featuredResource.type === "AUDIO" ? "Listen to Audio" :
+               featuredResource.type === "BOOK" ? "Read Full Guide" : "View Resource"}
             </button>
           </div>
         </section>
