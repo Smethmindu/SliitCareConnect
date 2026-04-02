@@ -3,7 +3,7 @@ import { Bell, BookOpen, Calendar, Home, LayoutDashboard, Leaf, LogOut, Menu, Me
 import Resources from "./pages/Resources";
 import FeedbackPage from "./pages/feedback";
 import Counselors from "./pages/Counselors";
-
+import CounselorProfile from "./pages/CounselorProfile";
 function Sidebar() {
   const location = useLocation();
   const path = location.pathname;
@@ -117,6 +117,7 @@ export default function App() {
             <Route path="/" element={<Resources />} />
             <Route path="/feedback" element={<FeedbackPage />} />
             <Route path="/counselors" element={<Counselors />} />
+            <Route path="/counselor/:id" element={<CounselorProfile />} />
           </Routes>
         </main>
 
