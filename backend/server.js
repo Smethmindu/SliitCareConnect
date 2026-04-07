@@ -4,38 +4,42 @@ import app from './app.js';
 
 dotenv.config();
 
-// MongoDB Connection with server startup
+const port = Number(process.env.PORT) || 3000;
+
+// Start server immediately so the dev proxy doesn't 502.
+const server = app.listen(port, () => {
+  console.log(`✅ Server running on port ${port}...`);
+});
+
+// Track DB readiness so routes can respond with a useful error.
+app.locals.dbReady = false;
+
 const connectDB = async () => {
   try {
-    console.log('Environment variables loaded:');
-    console.log('MONGO_STRING:', process.env.MONGO_STRING ? 'Present' : 'Missing');
-    console.log('DATABASE_PASSWORD:', process.env.DATABASE_PASSWORD ? 'Present' : 'Missing');
+    const mongoString =
+      process.env.MONGO_STRING ||
+      'mongodb+srv://smethmindu_db_user:aInUauTAwOTo24r8@cluster0.aivy9fh.mongodb.net/?appName=Cluster0';
 
-    const db = process.env.MONGO_STRING.replace('<PASSWORD>', process.env.DATABASE_PASSWORD);
-    
     console.log('Attempting to connect to MongoDB...');
-    console.log('Connection string:', db.replace(process.env.DATABASE_PASSWORD, '****'));
+    await mongoose.connect(mongoString);
 
-    await mongoose.connect(db);
+    app.locals.dbReady = true;
     console.log('✅ MongoDB connection successful');
-
-    // ✅ Start the server **only after DB is connected**
-    const port = process.env.PORT || 3000;
-    app.listen(port, () => {
-      console.log(`✅ Server running on port ${port}...`);
-    });
-
   } catch (error) {
-    console.error('❌ MongoDB connection error:', error.message);
-    process.exit(1); // Stop the process if DB fails
+    app.locals.dbReady = false;
+    console.error('❌ MongoDB connection error:', error?.message || error);
+    // Do NOT exit: keep API reachable to avoid frontend 502s.
   }
 };
 
-// Start the server
 connectDB();
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
   console.error('❌ Unhandled Rejection:', err);
-  process.exit(1);
+  try {
+    server?.close?.(() => process.exit(1));
+  } catch {
+    process.exit(1);
+  }
 });

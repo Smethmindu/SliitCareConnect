@@ -1,19 +1,34 @@
-import { Outlet, Link, useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LeafIcon,
   BellIcon,
-  HomeIcon,
-  CalendarIcon,
-  UsersIcon,
-  MessageSquareIcon,
   SettingsIcon,
   LogOutIcon,
-  BookOpenIcon,
   LayoutDashboardIcon,
+  UsersIcon,
 } from "lucide-react";
+
+function getToken() {
+  return localStorage.getItem("token") ?? sessionStorage.getItem("token") ?? null;
+}
 
 export function DashboardLayout() {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Small delay avoids edge cases where we navigate immediately
+    // after saving token in storage on the previous page.
+    const t = setTimeout(() => {
+      const token = getToken();
+      if (!token) {
+        navigate("/login", { replace: true, state: { from: location.pathname } });
+      }
+    }, 0);
+
+    return () => clearTimeout(t);
+  }, [location.pathname, navigate]);
 
   const containerStyle = {
     minHeight: "100vh",
@@ -62,16 +77,8 @@ export function DashboardLayout() {
   };
 
   const navItems = [
-    { icon: HomeIcon, label: "Home", path: "/" },
-    { icon: LayoutDashboardIcon, label: "Dashboard", path: "/dashboard" },
-    {
-      icon: CalendarIcon,
-      label: "Appointments",
-      path: "/appointments/upcoming",
-    },
-    { icon: UsersIcon, label: "Counselors", path: "/counselors" },
-    { icon: MessageSquareIcon, label: "Messages", path: "/messages" },
-    { icon: BookOpenIcon, label: "Resources", path: "/blog" },
+    { icon: UsersIcon, label: "Users", path: "/users" },
+    { icon: UsersIcon, label: "Admin Dashboard", path: "/admin" },
   ];
 
   return (
@@ -315,6 +322,14 @@ export function DashboardLayout() {
                   fontWeight: 500,
                   color: "#dc2626",
                   textDecoration: "none",
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  localStorage.removeItem("token");
+                  localStorage.removeItem("user");
+                  sessionStorage.removeItem("token");
+                  sessionStorage.removeItem("user");
+                  navigate("/login");
                 }}
               >
                 <LogOutIcon

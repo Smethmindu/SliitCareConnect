@@ -90,13 +90,12 @@ export function RegisterPage() {
   return (
     <div
       style={{
-        minHeight: "calc(100vh - 4rem)",
+        minHeight: "100vh",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: "3rem 1rem",
-        position: "relative",
-        overflow: "hidden",
+        background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)", // Light blue gradient background
+        padding: "1rem",
       }}
     >
       <div
