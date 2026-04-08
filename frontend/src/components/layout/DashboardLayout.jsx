@@ -151,13 +151,12 @@ export function DashboardLayout() {
                 margin: "0 0.25rem",
               }}
             ></div>
-            <Link
-              to="/settings"
+            <div
               style={{
                 display: "flex",
                 alignItems: "center",
                 gap: "0.75rem",
-                textDecoration: "none",
+                cursor: "default",
               }}
             >
               <div style={{ textAlign: "right" }}>
@@ -192,7 +191,7 @@ export function DashboardLayout() {
               >
                 SJ
               </div>
-            </Link>
+            </div>
           </div>
         </div>
       </header>

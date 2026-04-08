@@ -335,10 +335,10 @@ export function LandingPage() {
                   marginBottom: "2.5rem",
                 }}
               >
-                Join thousands of students who have already taken the first step
-                towards better mental health.
+                Browse our trusted counselors and book a session that fits your
+                schedule — in just a few clicks.
               </p>
-              <Link to="/register" style={{ textDecoration: "none" }}>
+              <Link to="/counselors" style={{ textDecoration: "none" }}>
                 <button
                   style={{
                     padding: "1rem 2rem",
@@ -354,7 +354,7 @@ export function LandingPage() {
                     boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)",
                   }}
                 >
-                  Create Free Account
+                  Book a Session
                 </button>
               </Link>
             </div>

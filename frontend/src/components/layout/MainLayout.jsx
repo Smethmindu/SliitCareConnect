@@ -1,5 +1,5 @@
 import { Outlet, Link } from "react-router-dom";
-import { LeafIcon, UserIcon } from "lucide-react";
+import { LeafIcon, BellIcon } from "lucide-react";
 
 export function MainLayout() {
   const containerStyle = {
@@ -146,6 +146,17 @@ export function MainLayout() {
               >
                 Appointments
               </Link>
+              <Link
+                to="#"
+                style={{
+                  fontSize: "0.875rem",
+                  fontWeight: 500,
+                  color: "#57534e",
+                  textDecoration: "none",
+                }}
+              >
+                Contact Us
+              </Link>
               <div
                 style={{
                   display: "flex",
@@ -154,64 +165,80 @@ export function MainLayout() {
                   marginLeft: "1rem",
                 }}
               >
-                <Link to="/dashboard" style={{ textDecoration: "none" }}>
-                  <button
+                <button
+                  style={{
+                    padding: "0.5rem",
+                    color: "#a8a29e",
+                    background: "none",
+                    border: "none",
+                    position: "relative",
+                    cursor: "pointer",
+                  }}
+                  title="Notifications"
+                >
+                  <BellIcon style={{ height: "1.25rem", width: "1.25rem" }} />
+                  <span
                     style={{
-                      display: "flex",
+                      position: "absolute",
+                      top: "0.375rem",
+                      right: "0.375rem",
+                      height: "0.5rem",
+                      width: "0.5rem",
+                      backgroundColor: "#f87171",
+                      borderRadius: "50%",
+                      border: "2px solid white",
+                    }}
+                  ></span>
+                </button>
+                <div
+                  style={{
+                    height: "2rem",
+                    width: "1px",
+                    backgroundColor: "#e7e5e4",
+                    margin: "0 0.25rem",
+                  }}
+                ></div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.75rem",
+                    cursor: "default",
+                  }}
+                >
+                  <div style={{ textAlign: "right" }}>
+                    <p
+                      style={{
+                        fontSize: "0.875rem",
+                        fontWeight: 500,
+                        color: "#44403c",
+                        margin: 0,
+                      }}
+                    >
+                      Sarah Jenkins
+                    </p>
+                    <p style={{ fontSize: "0.75rem", color: "#78716c", margin: 0 }}>
+                      Student
+                    </p>
+                  </div>
+                  <div
+                    style={{
+                      position: "relative",
+                      display: "inline-flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      height: "2.25rem",
-                      width: "2.25rem",
+                      height: "2rem",
+                      width: "2rem",
                       borderRadius: "50%",
-                      backgroundColor: "#f0f9ff",
-                      color: "#0369a1",
-                      border: "1px solid #bae6fd",
-                      cursor: "pointer",
-                      outline: "none",
-                      transition: "all 0.2s",
-                    }}
-                    title="Profile Dashboard"
-                  >
-                    <UserIcon style={{ height: "1.25rem", width: "1.25rem" }} />
-                  </button>
-                </Link>
-                <Link to="/login" style={{ textDecoration: "none" }}>
-                  <button
-                    style={{
-                      padding: "0.375rem 0.75rem",
-                      fontSize: "0.875rem",
-                      fontWeight: 500,
+                      backgroundColor: "#e7e5e4",
                       color: "#57534e",
-                      backgroundColor: "transparent",
-                      border: "none",
-                      borderRadius: "0.375rem",
-                      cursor: "pointer",
-                      outline: "none",
-                      transition: "background-color 0.3s",
-                    }}
-                  >
-                    Log in
-                  </button>
-                </Link>
-                <Link to="/register" style={{ textDecoration: "none" }}>
-                  <button
-                    style={{
-                      padding: "0.375rem 0.75rem",
                       fontSize: "0.875rem",
-                      fontWeight: 500,
-                      color: "white",
-                      backgroundColor: "#0ea5e9",
-                      border: "none",
-                      borderRadius: "0.375rem",
-                      cursor: "pointer",
-                      outline: "none",
-                      transition: "background-color 0.3s",
-                      boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+                      fontWeight: "bold",
                     }}
                   >
-                    Sign up
-                  </button>
-                </Link>
+                    SJ
+                  </div>
+                </div>
               </div>
             </div>
           </nav>
