@@ -18,6 +18,10 @@ app.get("/", (req, res) => {
   res.send("SliitCareConnect API is running...");
 });
 
+// Auth & User Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+
 // Mount API Routes — Counselor component
 app.use("/api/counselors", counselorRoutes);
 
