@@ -13,7 +13,7 @@ function getToken() {
   return localStorage.getItem("token") ?? sessionStorage.getItem("token") ?? null;
 }
 
-export function DashboardLayout() {
+export function ADashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
 

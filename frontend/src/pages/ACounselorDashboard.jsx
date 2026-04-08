@@ -14,7 +14,7 @@ function formatDate(value) {
   return d.toISOString().split("T")[0];
 }
 
-export function CounselorDashboard() {
+export function ACounselorDashboard() {
   const [students, setStudents] = useState([]);
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(false);

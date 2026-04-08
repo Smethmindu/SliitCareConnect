@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 
-export function MainLayout() {
+export function AMainLayout() {
   const containerStyle = {
     minHeight: "100vh",
     display: "flex",
