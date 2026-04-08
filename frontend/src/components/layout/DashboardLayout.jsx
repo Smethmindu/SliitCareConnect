@@ -1,34 +1,43 @@
-import { useEffect } from "react";
-import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Outlet, Link, useLocation } from "react-router-dom";
 import {
   LeafIcon,
   BellIcon,
+  HomeIcon,
+  CalendarIcon,
+  UsersIcon,
+  MessageSquareIcon,
   SettingsIcon,
   LogOutIcon,
+  BookOpenIcon,
   LayoutDashboardIcon,
-  UsersIcon,
 } from "lucide-react";
 
-function getToken() {
-  return localStorage.getItem("token") ?? sessionStorage.getItem("token") ?? null;
-}
-
-export function ADashboardLayout() {
-  const location = useLocation();
-  const navigate = useNavigate();
+export function DashboardLayout() {
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
-    // Small delay avoids edge cases where we navigate immediately
-    // after saving token in storage on the previous page.
-    const t = setTimeout(() => {
-      const token = getToken();
-      if (!token) {
-        navigate("/login", { replace: true, state: { from: location.pathname } });
+    const stored = localStorage.getItem('user') || sessionStorage.getItem('user');
+    if (stored) {
+      try {
+        setCurrentUser(JSON.parse(stored));
+      } catch (e) {
+        console.log('Could not parse stored user data');
       }
-    }, 0);
+    }
+  }, []);
 
-    return () => clearTimeout(t);
-  }, [location.pathname, navigate]);
+  const userName = currentUser
+    ? `${currentUser.firstName} ${currentUser.lastName}`
+    : 'Guest';
+  const userRole = currentUser?.role
+    ? currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1)
+    : '';
+  const userInitials = currentUser
+    ? `${currentUser.firstName?.[0] || ''}${currentUser.lastName?.[0] || ''}`
+    : 'G';
+
+  const location = useLocation();
 
   const containerStyle = {
     minHeight: "100vh",
@@ -77,8 +86,16 @@ export function ADashboardLayout() {
   };
 
   const navItems = [
-    { icon: UsersIcon, label: "Users", path: "/users" },
-    { icon: UsersIcon, label: "Admin Dashboard", path: "/admin" },
+    { icon: HomeIcon, label: "Home", path: "/" },
+    { icon: LayoutDashboardIcon, label: "Dashboard", path: "/dashboard" },
+    {
+      icon: CalendarIcon,
+      label: "Appointments",
+      path: "/appointments/upcoming",
+    },
+    { icon: UsersIcon, label: "Counselors", path: "/counselors" },
+    { icon: MessageSquareIcon, label: "Messages", path: "/messages" },
+    { icon: BookOpenIcon, label: "Resources", path: "/blog" },
   ];
 
   return (
@@ -175,10 +192,10 @@ export function ADashboardLayout() {
                     margin: 0,
                   }}
                 >
-                  Sarah Jenkins
+                  {userName}
                 </p>
                 <p style={{ fontSize: "0.75rem", color: "#78716c", margin: 0 }}>
-                  Student
+                  {userRole}
                 </p>
               </div>
               <div
@@ -196,7 +213,7 @@ export function ADashboardLayout() {
                   fontWeight: "bold",
                 }}
               >
-                SJ
+                {userInitials}
               </div>
             </div>
           </div>
@@ -321,14 +338,6 @@ export function ADashboardLayout() {
                   fontWeight: 500,
                   color: "#dc2626",
                   textDecoration: "none",
-                }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  localStorage.removeItem("token");
-                  localStorage.removeItem("user");
-                  sessionStorage.removeItem("token");
-                  sessionStorage.removeItem("user");
-                  navigate("/login");
                 }}
               >
                 <LogOutIcon

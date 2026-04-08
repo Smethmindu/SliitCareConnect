@@ -5,12 +5,13 @@ import notificationRoutes from "./routes/notificationRoutes.js";
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
 
+// Route imports — Counselor component only
+import counselorRoutes from "./routes/counselorRoutes.js";
+
 const app = express();
 
 // Configure CORS to allow frontend
 const corsOptions = {
-  // Allow requests from the frontend dev server.
-  // Using a dynamic origin callback avoids CORS issues across different ports.
   origin: (origin, callback) => callback(null, true),
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -18,7 +19,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-// Explicitly handle CORS preflight requests (browser sends OPTIONS before POST).
 app.options(/.*/, cors(corsOptions));
 
 app.use(express.json());
@@ -26,7 +26,6 @@ app.use(express.json());
 // API Routes
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/notifications", notificationRoutes);
-// Helpful health endpoints for dev/proxy debugging
 app.get("/api/health", (req, res) => {
   res.json({
     ok: true,
@@ -38,8 +37,20 @@ app.get("/api/health", (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 
+// Health check
 app.get("/", (req, res) => {
-  res.send("API is running...");
+  res.send("SliitCareConnect API is running...");
+});
+
+// Mount API Routes — Counselor component
+app.use("/api/counselors", counselorRoutes);
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({
+    status: "fail",
+    message: `Route ${req.originalUrl} not found`,
+  });
 });
 
 export default app;
