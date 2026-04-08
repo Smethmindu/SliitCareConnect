@@ -1,9 +1,7 @@
 import { Routes, Route, Link, useLocation } from "react-router-dom";
-import { Bell, BookOpen, Calendar, Home, LayoutDashboard, Leaf, LogOut, Menu, MessageSquare, Settings, UserRound } from "lucide-react";
+import { Bell, BookOpen, Calendar, Home, LayoutDashboard, Leaf, LogOut, Menu, MessageSquare, Settings } from "lucide-react";
 import Resources from "./pages/Resources";
-import FeedbackPage from "./pages/feedback";
-import Counselors from "./pages/Counselors";
-import CounselorProfile from "./pages/CounselorProfile";
+import FeedbackPage from "./pages/Feedback";
 function Sidebar() {
   const location = useLocation();
   const path = location.pathname;
@@ -37,11 +35,6 @@ function Sidebar() {
           <Calendar size={20} />
           <span>Appointments</span>
         </a>
-
-        <Link to="/counselors" className={`sidebar-link ${path === '/counselors' ? 'active' : ''}`}>
-          <UserRound size={20} />
-          <span>Counselors</span>
-        </Link>
 
         <a href="#" className="sidebar-link">
           <MessageSquare size={20} />
@@ -116,8 +109,6 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Resources />} />
             <Route path="/feedback" element={<FeedbackPage />} />
-            <Route path="/counselors" element={<Counselors />} />
-            <Route path="/counselor/:id" element={<CounselorProfile />} />
           </Routes>
         </main>
 
