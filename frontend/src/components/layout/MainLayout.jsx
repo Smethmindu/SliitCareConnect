@@ -95,7 +95,7 @@ export function MainLayout() {
       <header style={headerStyle}>
         <div style={navContainerStyle}>
           {/* Logo */}
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "flex-start" }}>
             <Link
               to="/"
               style={{
@@ -106,11 +106,13 @@ export function MainLayout() {
               }}
             >
               <div style={logoIconStyle}>
-                <LeafIcon
+                <img 
+                  src="/logo.png" 
+                  alt="SliitCareConnect Logo" 
                   style={{
-                    height: "1.25rem",
-                    width: "1.25rem",
-                    color: "#0284c7",
+                    height: "2.5rem",
+                    width: "auto",
+                    objectFit: "contain"
                   }}
                 />
               </div>
@@ -129,16 +131,15 @@ export function MainLayout() {
           </div>
 
           {/* Desktop Navigation */}
-          <nav style={{ display: "flex", alignItems: "center", gap: "2rem" }}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "2rem",
-                flexWrap: "wrap",
-              }}
-            >
-              <Link
+          <nav
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "2rem",
+              flexWrap: "wrap",
+            }}
+          >
+            <Link
                 to="/"
                 style={{
                   fontSize: "0.875rem",
@@ -195,26 +196,30 @@ export function MainLayout() {
               >
                 Contact Us
               </Link>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.75rem",
-                  marginLeft: "1rem",
-                }}
-              >
-                {currentUser ? (
-                  <>
-                    <button
-                      style={{
-                        padding: "0.5rem",
-                        color: "#a8a29e",
-                        background: "none",
-                        border: "none",
-                        position: "relative",
-                        cursor: "pointer",
-                      }}
-                      title="Notifications"
+            </nav>
+
+            {/* Profile / Auth Section */}
+            <div
+              style={{
+                flex: 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-end",
+                gap: "0.75rem",
+              }}
+            >
+              {currentUser ? (
+                <>
+                  <button
+                    style={{
+                      padding: "0.5rem",
+                      color: "#a8a29e",
+                      background: "none",
+                      border: "none",
+                      position: "relative",
+                      cursor: "pointer",
+                    }}
+                    title="Notifications"
                     >
                       <BellIcon style={{ height: "1.25rem", width: "1.25rem" }} />
                       <span
@@ -281,6 +286,8 @@ export function MainLayout() {
                       <button
                         onClick={handleLogout}
                         style={{
+                          position: "absolute",
+                          right: "1.5rem",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
@@ -291,7 +298,6 @@ export function MainLayout() {
                           borderRadius: "50%",
                           cursor: "pointer",
                           color: "#ef4444",
-                          marginLeft: "0.25rem",
                           transition: "background-color 0.2s",
                         }}
                         title="Log out"
@@ -343,8 +349,6 @@ export function MainLayout() {
                 )}
               </div>
             </div>
-          </nav>
-        </div>
       </header>
       <main style={mainStyle}>
         <Outlet />

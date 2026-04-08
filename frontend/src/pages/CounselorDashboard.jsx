@@ -79,7 +79,7 @@ export function CounselorDashboard() {
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <Link to="/" style={{ display: "flex", alignItems: "center", gap: "0.5rem", textDecoration: "none" }}>
               <div style={{ backgroundColor: "#f0f9ff", padding: "0.5rem", borderRadius: "0.75rem" }}>
-                <LeafIcon style={{ height: "1.25rem", width: "1.25rem", color: "#0284c7" }} />
+                <img src="/logo.png" alt="Logo" style={{ height: "2.5rem", width: "auto", objectFit: "contain" }} />
               </div>
               <span style={{ fontFamily: "sans-serif", fontWeight: 700, fontSize: "1.25rem", color: "#292524", letterSpacing: "-0.025em" }}>
                 SliitCare<span style={{ color: "#0ea5e9" }}>Connect</span>

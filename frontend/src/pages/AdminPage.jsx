@@ -512,7 +512,7 @@ export function AdminPage() {
           <button onClick={() => handleQuickAction('sendNotifications')} style={{ border: "1px solid #d6d3d1", borderRadius: "0.625rem", padding: "0.75rem 1rem", backgroundColor: "white", color: "#44403c", fontWeight: 600, cursor: "pointer" }}>
             📢 Send Notifications
           </button>
-          <button onClick={() => window.open('/settings', '_blank')} style={{ border: "1px solid #d6d3d1", borderRadius: "0.625rem", padding: "0.75rem 1rem", backgroundColor: "white", color: "#44403c", fontWeight: 600, cursor: "pointer" }}>
+          <button onClick={() => window.open('#', '_blank')} style={{ border: "1px solid #d6d3d1", borderRadius: "0.625rem", padding: "0.75rem 1rem", backgroundColor: "white", color: "#44403c", fontWeight: 600, cursor: "pointer" }}>
             ⚙️ Settings
           </button>
           <button onClick={() => window.open('/feedback', '_blank')} style={{ border: "1px solid #3b82f6", borderRadius: "0.625rem", padding: "0.75rem 1rem", backgroundColor: "white", color: "#3b82f6", fontWeight: 600, cursor: "pointer" }}>

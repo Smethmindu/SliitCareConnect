@@ -103,11 +103,13 @@ export function ADashboardLayout() {
                   borderRadius: "0.75rem",
                 }}
               >
-                <LeafIcon
+                <img 
+                  src="/logo.png" 
+                  alt="SliitCareConnect Logo" 
                   style={{
-                    height: "1.25rem",
-                    width: "1.25rem",
-                    color: "#0284c7",
+                    height: "2.5rem",
+                    width: "auto",
+                    objectFit: "contain"
                   }}
                 />
               </div>
@@ -287,7 +289,7 @@ export function ADashboardLayout() {
               }}
             >
               <Link
-                to="/settings"
+                to="#"
                 style={{
                   display: "flex",
                   alignItems: "center",

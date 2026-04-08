@@ -146,8 +146,14 @@ export function LoginPage() {
               marginBottom: "1rem",
             }}
           >
-            <LeafIcon
-              style={{ height: "2rem", width: "2rem", color: "#6fa687" }}
+            <img 
+              src="/logo.png" 
+              alt="SliitCareConnect Logo" 
+              style={{
+                height: "4rem",
+                width: "auto",
+                objectFit: "contain"
+              }}
             />
           </div>
           <h2
