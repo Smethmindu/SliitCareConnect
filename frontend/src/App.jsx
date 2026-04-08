@@ -39,21 +39,24 @@ export function App() {
       <Routes>
         {/* Public / Auth Routes */}
         <Route element={<AMainLayout />}>
-          <Route path="/contact" element={<ContactPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
         </Route>
 
-         {/* Public Routes */}
+        {/* Public Routes */}
         <Route element={<MainLayout />}>
           <Route path="/" element={<LandingPage />} />
           <Route path="/about" element={<AboutUs />} />
+          <Route path="/contact" element={<ContactPage />} />
         </Route>
 
         {/* Dashboard Routes / Student View */}
         <Route element={<DashboardLayout />}>
           <Route path="/counselors" element={<CounselorListing />} />
           <Route path="/counselors/:id" element={<CounselorProfile />} />
+          <Route path="/book" element={<BookAppointment />} />
+          <Route path="/appointments/:id" element={<AppointmentDetails />} />
+          <Route path="/dashboard/contact" element={<ContactPage />} />
         </Route>
 
         {/* Counselor specific Routes / Counselor View */}
@@ -71,10 +74,6 @@ export function App() {
           <Route path="/counselor" element={<ACounselorDashboard />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/feedback" element={<FeedbackReviews />} />
-          <Route path="/book" element={<BookAppointment />} />
-          <Route path="/appointments/:id" element={<AppointmentDetails />} />
-          
-
         </Route>
       </Routes>
     </BrowserRouter>

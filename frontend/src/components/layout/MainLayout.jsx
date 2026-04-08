@@ -170,7 +170,7 @@ export function MainLayout() {
                 Appointments
               </Link>
               <Link
-                to="#"
+                to="/contact"
                 style={{
                   fontSize: "0.875rem",
                   fontWeight: 500,

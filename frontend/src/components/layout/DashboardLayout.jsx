@@ -11,6 +11,7 @@ import {
   LogOutIcon,
   BookOpenIcon,
   LayoutDashboardIcon,
+  MailIcon,
 } from "lucide-react";
 
 export function DashboardLayout() {
@@ -96,6 +97,7 @@ export function DashboardLayout() {
     { icon: UsersIcon, label: "Counselors", path: "/counselors" },
     { icon: MessageSquareIcon, label: "Messages", path: "/messages" },
     { icon: BookOpenIcon, label: "Resources", path: "/blog" },
+    { icon: MailIcon, label: "Contact Us", path: "/dashboard/contact" },
   ];
 
   return (
