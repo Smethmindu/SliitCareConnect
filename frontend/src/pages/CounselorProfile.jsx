@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -12,6 +13,18 @@ import {
 
 export function CounselorProfile() {
   useParams();
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    const stored = localStorage.getItem('user') || sessionStorage.getItem('user');
+    if (stored) {
+      try {
+        setCurrentUser(JSON.parse(stored));
+      } catch (e) {
+        console.log('Could not parse stored user data');
+      }
+    }
+  }, []);
 
   const fadeIn = {
     initial: { opacity: 0, y: 10 },
@@ -639,7 +652,7 @@ export function CounselorProfile() {
                 </p>
               </div>
 
-              <Link to="/book" style={{ textDecoration: "none" }}>
+              <Link to={currentUser ? "/book" : "/register"} style={{ textDecoration: "none" }}>
                 <button
                   style={{
                     width: "100%",

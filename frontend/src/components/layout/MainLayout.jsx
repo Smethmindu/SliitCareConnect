@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Outlet, Link } from "react-router-dom";
-import { LeafIcon, BellIcon } from "lucide-react";
+import { Outlet, Link, useNavigate } from "react-router-dom";
+import { LeafIcon, BellIcon, LogOutIcon } from "lucide-react";
 
 export function MainLayout() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -25,6 +25,19 @@ export function MainLayout() {
   const userInitials = currentUser
     ? `${currentUser.firstName?.[0] || ''}${currentUser.lastName?.[0] || ''}`
     : 'G';
+
+  const navigate = useNavigate();
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    sessionStorage.removeItem('user');
+    sessionStorage.removeItem('token');
+    setCurrentUser(null);
+    navigate('/');
+  };
+
   const containerStyle = {
     minHeight: "100vh",
     display: "flex",
@@ -158,17 +171,19 @@ export function MainLayout() {
               >
                 Resources
               </Link>
-              <Link
-                to="/appointments/upcoming"
-                style={{
-                  fontSize: "0.875rem",
-                  fontWeight: 500,
-                  color: "#57534e",
-                  textDecoration: "none",
-                }}
-              >
-                Appointments
-              </Link>
+              {currentUser && (
+                <Link
+                  to="/appointments/upcoming"
+                  style={{
+                    fontSize: "0.875rem",
+                    fontWeight: 500,
+                    color: "#57534e",
+                    textDecoration: "none",
+                  }}
+                >
+                  Appointments
+                </Link>
+              )}
               <Link
                 to="/contact"
                 style={{
@@ -188,80 +203,144 @@ export function MainLayout() {
                   marginLeft: "1rem",
                 }}
               >
-                <button
-                  style={{
-                    padding: "0.5rem",
-                    color: "#a8a29e",
-                    background: "none",
-                    border: "none",
-                    position: "relative",
-                    cursor: "pointer",
-                  }}
-                  title="Notifications"
-                >
-                  <BellIcon style={{ height: "1.25rem", width: "1.25rem" }} />
-                  <span
-                    style={{
-                      position: "absolute",
-                      top: "0.375rem",
-                      right: "0.375rem",
-                      height: "0.5rem",
-                      width: "0.5rem",
-                      backgroundColor: "#f87171",
-                      borderRadius: "50%",
-                      border: "2px solid white",
-                    }}
-                  ></span>
-                </button>
-                <div
-                  style={{
-                    height: "2rem",
-                    width: "1px",
-                    backgroundColor: "#e7e5e4",
-                    margin: "0 0.25rem",
-                  }}
-                ></div>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.75rem",
-                    cursor: "default",
-                  }}
-                >
-                  <div style={{ textAlign: "right" }}>
-                    <p
+                {currentUser ? (
+                  <>
+                    <button
                       style={{
-                        fontSize: "0.875rem",
-                        fontWeight: 500,
-                        color: "#44403c",
-                        margin: 0,
+                        padding: "0.5rem",
+                        color: "#a8a29e",
+                        background: "none",
+                        border: "none",
+                        position: "relative",
+                        cursor: "pointer",
+                      }}
+                      title="Notifications"
+                    >
+                      <BellIcon style={{ height: "1.25rem", width: "1.25rem" }} />
+                      <span
+                        style={{
+                          position: "absolute",
+                          top: "0.375rem",
+                          right: "0.375rem",
+                          height: "0.5rem",
+                          width: "0.5rem",
+                          backgroundColor: "#f87171",
+                          borderRadius: "50%",
+                          border: "2px solid white",
+                        }}
+                      ></span>
+                    </button>
+                    <div
+                      style={{
+                        height: "2rem",
+                        width: "1px",
+                        backgroundColor: "#e7e5e4",
+                        margin: "0 0.25rem",
+                      }}
+                    ></div>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.75rem",
+                        cursor: "default",
                       }}
                     >
-                      {userName}
-                    </p>
-                    <p style={{ fontSize: "0.75rem", color: "#78716c", margin: 0 }}>
-                      {userRole}
-                    </p>
-                  </div>
-                  <div
-                    style={{
-                      position: "relative",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      height: "2rem",
-                      width: "2rem",
-                      borderRadius: "50%",
-                      backgroundColor: "#e7e5e4",
-                      color: "#57534e",
-                      fontSize: "0.875rem",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {userInitials}
-                  </div>
-                </div>
+                      <div style={{ textAlign: "right" }}>
+                        <p
+                          style={{
+                            fontSize: "0.875rem",
+                            fontWeight: 500,
+                            color: "#44403c",
+                            margin: 0,
+                          }}
+                        >
+                          {userName}
+                        </p>
+                        <p style={{ fontSize: "0.75rem", color: "#78716c", margin: 0 }}>
+                          {userRole}
+                        </p>
+                      </div>
+                      <div
+                        style={{
+                          position: "relative",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          height: "2rem",
+                          width: "2rem",
+                          borderRadius: "50%",
+                          backgroundColor: "#e7e5e4",
+                          color: "#57534e",
+                          fontSize: "0.875rem",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {userInitials}
+                      </div>
+                      <button
+                        onClick={handleLogout}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          height: "2rem",
+                          width: "2rem",
+                          backgroundColor: "#fee2e2",
+                          border: "none",
+                          borderRadius: "50%",
+                          cursor: "pointer",
+                          color: "#ef4444",
+                          marginLeft: "0.25rem",
+                          transition: "background-color 0.2s",
+                        }}
+                        title="Log out"
+                      >
+                        <LogOutIcon style={{ height: "1rem", width: "1rem" }} />
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <Link to="/login" style={{ textDecoration: "none" }}>
+                      <button
+                        style={{
+                          padding: "0.375rem 0.75rem",
+                          fontSize: "0.875rem",
+                          fontWeight: 500,
+                          color: "#57534e",
+                          backgroundColor: "transparent",
+                          border: "none",
+                          borderRadius: "0.375rem",
+                          cursor: "pointer",
+                          outline: "none",
+                          transition: "background-color 0.3s",
+                        }}
+                      >
+                        Log in
+                      </button>
+                    </Link>
+                    <Link to="/register" style={{ textDecoration: "none" }}>
+                      <button
+                        style={{
+                          padding: "0.375rem 0.75rem",
+                          fontSize: "0.875rem",
+                          fontWeight: 500,
+                          color: "white",
+                          backgroundColor: "#0ea5e9",
+                          border: "none",
+                          borderRadius: "0.375rem",
+                          cursor: "pointer",
+                          outline: "none",
+                          transition: "background-color 0.3s",
+                          boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+                        }}
+                      >
+                        Sign up
+                      </button>
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </nav>

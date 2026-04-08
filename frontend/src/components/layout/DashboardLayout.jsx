@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Outlet, Link, useLocation } from "react-router-dom";
+import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LeafIcon,
   BellIcon,
@@ -39,6 +39,17 @@ export function DashboardLayout() {
     : 'G';
 
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    sessionStorage.removeItem('user');
+    sessionStorage.removeItem('token');
+    setCurrentUser(null);
+    navigate('/');
+  };
 
   const containerStyle = {
     minHeight: "100vh",
@@ -88,14 +99,10 @@ export function DashboardLayout() {
 
   const navItems = [
     { icon: HomeIcon, label: "Home", path: "/" },
-    { icon: LayoutDashboardIcon, label: "Dashboard", path: "/dashboard" },
-    {
-      icon: CalendarIcon,
-      label: "Appointments",
-      path: "/appointments/upcoming",
-    },
+    ...(currentUser ? [{ icon: LayoutDashboardIcon, label: "Dashboard", path: "/dashboard" }] : []),
+    ...(currentUser ? [{ icon: CalendarIcon, label: "Appointments", path: "/appointments/upcoming" }] : []),
     { icon: UsersIcon, label: "Counselors", path: "/counselors" },
-    { icon: MessageSquareIcon, label: "Messages", path: "/messages" },
+    ...(currentUser ? [{ icon: MessageSquareIcon, label: "Messages", path: "/messages" }] : []),
     { icon: BookOpenIcon, label: "Resources", path: "/blog" },
     { icon: MailIcon, label: "Contact Us", path: "/dashboard/contact" },
   ];
@@ -297,62 +304,65 @@ export function DashboardLayout() {
             </nav>
           </div>
 
-          <div style={{ padding: "1.5rem", borderTop: "1px solid #f5f5f4" }}>
-            <nav
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "0.375rem",
-              }}
-            >
-              <Link
-                to="/settings"
+          {currentUser && (
+            <div style={{ padding: "1.5rem", borderTop: "1px solid #f5f5f4" }}>
+              <nav
                 style={{
                   display: "flex",
-                  alignItems: "center",
-                  gap: "0.75rem",
-                  padding: "0.625rem 0.75rem",
-                  borderRadius: "0.75rem",
-                  fontSize: "0.875rem",
-                  fontWeight: 500,
-                  color: "#57534e",
-                  textDecoration: "none",
+                  flexDirection: "column",
+                  gap: "0.375rem",
                 }}
               >
-                <SettingsIcon
+                <Link
+                  to="/settings"
                   style={{
-                    height: "1.25rem",
-                    width: "1.25rem",
-                    color: "#a8a29e",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.75rem",
+                    padding: "0.625rem 0.75rem",
+                    borderRadius: "0.75rem",
+                    fontSize: "0.875rem",
+                    fontWeight: 500,
+                    color: "#57534e",
+                    textDecoration: "none",
                   }}
-                />
-                Settings
-              </Link>
-              <Link
-                to="/"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.75rem",
-                  padding: "0.625rem 0.75rem",
-                  borderRadius: "0.75rem",
-                  fontSize: "0.875rem",
-                  fontWeight: 500,
-                  color: "#dc2626",
-                  textDecoration: "none",
-                }}
-              >
-                <LogOutIcon
+                >
+                  <SettingsIcon
+                    style={{
+                      height: "1.25rem",
+                      width: "1.25rem",
+                      color: "#a8a29e",
+                    }}
+                  />
+                  Settings
+                </Link>
+                <a
+                  href="#"
+                  onClick={handleLogout}
                   style={{
-                    height: "1.25rem",
-                    width: "1.25rem",
-                    color: "#f87171",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.75rem",
+                    padding: "0.625rem 0.75rem",
+                    borderRadius: "0.75rem",
+                    fontSize: "0.875rem",
+                    fontWeight: 500,
+                    color: "#dc2626",
+                    textDecoration: "none",
                   }}
-                />
-                Log out
-              </Link>
-            </nav>
-          </div>
+                >
+                  <LogOutIcon
+                    style={{
+                      height: "1.25rem",
+                      width: "1.25rem",
+                      color: "#f87171",
+                    }}
+                  />
+                  Log out
+                </a>
+              </nav>
+            </div>
+          )}
         </aside>
 
         <main style={mainStyle}>
