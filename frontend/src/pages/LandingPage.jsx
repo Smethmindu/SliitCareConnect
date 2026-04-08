@@ -1,249 +1,363 @@
-import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { ArrowRightIcon, ShieldCheckIcon, VideoIcon, HeartIcon } from "lucide-react";
+import { motion } from "framer-motion";
+import {
+  ShieldCheckIcon,
+  CalendarIcon,
+  MessageSquareIcon,
+  ArrowRightIcon,
+  BrainCircuitIcon,
+} from "lucide-react";
 import heroImg from "../assets/counselors.png";
 
 export function LandingPage() {
-  const containerStyle = {
-    display: "flex",
-    flexDirection: "column",
-    minHeight: "calc(100vh - 4rem)",
-    fontFamily: "system-ui, -apple-system, sans-serif",
+  const fadeIn = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.6 },
   };
 
-  const heroStyle = {
-    position: "relative",
-    overflow: "hidden",
-    backgroundColor: "#fdfbf7",
-    padding: "6rem 2rem 4rem",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: "80vh",
-  };
-
-  const gradientBlob = {
-    position: "absolute",
-    width: "800px",
-    height: "800px",
-    background: "radial-gradient(circle, rgba(14,165,233,0.1) 0%, rgba(253,251,247,0) 70%)",
-    top: "-200px",
-    right: "-200px",
-    borderRadius: "50%",
-    zIndex: 0,
-  };
-
-  const aboutSectionStyle = {
-    padding: "6rem 2rem",
-    backgroundColor: "white",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    textAlign: "center",
-    borderTop: "1px solid #f5f5f4",
-    borderBottom: "1px solid #f5f5f4",
+  const stagger = {
+    animate: { transition: { staggerChildren: 0.2 } },
   };
 
   return (
-    <div style={containerStyle}>
+    <div style={{ display: "flex", flexDirection: "column" }}>
       {/* Hero Section */}
-      <section style={heroStyle}>
-        <div style={gradientBlob} />
-        
-        <div style={{
-          display: "flex",
-          flexDirection: "row",
-          flexWrap: "wrap",
-          alignItems: "center",
-          justifyContent: "space-between",
-          maxWidth: "1200px",
-          width: "100%",
-          gap: "4rem",
-          zIndex: 1,
-        }}>
-          {/* Hero Text */}
-          <motion.div 
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            style={{ flex: "1 1 500px", maxWidth: "600px" }}
-          >
-            <span style={{ 
-              color: "#0369a1", 
-              fontWeight: 600, 
-              letterSpacing: "0.05em", 
-              textTransform: "uppercase", 
-              fontSize: "0.875rem",
-              backgroundColor: "#e0f2fe",
-              padding: "0.5rem 1rem",
-              borderRadius: "9999px",
-              marginBottom: "1.5rem",
-              display: "inline-block"
-            }}>
-              University Wellness Platform
-            </span>
-            <h1 style={{ 
-              fontSize: "4rem", 
-              lineHeight: 1.1, 
-              fontWeight: 800, 
-              color: "#1c1917", 
-              marginBottom: "1.5rem",
-              letterSpacing: "-0.02em"
-            }}>
-              Your Mental Wellness <br/>
-              <span style={{ color: "#0ea5e9" }}>Starts Here</span>
-            </h1>
-            <p style={{ 
-              fontSize: "1.25rem", 
-              color: "#57534e", 
-              marginBottom: "2.5rem", 
-              lineHeight: 1.6,
-            }}>
-              Connect with certified counselors, schedule sessions, and access resources tailored for university students' unique challenges.
-            </p>
-            <div style={{ display: "flex", gap: "1rem" }}>
-              <Link to="/counselors" style={{ textDecoration: "none" }}>
-                <motion.button 
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  style={{
-                    backgroundColor: "#0ea5e9",
-                    color: "white",
-                    padding: "1rem 2rem",
-                    borderRadius: "0.75rem",
-                    fontSize: "1.125rem",
-                    fontWeight: 600,
-                    border: "none",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.5rem",
-                    boxShadow: "0 10px 15px -3px rgba(14, 165, 233, 0.3)"
-                  }}
-                >
-                  Find a Counselor <ArrowRightIcon style={{ width: "1.25rem", height: "1.25rem" }} />
-                </motion.button>
-              </Link>
-            </div>
-          </motion.div>
-
-          {/* Hero Image */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+      <section
+        style={{
+          backgroundColor: "#5a6af0",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: "80rem",
+            margin: "0 auto",
+            padding: "0 1rem",
+            width: "100%",
+          }}
+        >
+          <div
             style={{
-              flex: "1 1 400px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "flex-end",
-              position: "relative",
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+              gap: "2rem",
+              alignItems: "center",
             }}
           >
-            <img 
-              src={heroImg} 
-              alt="Our professional counseling team" 
+            <motion.div
+              initial="initial"
+              animate="animate"
+              variants={stagger}
+              style={{ paddingTop: "4rem", paddingBottom: "4rem" }}
+            >
+              <motion.h1
+                variants={fadeIn}
+                style={{
+                  fontSize: "3.5rem",
+                  fontFamily: "sans-serif",
+                  fontWeight: "bold",
+                  color: "white",
+                  lineHeight: 1.2,
+                  marginBottom: "1.5rem",
+                  marginTop: 0,
+                }}
+              >
+                Book Appointment <br /> With Trusted Counselors
+              </motion.h1>
+
+              <motion.div
+                variants={fadeIn}
+                style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "2rem" }}
+              >
+                <div style={{ display: "flex" }}>
+                  <img src="https://i.pravatar.cc/100?img=33" alt="User" style={{ width: "2.5rem", height: "2.5rem", borderRadius: "50%", border: "2px solid white", marginLeft: "0" }} />
+                  <img src="https://i.pravatar.cc/100?img=47" alt="User" style={{ width: "2.5rem", height: "2.5rem", borderRadius: "50%", border: "2px solid white", marginLeft: "-0.75rem" }} />
+                  <img src="https://i.pravatar.cc/100?img=12" alt="User" style={{ width: "2.5rem", height: "2.5rem", borderRadius: "50%", border: "2px solid white", marginLeft: "-0.75rem" }} />
+                </div>
+                <p style={{ color: "rgba(255, 255, 255, 0.9)", fontSize: "0.875rem", margin: 0, maxWidth: "20rem", lineHeight: 1.5 }}>
+                  Simply browse through our extensive list of trusted doctors, schedule your appointment hassle-free.
+                </p>
+              </motion.div>
+
+              <motion.div variants={fadeIn}>
+                <Link to="/counselors" style={{ textDecoration: "none" }}>
+                  <button
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      padding: "0.75rem 1.5rem",
+                      fontSize: "1rem",
+                      borderRadius: "9999px",
+                      fontWeight: 500,
+                      backgroundColor: "white",
+                      color: "#4b5563",
+                      border: "none",
+                      cursor: "pointer",
+                      outline: "none",
+                      transition: "transform 0.2s",
+                      boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)",
+                    }}
+                  >
+                    Book appointment{" "}
+                    <ArrowRightIcon
+                      style={{
+                        marginLeft: "0.5rem",
+                        height: "1rem",
+                        width: "1rem",
+                      }}
+                    />
+                  </button>
+                </Link>
+              </motion.div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
               style={{
-                width: "100%",
-                maxWidth: "600px",
-                height: "auto",
-                objectFit: "contain",
-                filter: "drop-shadow(0 20px 25px rgba(0,0,0,0.1))"
+                height: "100%",
+                display: "flex",
+                alignItems: "flex-end",
+                justifyContent: "center",
+                paddingTop: "2rem"
               }}
-            />
-          </motion.div>
+            >
+              <img
+                src={heroImg}
+                alt="Our Professional Counselors"
+                style={{
+                  maxWidth: "130%",
+                  width: "130%",
+                  height: "auto",
+                  objectFit: "contain",
+                  marginBottom: "-4px",
+                  marginLeft: "10%"
+                }}
+              />
+            </motion.div>
+          </div>
         </div>
       </section>
 
       {/* About Us Preview Section */}
-      <section style={aboutSectionStyle}>
-        <div style={{ maxWidth: "800px" }}>
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            style={{ fontSize: "2.5rem", lineHeight: 1.2, fontWeight: 800, color: "#1c1917", marginBottom: "1.5rem", marginTop: 0 }}
-          >
-            Dedicated to <span style={{ color: "#0ea5e9" }}>Student Wellbeing</span>
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            style={{ fontSize: "1.125rem", color: "#57534e", lineHeight: 1.6, marginBottom: "2.5rem" }}
-          >
-            SliitCareConnect is built on the belief that university life shouldn't be a journey you face alone. 
-            We bridge the gap between students needing help and available counseling resources, ensuring 
-            professional support is always just a few clicks away.
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <Link to="/about" style={{ textDecoration: "none" }}>
-              <button style={{
-                backgroundColor: "white",
-                color: "#0369a1",
-                padding: "0.75rem 2rem",
-                borderRadius: "9999px",
-                fontSize: "1rem",
-                fontWeight: 600,
-                border: "2px solid #bae6fd",
-                cursor: "pointer",
-                transition: "all 0.3s",
-              }}
-              onMouseOver={(e) => { e.currentTarget.style.backgroundColor = '#f0f9ff' }}
-              onMouseOut={(e) => { e.currentTarget.style.backgroundColor = 'white' }}
-              >
-                See More About Us
-              </button>
-            </Link>
-          </motion.div>
+      <section style={{ padding: "4rem 0", backgroundColor: "#f9fafb" }}>
+        <div style={{ maxWidth: "80rem", margin: "0 auto", padding: "0 1rem", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+          <h2 style={{ fontSize: "2rem", fontFamily: "sans-serif", fontWeight: "bold", color: "#1c1917", marginBottom: "1rem", marginTop: 0 }}>
+            Who We Are
+          </h2>
+          <p style={{ fontSize: "1.125rem", color: "#57534e", maxWidth: "48rem", lineHeight: 1.625, marginBottom: "2rem" }}>
+            Welcome to SliitCareConnect, your trusted partner in managing your healthcare needs conveniently and efficiently. We continuously strive to enhance our platform, integrating the latest advancements to improve user experience and deliver superior service.
+          </p>
+          <Link to="/about" style={{ textDecoration: "none" }}>
+            <button style={{ padding: "0.75rem 1.5rem", fontSize: "1rem", borderRadius: "9999px", fontWeight: 500, backgroundColor: "white", color: "#0ea5e9", border: "1px solid #0ea5e9", cursor: "pointer", transition: "all 0.3s" }}>
+              More about us
+            </button>
+          </Link>
         </div>
       </section>
 
       {/* Features Section */}
-      <section style={{ padding: "6rem 2rem", backgroundColor: "#fdfbf7", zIndex: 1 }}>
-        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "2.5rem" }}>
-            
-            <motion.div 
-              whileHover={{ y: -5 }}
-              style={{ padding: "2.5rem", backgroundColor: "white", borderRadius: "1.5rem", border: "1px solid #f5f5f4", boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)" }}
+      <section style={{ padding: "6rem 0", backgroundColor: "white" }}>
+        <div
+          style={{
+            maxWidth: "80rem",
+            margin: "0 auto",
+            padding: "0 1rem",
+            width: "100%",
+          }}
+        >
+          <div
+            style={{
+              textAlign: "center",
+              maxWidth: "36rem",
+              margin: "0 auto 4rem auto",
+            }}
+          >
+            <h2
+              style={{
+                fontSize: "2.25rem",
+                fontFamily: "sans-serif",
+                fontWeight: "bold",
+                color: "#1c1917",
+                marginBottom: "1rem",
+                marginTop: 0,
+              }}
             >
-              <div style={{ backgroundColor: "#dbeafe", width: "4rem", height: "4rem", borderRadius: "1rem", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "1.5rem" }}>
-                <VideoIcon style={{ color: "#2563eb", width: "2rem", height: "2rem" }} />
-              </div>
-              <h3 style={{ fontSize: "1.5rem", color: "#0f172a", marginBottom: "1rem", fontWeight: 600, marginTop: 0 }}>Virtual & In-Person</h3>
-              <p style={{ color: "#64748b", lineHeight: 1.6, margin: 0 }}>Choose between flexible online video sessions or traditional in-person counseling on campus.</p>
-            </motion.div>
+              Support tailored for you
+            </h2>
+            <p style={{ fontSize: "1.125rem", color: "#78716c" }}>
+              We understand the unique challenges of student life. Our platform
+              makes it easy to get the right support at the right time.
+            </p>
+          </div>
 
-            <motion.div 
-              whileHover={{ y: -5 }}
-              style={{ padding: "2.5rem", backgroundColor: "white", borderRadius: "1.5rem", border: "1px solid #f5f5f4", boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)" }}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+              gap: "2rem",
+            }}
+          >
+            {[
+              {
+                icon: ShieldCheckIcon,
+                title: "Safe & Confidential",
+                desc: "Your privacy is our top priority. All communications and records are strictly confidential.",
+                bg: "#f0fdf4",
+                color: "#16a34a",
+              },
+              {
+                icon: CalendarIcon,
+                title: "Easy Scheduling",
+                desc: "Book in-person or virtual sessions that fit around your class schedule.",
+                bg: "#f0f9ff",
+                color: "#0ea5e9",
+              },
+              {
+                icon: MessageSquareIcon,
+                title: "Direct Messaging",
+                desc: "Securely message your counselor between sessions for ongoing support.",
+                bg: "#fef2f2",
+                color: "#dc2626",
+              },
+            ].map((feature, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.2 }}
+              >
+                <div
+                  style={{
+                    backgroundColor: "white",
+                    borderRadius: "1.5rem",
+                    padding: "2rem",
+                    border: "1px solid #f5f5f4",
+                    boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)",
+                    transition: "box-shadow 0.3s",
+                    height: "100%",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "3.5rem",
+                      height: "3.5rem",
+                      borderRadius: "1rem",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      marginBottom: "1.5rem",
+                      backgroundColor: feature.bg,
+                      color: feature.color,
+                    }}
+                  >
+                    <feature.icon
+                      style={{ height: "1.75rem", width: "1.75rem" }}
+                    />
+                  </div>
+                  <h3
+                    style={{
+                      fontSize: "1.25rem",
+                      fontWeight: 600,
+                      color: "#1c1917",
+                      marginBottom: "0.75rem",
+                      marginTop: 0,
+                    }}
+                  >
+                    {feature.title}
+                  </h3>
+                  <p style={{ color: "#57534e", lineHeight: 1.625 }}>
+                    {feature.desc}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section style={{ padding: "6rem 0", backgroundColor: "#fdfbf7" }}>
+        <div
+          style={{
+            maxWidth: "80rem",
+            margin: "0 auto",
+            padding: "0 1rem",
+            width: "100%",
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "#0284c7",
+              borderRadius: "2rem",
+              padding: "4rem 2rem",
+              textAlign: "center",
+              color: "white",
+              position: "relative",
+              overflow: "hidden",
+            }}
+          >
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                opacity: 0.1,
+                backgroundImage:
+                  "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
+              }}
+            ></div>
+            <div
+              style={{
+                position: "relative",
+                zIndex: 10,
+                maxWidth: "36rem",
+                margin: "0 auto",
+              }}
             >
-              <div style={{ backgroundColor: "#dcfce7", width: "4rem", height: "4rem", borderRadius: "1rem", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "1.5rem" }}>
-                <ShieldCheckIcon style={{ color: "#16a34a", width: "2rem", height: "2rem" }} />
-              </div>
-              <h3 style={{ fontSize: "1.5rem", color: "#0f172a", marginBottom: "1rem", fontWeight: 600, marginTop: 0 }}>Safe & Confidential</h3>
-              <p style={{ color: "#64748b", lineHeight: 1.6, margin: 0 }}>Your privacy is our priority. All communications and session notes are strictly confidential and secure.</p>
-            </motion.div>
-
-            <motion.div 
-              whileHover={{ y: -5 }}
-              style={{ padding: "2.5rem", backgroundColor: "white", borderRadius: "1.5rem", border: "1px solid #f5f5f4", boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)" }}
-            >
-              <div style={{ backgroundColor: "#fce7f3", width: "4rem", height: "4rem", borderRadius: "1rem", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "1.5rem" }}>
-                <HeartIcon style={{ color: "#db2777", width: "2rem", height: "2rem" }} />
-              </div>
-              <h3 style={{ fontSize: "1.5rem", color: "#0f172a", marginBottom: "1rem", fontWeight: 600, marginTop: 0 }}>Tailored Support</h3>
-              <p style={{ color: "#64748b", lineHeight: 1.6, margin: 0 }}>Match with counselors specializing in your specific needs, from academic stress to personal growth.</p>
-            </motion.div>
-
+              <h2
+                style={{
+                  fontSize: "2.25rem",
+                  fontFamily: "sans-serif",
+                  fontWeight: "bold",
+                  marginBottom: "1rem",
+                  marginTop: 0,
+                }}
+              >
+                Ready to talk?
+              </h2>
+              <p
+                style={{
+                  fontSize: "1.125rem",
+                  color: "#e0f2fe",
+                  marginBottom: "2.5rem",
+                }}
+              >
+                Join thousands of students who have already taken the first step
+                towards better mental health.
+              </p>
+              <Link to="/register" style={{ textDecoration: "none" }}>
+                <button
+                  style={{
+                    padding: "1rem 2rem",
+                    fontSize: "1.125rem",
+                    borderRadius: "0.75rem",
+                    fontWeight: 600,
+                    backgroundColor: "white",
+                    color: "#0369a1",
+                    border: "none",
+                    cursor: "pointer",
+                    outline: "none",
+                    transition: "background-color 0.3s",
+                    boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)",
+                  }}
+                >
+                  Create Free Account
+                </button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
