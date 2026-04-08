@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+
 export function StudentDashboard() {
   const [currentUser, setCurrentUser] = useState(null);
 

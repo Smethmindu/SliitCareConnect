@@ -1,7 +1,7 @@
 {
-  "name": "frontend",
+  "name": "magic-patterns-vite-template",
+  "version": "0.0.1",
   "private": true,
-  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "start": "vite",
@@ -11,12 +11,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tailwindcss/postcss": "^4.2.2",
+    "autoprefixer": "^10.4.27",
+    "emailjs-com": "^3.2.0",
     "framer-motion": "^12.38.0",
     "jspdf": "^4.2.1",
     "lucide-react": "^1.6.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "react-router-dom": "^7.13.2"
+    "react-router-dom": "^7.13.2",
+    "tailwindcss": "^4.2.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",

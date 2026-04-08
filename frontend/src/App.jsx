@@ -12,7 +12,19 @@ import { FeedbackReviews } from "./pages/FeedbackReviews";
 import { AMainLayout } from "./components/layout/AMainLayout.jsx";
 import { ADashboardLayout } from "./components/layout/ADashboardLayout.jsx";
 
-export default function App() {
+
+
+
+
+
+// Core Pages (Block 2)
+
+import { BookAppointment } from "./pages/BookAppointment";
+import { AppointmentDetails } from "./pages/AppointmentDetails";
+// Core Pages (Block 3)
+
+
+export function App() {
   return (
     <BrowserRouter>
       <Routes>
@@ -33,8 +45,12 @@ export default function App() {
           <Route path="/counselor" element={<ACounselorDashboard />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/feedback" element={<FeedbackReviews />} />
+          <Route path="/book" element={<BookAppointment />} />
+          <Route path="/appointments/:id" element={<AppointmentDetails />} />
+          
+
         </Route>
       </Routes>
     </BrowserRouter>
-  );
+  ); 
 }

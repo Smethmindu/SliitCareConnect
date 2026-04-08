@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import bookingRoutes from "./routes/bookingRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
 
@@ -21,6 +23,9 @@ app.options(/.*/, cors(corsOptions));
 
 app.use(express.json());
 
+// API Routes
+app.use("/api/bookings", bookingRoutes);
+app.use("/api/notifications", notificationRoutes);
 // Helpful health endpoints for dev/proxy debugging
 app.get("/api/health", (req, res) => {
   res.json({
