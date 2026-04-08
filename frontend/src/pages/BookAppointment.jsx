@@ -362,7 +362,7 @@ export function BookAppointment() {
                 </div>
                 <div style={{ padding: "1rem", backgroundColor: "#fffbeb", borderRadius: "0.75rem", border: "1px solid #fef3c7" }}>
                   <p style={{ fontSize: "0.875rem", color: "#92400e", margin: 0 }}>
-                    <strong>Note:</strong> If you are experiencing a crisis or medical emergency, please call 911 or go to the nearest emergency room immediately.
+                    <strong>Note:</strong> If you are experiencing a crisis or medical emergency, please call 119 or go to the nearest emergency room immediately.
                   </p>
                 </div>
               </div>
