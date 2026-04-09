@@ -14,7 +14,8 @@ import { ADashboardLayout } from "./components/layout/ADashboardLayout.jsx";
 // Core Pages (Block 2)
 
 import { BookAppointment } from "./pages/BookAppointment";
-import { AppointmentDetails } from "./pages/AppointmentDetails";
+// import { AppointmentDetails } from "./pages/AppointmentDetails";
+import { MyAppointments } from "./pages/MyAppointments";
 // Core Pages (Block 3)
 
 import { MainLayout } from "./components/layout/MainLayout";
@@ -53,7 +54,8 @@ export function App() {
           <Route path="/counselors" element={<CounselorListing />} />
           <Route path="/counselors/:id" element={<CounselorProfile />} />
           <Route path="/book" element={<BookAppointment />} />
-          <Route path="/appointments/:id" element={<AppointmentDetails />} />
+          {/* <Route path="/appointments/:id" element={<AppointmentDetails />} /> */}
+          <Route path="/appointments" element={<MyAppointments />} />
           <Route path="/dashboard/contact" element={<ContactPage />} />
           <Route path="/messages" element={<MessagesPage />} />
         </Route>

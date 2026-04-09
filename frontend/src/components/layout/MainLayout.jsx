@@ -174,7 +174,7 @@ export function MainLayout() {
               </Link>
               {currentUser && (
                 <Link
-                  to="/appointments/upcoming"
+                  to="/appointments"
                   style={{
                     fontSize: "0.875rem",
                     fontWeight: 500,
