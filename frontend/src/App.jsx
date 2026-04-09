@@ -5,9 +5,7 @@ import { ContactPage } from "./pages/ContactPage";
 import { MessagesPage } from "./pages/MessagesPage";
 import { UsersPage } from "./pages/UsersPage";
 import { ProfileSettings } from "./pages/ProfileSettings";
-import { StudentDashboard } from "./pages/StudentDashboard";
 import { AdminPage } from "./pages/AdminPage";
-import { ACounselorDashboard } from "./pages/ACounselorDashboard.jsx";
 import { FeedbackReviews } from "./pages/FeedbackReviews";
 import { AMainLayout } from "./components/layout/AMainLayout.jsx";
 import { ADashboardLayout } from "./components/layout/ADashboardLayout.jsx";
@@ -57,6 +55,7 @@ export function App() {
           <Route path="/book" element={<BookAppointment />} />
           <Route path="/appointments/:id" element={<AppointmentDetails />} />
           <Route path="/dashboard/contact" element={<ContactPage />} />
+          <Route path="/messages" element={<MessagesPage />} />
         </Route>
 
         {/* Counselor specific Routes / Counselor View */}
@@ -67,11 +66,8 @@ export function App() {
 
         {/* Dashboard Routes */}
         <Route element={<ADashboardLayout />}>
-          <Route path="/messages" element={<MessagesPage />} />
           <Route path="/users" element={<UsersPage />} />
           <Route path="/settings" element={<ProfileSettings />} />
-          <Route path="/student" element={<StudentDashboard />} />
-          <Route path="/counselor" element={<ACounselorDashboard />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/feedback" element={<FeedbackReviews />} />
         </Route>

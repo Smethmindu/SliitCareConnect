@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   CalendarIcon,
@@ -14,10 +15,41 @@ import {
   BellIcon,
   LogOutIcon,
 } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 export function CounselorDashboard() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    const userStr = localStorage.getItem("user") || sessionStorage.getItem("user");
+    if (userStr) {
+      try {
+        setCurrentUser(JSON.parse(userStr));
+      } catch (e) {
+        console.error("Failed to parse user data", e);
+      }
+    }
+  }, []);
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
+    navigate('/login');
+  };
+
+  const userName = currentUser ? `${currentUser.firstName} ${currentUser.lastName}` : "Counselor";
+  const userInitials = currentUser 
+    ? `${currentUser.firstName?.charAt(0) || ""}${currentUser.lastName?.charAt(0) || ""}`.toUpperCase()
+    : "C";
+  const userRoleStr = currentUser?.role 
+    ? currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1) 
+    : "Counselor";
+
 
   const todaySessions = [
     {
@@ -95,10 +127,10 @@ export function CounselorDashboard() {
             <div style={{ height: "2rem", width: "1px", backgroundColor: "#e7e5e4", margin: "0 0.25rem" }}></div>
             <Link to="/settings" style={{ display: "flex", alignItems: "center", gap: "0.75rem", textDecoration: "none" }}>
               <div style={{ textAlign: "right" }}>
-                <p style={{ fontSize: "0.875rem", fontWeight: 500, color: "#44403c", margin: 0 }}>Dr. Emily Chen</p>
-                <p style={{ fontSize: "0.75rem", color: "#78716c", margin: 0 }}>Counselor</p>
+                <p style={{ fontSize: "0.875rem", fontWeight: 500, color: "#44403c", margin: 0 }}>{userName}</p>
+                <p style={{ fontSize: "0.75rem", color: "#78716c", margin: 0 }}>{userRoleStr}</p>
               </div>
-              <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", height: "2rem", width: "2rem", borderRadius: "50%", backgroundColor: "#e7e5e4", color: "#57534e", fontSize: "0.875rem", fontWeight: "bold" }}>EC</div>
+              <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", height: "2rem", width: "2rem", borderRadius: "50%", backgroundColor: "#e7e5e4", color: "#57534e", fontSize: "0.875rem", fontWeight: "bold" }}>{userInitials}</div>
             </Link>
           </div>
         </div>
@@ -141,7 +173,7 @@ export function CounselorDashboard() {
 
           <div style={{ padding: "1.5rem", borderTop: "1px solid #f5f5f4" }}>
             <nav style={{ display: "flex", flexDirection: "column", gap: "0.375rem" }}>
-              <Link to="/" style={{ display: "flex", alignItems: "center", gap: "0.75rem", padding: "0.625rem 0.75rem", borderRadius: "0.75rem", fontSize: "0.875rem", fontWeight: 500, color: "#dc2626", textDecoration: "none" }}>
+              <Link to="/" onClick={handleLogout} style={{ display: "flex", alignItems: "center", gap: "0.75rem", padding: "0.625rem 0.75rem", borderRadius: "0.75rem", fontSize: "0.875rem", fontWeight: 500, color: "#dc2626", textDecoration: "none" }}>
                 <LogOutIcon style={{ height: "1.25rem", width: "1.25rem", color: "#f87171" }} />
                 Log out
               </Link>
@@ -209,7 +241,7 @@ export function CounselorDashboard() {
                         color: "white"
                       }}
                     >
-                      Good morning, Dr. Chen
+                      Good morning, {currentUser?.firstName ? currentUser.firstName : "Counselor"}
                     </h1>
                     <p style={{ color: "#d1fae5", fontSize: "1.125rem", margin: 0 }}>
                       You have 3 sessions scheduled today.

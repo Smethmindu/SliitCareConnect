@@ -89,11 +89,11 @@ export function LoginPage() {
           console.log('Navigating to /admin');
           navigate('/admin');
         } else if (userRole === 'counselor') {
-          console.log('Navigating to /counselor');
-          navigate('/counselor');
+          console.log('Navigating to /counselor-dashboard');
+          navigate('/counselor-dashboard');
         } else if (userRole === 'student') {
-          console.log('Navigating to /student');
-          navigate('/student');
+          console.log('Navigating to / (Home)');
+          navigate('/');
         } else {
           console.log('Navigating to /messages (default)');
           navigate('/messages');

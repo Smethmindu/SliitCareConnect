@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LeafIcon,
@@ -17,6 +17,8 @@ export function ADashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const [currentUser, setCurrentUser] = useState(null);
+
   useEffect(() => {
     // Small delay avoids edge cases where we navigate immediately
     // after saving token in storage on the previous page.
@@ -24,11 +26,28 @@ export function ADashboardLayout() {
       const token = getToken();
       if (!token) {
         navigate("/login", { replace: true, state: { from: location.pathname } });
+      } else {
+        const userStr = localStorage.getItem("user") || sessionStorage.getItem("user");
+        if (userStr) {
+          try {
+            setCurrentUser(JSON.parse(userStr));
+          } catch(e) {
+            console.error(e);
+          }
+        }
       }
     }, 0);
 
     return () => clearTimeout(t);
   }, [location.pathname, navigate]);
+
+  const userName = currentUser ? `${currentUser.firstName} ${currentUser.lastName}` : "Admin";
+  const userRoleStr = currentUser?.role 
+    ? currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1) 
+    : "Admin";
+  const userInitials = currentUser 
+    ? `${currentUser.firstName?.charAt(0) || ""}${currentUser.lastName?.charAt(0) || ""}`.toUpperCase()
+    : "A";
 
   const containerStyle = {
     minHeight: "100vh",
@@ -177,10 +196,10 @@ export function ADashboardLayout() {
                     margin: 0,
                   }}
                 >
-                  Sarah Jenkins
+                  {userName}
                 </p>
                 <p style={{ fontSize: "0.75rem", color: "#78716c", margin: 0 }}>
-                  Student
+                  {userRoleStr}
                 </p>
               </div>
               <div
@@ -198,7 +217,7 @@ export function ADashboardLayout() {
                   fontWeight: "bold",
                 }}
               >
-                SJ
+                {userInitials}
               </div>
             </div>
           </div>
