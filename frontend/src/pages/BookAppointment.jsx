@@ -203,7 +203,7 @@ export function BookAppointment() {
       }
       
       setSuccess(true);
-      setTimeout(() => navigate("/dashboard"), 2000);
+      setTimeout(() => navigate("/"), 3000);
     } catch (err) {
       setError(err.message);
     } finally {

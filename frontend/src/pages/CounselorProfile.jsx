@@ -178,18 +178,6 @@ export function CounselorProfile() {
                   style={{ height: "100%", width: "100%", objectFit: "cover" }}
                 />
               </div>
-              <div
-                style={{
-                  position: "absolute",
-                  bottom: "0.5rem",
-                  right: "0.5rem",
-                  height: "1.5rem",
-                  width: "1.5rem",
-                  borderRadius: "50%",
-                  border: "4px solid white",
-                  backgroundColor: counselor.online ? "#22c55e" : "#d6d3d1",
-                }}
-              />
             </div>
             <div style={{ flex: 1 }}>
               <div

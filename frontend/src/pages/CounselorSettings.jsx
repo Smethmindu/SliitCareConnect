@@ -34,7 +34,7 @@ export function CounselorSettings() {
     lastName: "Chen",
     email: "emily.chen@sliitcare.com",
     dob: "1985-06-15",
-    speciality: "Clinical Psychologist",
+    speciality: "Anxiety",
     specialitiesTags: "Anxiety, Depression, Mindfulness",
     bio: "I am a licensed clinical psychologist with over 10 years of experience helping university students navigate academic stress, anxiety, and personal growth transitions.",
     education: "Ph.D. in Clinical Psychology, Stanford University",
@@ -125,14 +125,14 @@ export function CounselorSettings() {
       <header style={{ flexShrink: 0, width: "100%", backgroundColor: "rgba(255, 255, 255, 0.95)", backdropFilter: "blur(12px)", borderBottom: "1px solid #f5f5f4" }}>
         <div style={{ maxWidth: "1600px", margin: "0 auto", padding: "0 1.5rem", display: "flex", justifyContent: "space-between", alignItems: "center", height: "4rem" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <Link to="/" style={{ display: "flex", alignItems: "center", gap: "0.5rem", textDecoration: "none" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", textDecoration: "none" }}>
               <div style={{ backgroundColor: "#f0f9ff", padding: "0.5rem", borderRadius: "0.75rem" }}>
                 <img src="/logo.png" alt="Logo" style={{ height: "2.5rem", width: "auto", objectFit: "contain" }} />
               </div>
               <span style={{ fontFamily: "sans-serif", fontWeight: 700, fontSize: "1.25rem", color: "#292524", letterSpacing: "-0.025em" }}>
                 SliitCare<span style={{ color: "#0ea5e9" }}>Connect</span>
               </span>
-            </Link>
+            </div>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
@@ -316,7 +316,14 @@ export function CounselorSettings() {
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                   <label style={{ fontSize: "0.875rem", fontWeight: 500, color: "#44403c" }}>Primary Role / Title <span style={{color: "#ef4444"}}>*</span></label>
-                  <input name="speciality" value={formData.speciality} onChange={handleChange} onBlur={handleBlur} placeholder="e.g. Clinical Psychologist" style={{ padding: "0.75rem", borderRadius: "0.5rem", border: `1px solid ${errors.speciality ? '#ef4444' : '#e7e5e4'}`, backgroundColor: "#fafaf9", outline: "none", fontSize: "0.875rem", color: "#1c1917" }} />
+                  <select name="speciality" value={formData.speciality} onChange={handleChange} onBlur={handleBlur} style={{ padding: "0.75rem", borderRadius: "0.5rem", border: `1px solid ${errors.speciality ? '#ef4444' : '#e7e5e4'}`, backgroundColor: "#fafaf9", outline: "none", fontSize: "0.875rem", color: "#1c1917", cursor: "pointer" }}>
+                    <option value="" disabled>Select a specialty</option>
+                    <option value="Anxiety">Anxiety</option>
+                    <option value="Depression">Depression</option>
+                    <option value="Stress">Stress</option>
+                    <option value="Academic">Academic</option>
+                    <option value="Relationships">Relationships</option>
+                  </select>
                   {errors.speciality && <span style={{ color: "#ef4444", fontSize: "0.75rem", display: "flex", alignItems: "center", gap: "0.25rem" }}><AlertCircleIcon style={{width: "0.75rem", height: "0.75rem"}}/> {errors.speciality}</span>}
                 </div>
 

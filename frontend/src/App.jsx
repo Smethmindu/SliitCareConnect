@@ -67,7 +67,7 @@ export function App() {
         {/* Dashboard Routes */}
         <Route element={<ADashboardLayout />}>
           <Route path="/users" element={<UsersPage />} />
-          <Route path="/settings" element={<ProfileSettings />} />
+          <Route path="/asettings" element={<ProfileSettings />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/feedback" element={<FeedbackReviews />} />
         </Route>

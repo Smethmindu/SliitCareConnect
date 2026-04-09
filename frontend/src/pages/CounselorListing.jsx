@@ -340,18 +340,6 @@ export function CounselorListing() {
                       }}
                     />
                   </div>
-                  <div
-                    style={{
-                      position: "absolute",
-                      bottom: 0,
-                      right: 0,
-                      height: "1rem",
-                      width: "1rem",
-                      borderRadius: "50%",
-                      border: "2px solid white",
-                      backgroundColor: counselor.online ? "#22c55e" : "#d6d3d1",
-                    }}
-                  />
                 </div>
                 <div
                   style={{

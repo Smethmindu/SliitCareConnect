@@ -106,8 +106,7 @@ export function ADashboardLayout() {
       <header style={headerStyle}>
         <div style={navContainerStyle}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <Link
-              to="/"
+            <div
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -143,7 +142,7 @@ export function ADashboardLayout() {
               >
                 SliitCare<span style={{ color: "#0ea5e9" }}>Connect</span>
               </span>
-            </Link>
+            </div>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
@@ -308,7 +307,7 @@ export function ADashboardLayout() {
               }}
             >
               <Link
-                to="#"
+                to="/asettings"
                 style={{
                   display: "flex",
                   alignItems: "center",
