@@ -42,9 +42,17 @@ export function CounselorDashboard() {
     navigate('/login');
   };
 
-  const userName = currentUser ? `${currentUser.firstName} ${currentUser.lastName}` : "Counselor";
-  const userInitials = currentUser 
-    ? `${currentUser.firstName?.charAt(0) || ""}${currentUser.lastName?.charAt(0) || ""}`.toUpperCase()
+  let validName = currentUser?.firstName 
+    ? `${currentUser.firstName} ${currentUser.lastName || ''}`.trim() 
+    : currentUser?.name;
+  
+  if (!validName || validName === "undefined undefined" || validName === "undefined") {
+    validName = "Counselor";
+  }
+
+  const userName = validName;
+  const userInitials = userName !== "Counselor" && userName.length > 0
+    ? userName.split(" ").map(n => n.charAt(0)).join("").substring(0, 2).toUpperCase()
     : "C";
   const userRoleStr = currentUser?.role 
     ? currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1) 

@@ -1,5 +1,5 @@
 import Feedback from "../models/Feedback.js";
-import {  getBookingById  } from "../services/bookingService.js";
+import Booking from "../models/Booking.js";
 
 export const checkEligibility = async (req, res) => {
   try {
@@ -11,7 +11,7 @@ export const checkEligibility = async (req, res) => {
       return res.status(403).json({ message: "Only students can submit feedback" });
     }
 
-    const booking = await getBookingById(bookingId);
+    const booking = await Booking.findById(bookingId);
     if (!booking) {
       return res.status(404).json({ message: "Booking not found" });
     }
@@ -20,7 +20,7 @@ export const checkEligibility = async (req, res) => {
       return res.status(403).json({ message: "Not your booking" });
     }
 
-    if (booking.status !== "COMPLETED") {
+    if (booking.status !== "completed") {
       return res.status(400).json({ message: "Session not completed yet" });
     }
 
@@ -53,7 +53,7 @@ export const createFeedback = async (req, res) => {
     let targetCounselorId = counselorId;
 
     if (bookingId) {
-      const booking = await getBookingById(bookingId);
+      const booking = await Booking.findById(bookingId);
       if (!booking) {
         return res.status(404).json({ message: "Booking not found" });
       }
@@ -62,7 +62,7 @@ export const createFeedback = async (req, res) => {
         return res.status(403).json({ message: "Not your booking" });
       }
 
-      if (booking.status !== "COMPLETED") {
+      if (booking.status !== "completed") {
         return res.status(400).json({ message: "Session not completed yet" });
       }
 
@@ -93,7 +93,7 @@ export const createFeedback = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ message: "Server error: " + err.message + " | Stack: " + err.stack });
   }
 };
 

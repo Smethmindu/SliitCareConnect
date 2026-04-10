@@ -41,9 +41,17 @@ export function CounselorAppointments() {
     navigate('/login');
   };
 
-  const userName = currentUser ? `${currentUser.firstName} ${currentUser.lastName}` : "Counselor";
-  const userInitials = currentUser 
-    ? `${currentUser.firstName?.charAt(0) || ""}${currentUser.lastName?.charAt(0) || ""}`.toUpperCase()
+  let validName = currentUser?.firstName 
+    ? `${currentUser.firstName} ${currentUser.lastName || ''}`.trim() 
+    : currentUser?.name;
+  
+  if (!validName || validName === "undefined undefined" || validName === "undefined") {
+    validName = "Counselor";
+  }
+
+  const userName = validName;
+  const userInitials = userName !== "Counselor" && userName.length > 0
+    ? userName.split(" ").map(n => n.charAt(0)).join("").substring(0, 2).toUpperCase()
     : "C";
   const userRoleStr = currentUser?.role 
     ? currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1) 
@@ -113,6 +121,29 @@ export function CounselorAppointments() {
     };
     fetchAppointments();
   }, []);
+
+  const handleMarkCompleted = async (appId) => {
+    try {
+      const storedToken = localStorage.getItem("token") || sessionStorage.getItem("token");
+      const response = await fetch(`http://localhost:3000/api/bookings/${appId}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${storedToken}`
+        },
+        body: JSON.stringify({ status: 'completed' })
+      });
+      if (response.ok) {
+        setAppointments(prev => prev.filter(app => app.id !== appId));
+        alert('Session marked as completed.');
+      } else {
+        alert('Failed to mark session as completed.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('An error occurred.');
+    }
+  };
 
   const navItems = [
     { icon: LayoutDashboardIcon, label: "Dashboard", path: "/counselor-dashboard" },
@@ -279,6 +310,22 @@ export function CounselorAppointments() {
                               }}
                        >
                          {expandedId === app.id ? 'Hide Details' : 'View Details'}
+                      </button>
+                      <button 
+                              onClick={() => handleMarkCompleted(app.id)}
+                              style={{
+                                padding: "0.5rem 1.25rem",
+                                fontSize: "0.875rem",
+                                borderRadius: "0.5rem",
+                                fontWeight: 500,
+                                backgroundColor: "#10b981",
+                                color: "white",
+                                border: "none",
+                                cursor: "pointer",
+                                transition: "all 0.2s"
+                              }}
+                       >
+                         Mark as Completed
                       </button>
                     </div>
 

@@ -19,6 +19,7 @@ export function CounselorListing() {
   const [activeFilter, setActiveFilter] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [ratings, setRatings] = useState({});
 
   // Fetch real data from backend
   useEffect(() => {
@@ -41,6 +42,36 @@ export function CounselorListing() {
     };
     fetchCounselors();
   }, []);
+
+  useEffect(() => {
+    if (counselors.length > 0) {
+      const fetchRatings = async () => {
+        const ratingsMap = { ...ratings };
+        let hasNew = false;
+        await Promise.all(
+          counselors.map(async (c) => {
+            const cid = c._id || c.id;
+            if (cid && ratingsMap[cid] === undefined) {
+              try {
+                const res = await fetch(`http://localhost:3000/api/feedback/counselor/${cid}/average`);
+                if (res.ok) {
+                  const data = await res.json();
+                  ratingsMap[cid] = data.averageRating ? data.averageRating.toFixed(1) : 0;
+                  hasNew = true;
+                }
+              } catch (err) {
+                console.error("Failed to load rating for", cid, err);
+              }
+            }
+          })
+        );
+        if (hasNew) {
+          setRatings(ratingsMap);
+        }
+      };
+      fetchRatings();
+    }
+  }, [counselors]);
 
   const fadeIn = {
     initial: { opacity: 0, y: 10 },
@@ -344,7 +375,7 @@ export function CounselorListing() {
                       color: "#b45309",
                     }}
                   >
-                    {counselor.rating || 0}
+                    {ratings[counselor._id || counselor.id] ?? (counselor.rating || 0)}
                   </span>
                 </div>
               </div>

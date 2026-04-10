@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon, VideoIcon, MapPinIcon, PhoneIcon } from "lucide-react";
 
@@ -38,8 +39,9 @@ export function MyAppointments() {
           const mappedAppointments = fetchedBookings.map(b => {
              let statusDisplay = "Pending"; // default back-end is 'pending'
              if (b.status === "confirmed") statusDisplay = "Approved";
-             // we will not show completed/canceled in these two tabs unless we map them, 
-             // but user requested only Pending and Approved tabs.
+             if (b.status === "completed") statusDisplay = "Completed";
+             // we will not show canceled in these tabs unless we map them, 
+             // but user requested Pending, Approved, and Completed tabs.
 
              // Map session type from 'video', 'in-person', 'phone'
              let typeDisplay = "Video Call";
@@ -54,6 +56,7 @@ export function MyAppointments() {
                 counselor: b.counselorName || "Counselor",
                 time: b.time,
                 status: statusDisplay,
+                counselorId: b.counselorId,
                 notes: b.notes || "No notes provided.",
                 image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=300&q=80"
              };
@@ -111,7 +114,7 @@ export function MyAppointments() {
 
           {/* Filter Tabs */}
           <div style={{ display: "flex", gap: "0.75rem", marginBottom: "2rem", overflowX: "auto", paddingBottom: "0.5rem" }}>
-            {["Pending", "Approved"].map((tab) => (
+            {["Pending", "Approved", "Completed"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -199,6 +202,13 @@ export function MyAppointments() {
                         <span style={{ padding: "0.25rem 0.75rem", borderRadius: "9999px", fontSize: "0.75rem", fontWeight: 600, backgroundColor: "#f0fdf4", color: "#166534", border: "1px solid #bbf7d0" }}>
                           Approved
                         </span>
+                      )}
+                      {app.status === "Completed" && (
+                        <Link to={`/feedback?counselorId=${app.counselorId}&bookingId=${app.id}`}>
+                          <button style={{ padding: "0.375rem 1rem", borderRadius: "9999px", fontSize: "0.75rem", fontWeight: 600, backgroundColor: "#0ea5e9", color: "white", border: "none", cursor: "pointer", outline: "none", textDecoration: "none" }}>
+                            Leave Feedback
+                          </button>
+                        </Link>
                       )}
 
                       <div style={{ marginLeft: "auto", position: "relative", group: "true" }}>

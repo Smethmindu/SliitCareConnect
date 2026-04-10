@@ -19,7 +19,7 @@ const FeedbackSchema = new mongoose.Schema(
 
     rating: { type: Number, min: 1, max: 5, required: true },
     tags: [{ type: String }],
-    comment: { type: String, maxlength: 500, required: true },
+    comment: { type: String, maxlength: 500, required: false },
     isAnonymous: { type: Boolean, default: true },
 
     survey: { type: SurveySchema, required: false },

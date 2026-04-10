@@ -41,13 +41,21 @@ export function ADashboardLayout() {
     return () => clearTimeout(t);
   }, [location.pathname, navigate]);
 
-  const userName = currentUser ? `${currentUser.firstName} ${currentUser.lastName}` : "Admin";
+  let validName = currentUser?.firstName 
+    ? `${currentUser.firstName} ${currentUser.lastName || ''}`.trim() 
+    : currentUser?.name;
+  
+  if (!validName || validName === "undefined undefined" || validName === "undefined") {
+    validName = "Admin";
+  }
+
+  const userName = validName;
+  const userInitials = userName !== "Admin" && userName.length > 0
+    ? userName.split(" ").map(n => n.charAt(0)).join("").substring(0, 2).toUpperCase()
+    : "A";
   const userRoleStr = currentUser?.role 
     ? currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1) 
     : "Admin";
-  const userInitials = currentUser 
-    ? `${currentUser.firstName?.charAt(0) || ""}${currentUser.lastName?.charAt(0) || ""}`.toUpperCase()
-    : "A";
 
   const containerStyle = {
     minHeight: "100vh",

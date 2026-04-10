@@ -13,6 +13,7 @@ export default function FeedbackPage() {
   const [searchParams] = useSearchParams();
   const counselorId = searchParams.get("counselorId");
   const editId = searchParams.get("editId");
+  const bookingId = searchParams.get("bookingId");
   
   const [counselor, setCounselor] = useState(null);
   const [isLoadingCounselor, setIsLoadingCounselor] = useState(true);
@@ -96,6 +97,7 @@ export default function FeedbackPage() {
 
         const payload = {
           counselorId,
+          bookingId,
           rating,
           tags: selectedTags,
           comment,

@@ -64,7 +64,7 @@ export const getCounselorBookings = async (req, res) => {
 export const updateBookingStatus = async (req, res) => {
   try {
     const { status } = req.body;
-    if (!['confirmed', 'declined', 'cancelled'].includes(status)) {
+    if (!['confirmed', 'declined', 'cancelled', 'completed'].includes(status)) {
       return res.status(400).json({ status: 'error', message: 'Invalid status value.' });
     }
 
@@ -79,10 +79,16 @@ export const updateBookingStatus = async (req, res) => {
     }
 
     // Notify the student about the status change
-    const statusLabel = status === 'confirmed' ? 'confirmed' : 'declined';
+    let type = '';
+    let statusLabel = status;
+    if (status === 'confirmed') type = 'booking_confirmed';
+    else if (status === 'declined') type = 'booking_declined';
+    else if (status === 'completed') type = 'booking_completed';
+    else type = 'booking_cancelled';
+
     await Notification.create({
       recipientId: booking.studentId,
-      type: status === 'confirmed' ? 'booking_confirmed' : 'booking_declined',
+      type: type,
       message: `Your booking with ${booking.counselorName} on ${booking.date} at ${booking.time} has been ${statusLabel}.`,
       bookingId: booking._id,
     });

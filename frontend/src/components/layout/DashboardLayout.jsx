@@ -28,15 +28,21 @@ export function DashboardLayout() {
     }
   }, []);
 
-  const userName = currentUser
-    ? `${currentUser.firstName} ${currentUser.lastName}`
-    : 'Guest';
+  let validName = currentUser?.firstName 
+    ? `${currentUser.firstName} ${currentUser.lastName || ''}`.trim() 
+    : currentUser?.name;
+  
+  if (!validName || validName === "undefined undefined" || validName === "undefined") {
+    validName = "Guest";
+  }
+
+  const userName = validName;
+  const userInitials = userName !== "Guest" && userName.length > 0
+    ? userName.split(" ").map(n => n.charAt(0)).join("").substring(0, 2).toUpperCase()
+    : "G";
   const userRole = currentUser?.role
     ? currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1)
     : '';
-  const userInitials = currentUser
-    ? `${currentUser.firstName?.[0] || ''}${currentUser.lastName?.[0] || ''}`
-    : 'G';
 
   const location = useLocation();
   const navigate = useNavigate();

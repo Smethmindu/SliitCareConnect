@@ -17,6 +17,7 @@ export function CounselorProfile() {
   const [counselor, setCounselor] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [feedbacks, setFeedbacks] = useState([]);
 
   useEffect(() => {
     const stored = localStorage.getItem('user') || sessionStorage.getItem('user');
@@ -52,6 +53,21 @@ export function CounselorProfile() {
     if (id) fetchCounselor();
   }, [id]);
 
+  useEffect(() => {
+    const fetchFeedbacks = async () => {
+      try {
+        const response = await fetch(`http://localhost:3000/api/feedback/counselor/${id}`);
+        if (response.ok) {
+          const data = await response.json();
+          setFeedbacks(data.feedbacks || []);
+        }
+      } catch (err) {
+        console.error("Error fetching feedbacks:", err);
+      }
+    };
+    if (id) fetchFeedbacks();
+  }, [id]);
+
   const fadeIn = {
     initial: { opacity: 0, y: 10 },
     animate: { opacity: 1, y: 0 },
@@ -80,7 +96,9 @@ export function CounselorProfile() {
   // Derived fields from backend model
   const counselorName = counselor.name || "Counselor";
   const counselorTitle = counselor.speciality || "Wellness Counselor";
-  const counselorRating = counselor.rating || 0;
+  const counselorRating = feedbacks.length > 0 
+    ? (feedbacks.reduce((acc, curr) => acc + curr.rating, 0) / feedbacks.length).toFixed(1)
+    : (counselor.rating || 0);
   const counselorBio = counselor.bio || "This counselor has not added a bio yet.";
   const counselorAvatar = counselor.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(counselorName)}&background=e0f2fe&color=0284c7&size=150`;
   const specialtiesList = Array.isArray(counselor.specialities) && counselor.specialities.length > 0
@@ -438,44 +456,55 @@ export function CounselorProfile() {
               >
                 Student Reviews
               </h2>
-              <Link to="/feedback" style={{ textDecoration: "none" }}>
-                <button
-                  style={{
-                    padding: "0.5rem 1rem",
-                    fontSize: "0.875rem",
-                    borderRadius: "0.5rem",
-                    fontWeight: 500,
-                    backgroundColor: "white",
-                    color: "#0ea5e9",
-                    border: "1px solid #e0f2fe",
-                    cursor: "pointer",
-                    outline: "none",
-                    transition: "all 0.2s",
-                    boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
-                  }}
-                  onMouseOver={(e) => { e.currentTarget.style.backgroundColor = "#f0f9ff"; }}
-                  onMouseOut={(e) => { e.currentTarget.style.backgroundColor = "white"; }}
-                >
-                  Leave Feedback
-                </button>
-              </Link>
             </div>
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
-            >
-              <div
-                style={{
-                  backgroundColor: "white",
-                  borderRadius: "1rem",
-                  padding: "2rem",
-                  boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-                  textAlign: "center",
-                  color: "#78716c",
-                  fontStyle: "italic",
-                }}
-              >
-                No reviews yet. Be the first to leave feedback!
-              </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              {feedbacks.length > 0 ? (
+                feedbacks.map((fb) => (
+                  <div
+                    key={fb._id}
+                    style={{
+                      backgroundColor: "white",
+                      borderRadius: "1rem",
+                      padding: "1.5rem",
+                      boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+                    }}
+                  >
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
+                      <span style={{ fontWeight: 600, color: "#1c1917" }}>
+                        {fb.isAnonymous ? "Anonymous User" : "Student"}
+                      </span>
+                      <span style={{ color: "#fbbf24", display: "flex" }}>
+                         {"★".repeat(fb.rating)}{"☆".repeat(5-fb.rating)}
+                      </span>
+                    </div>
+                    {fb.tags && fb.tags.length > 0 && (
+                      <div style={{ display: "flex", gap: "0.5rem", marginBottom: "0.5rem", flexWrap: "wrap" }}>
+                        {fb.tags.map(tag => (
+                          <span key={tag} style={{ fontSize: "0.75rem", backgroundColor: "#f0f9ff", color: "#0369a1", padding: "0.125rem 0.5rem", borderRadius: "9999px" }}>{tag}</span>
+                        ))}
+                      </div>
+                    )}
+                    <p style={{ color: "#57534e", fontSize: "0.875rem", margin: 0 }}>{fb.comment}</p>
+                    <div style={{ fontSize: "0.75rem", color: "#a8a29e", marginTop: "0.5rem" }}>
+                      {new Date(fb.createdAt).toLocaleDateString()}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div
+                  style={{
+                    backgroundColor: "white",
+                    borderRadius: "1rem",
+                    padding: "2rem",
+                    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+                    textAlign: "center",
+                    color: "#78716c",
+                    fontStyle: "italic",
+                  }}
+                >
+                  No reviews yet. Be the first to leave feedback!
+                </div>
+              )}
             </div>
           </section>
         </motion.div>
