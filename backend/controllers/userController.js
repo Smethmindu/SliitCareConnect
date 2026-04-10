@@ -1,4 +1,5 @@
 import { User } from '../models/User.js';
+import Counselor from '../models/counselorModel.js';
 
 // Get current user profile
 export const getProfile = async (req, res) => {
@@ -246,6 +247,92 @@ export const deleteUser = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Server error deleting user'
+    });
+  }
+};
+
+// Create user (Admin only)
+export const createUser = async (req, res) => {
+  try {
+    const { firstName, lastName, email, password, role, studentId } = req.body;
+
+    // Validation
+    if (!firstName || !lastName || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide all required fields: firstName, lastName, email, password'
+      });
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: 'User with this email already exists'
+      });
+    }
+
+    // Create new user (Admins bypass email verification)
+    const user = new User({
+      firstName,
+      lastName,
+      email,
+      password,
+      role: role || 'student',
+      studentId,
+      isActive: true,
+      isEmailVerified: true
+    });
+
+    await user.save();
+
+    // Auto-create counselor profile if role is counselor
+    if (user.role === 'counselor') {
+      try {
+        await Counselor.create({
+          userId: user._id,
+          name: `${user.firstName} ${user.lastName}`,
+          email: user.email,
+          speciality: 'General Counselor' 
+        });
+        console.log(`Created counselor profile for ${user.email}`);
+      } catch (err) {
+        console.error('Error creating linked counselor profile:', err);
+        // We still successfully created the user though
+      }
+    }
+
+    res.status(201).json({
+      success: true,
+      message: 'User created successfully',
+      data: {
+        user: user.getProfile()
+      }
+    });
+
+  } catch (error) {
+    console.error('Create user error:', error);
+    
+    if (error.name === 'ValidationError') {
+      const errors = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({
+        success: false,
+        message: 'Validation error',
+        errors
+      });
+    }
+    
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email already exists'
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: `Server error: ${error.message}`
     });
   }
 };

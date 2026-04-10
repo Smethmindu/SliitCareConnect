@@ -194,48 +194,7 @@ export function RegisterPage() {
               "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
           }}
         >
-          {/* Role Selector */}
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              marginBottom: "2rem",
-            }}
-          >
-            <label
-              style={{
-                display: "block",
-                fontSize: "0.875rem",
-                fontWeight: 500,
-                color: "#44403c",
-                marginBottom: "0.5rem",
-              }}
-            >
-              I am a
-            </label>
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              disabled={loading}
-              style={{
-                width: "100%",
-                padding: "0.75rem 1rem",
-                borderRadius: "0.75rem",
-                backgroundColor: "white",
-                border: "1px solid #e7e5e4",
-                color: "#292524",
-                fontSize: "0.875rem",
-                outline: "none",
-                boxSizing: "border-box",
-                cursor: loading ? "not-allowed" : "pointer",
-                opacity: loading ? 0.7 : 1
-              }}
-            >
-              <option value="student">Student</option>
-              <option value="counselor">Counselor</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
+          {/* Role Selector has been removed. Public registration is for students only. */}
 
           <form
             action="#"
@@ -399,36 +358,7 @@ export function RegisterPage() {
               </div>
             )}
 
-            {role === "counselor" && (
-              <div style={{ display: "flex", flexDirection: "column" }}>
-                <label
-                  style={{
-                    display: "block",
-                    fontSize: "0.875rem",
-                    fontWeight: 500,
-                    color: "#44403c",
-                    marginBottom: "0.5rem",
-                  }}
-                >
-                  Staff ID / License Number
-                </label>
-                <input
-                  placeholder="e.g. C-98765"
-                  required
-                  style={{
-                    width: "100%",
-                    padding: "0.75rem 1rem",
-                    borderRadius: "0.75rem",
-                    backgroundColor: "white",
-                    border: "1px solid #e7e5e4",
-                    color: "#292524",
-                    fontSize: "0.875rem",
-                    outline: "none",
-                    boxSizing: "border-box",
-                  }}
-                />
-              </div>
-            )}
+
 
             <div
               style={{

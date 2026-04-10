@@ -10,14 +10,12 @@ import { FeedbackReviews } from "./pages/FeedbackReviews";
 import { AMainLayout } from "./components/layout/AMainLayout.jsx";
 import { ADashboardLayout } from "./components/layout/ADashboardLayout.jsx";
 
-
 // Core Pages (Block 2)
-
 import { BookAppointment } from "./pages/BookAppointment";
 // import { AppointmentDetails } from "./pages/AppointmentDetails";
 import { MyAppointments } from "./pages/MyAppointments";
-// Core Pages (Block 3)
 
+// Core Pages (Block 3)
 import { MainLayout } from "./components/layout/MainLayout";
 import { DashboardLayout } from "./components/layout/DashboardLayout";
 
@@ -29,8 +27,15 @@ import { AboutUs } from "./pages/AboutUs";
 import { CounselorListing } from "./pages/CounselorListing";
 import { CounselorProfile } from "./pages/CounselorProfile";
 import { CounselorDashboard } from "./pages/CounselorDashboard";
+import { CounselorAppointments } from "./pages/CounselorAppointments";
 import { CounselorAvailability } from "./pages/CounselorAvailability";
 import { CounselorSettings } from "./pages/CounselorSettings";
+
+// Feature Pages
+import Resources from "./pages/Resources";
+import AdminResources from "./pages/AdminResources";
+import Quiz from "./pages/Quiz";
+import FeedbackPage from "./pages/feedback";
 
 export function App() {
   return (
@@ -58,20 +63,25 @@ export function App() {
           <Route path="/appointments" element={<MyAppointments />} />
           <Route path="/dashboard/contact" element={<ContactPage />} />
           <Route path="/messages" element={<MessagesPage />} />
+          
+          <Route path="/resources" element={<Resources />} />
+          <Route path="/quiz" element={<Quiz />} />
+          <Route path="/feedback" element={<FeedbackPage />} />
         </Route>
 
         {/* Counselor specific Routes / Counselor View */}
         <Route path="/counselor-dashboard" element={<CounselorDashboard />} />
+        <Route path="/counselor-appointments" element={<CounselorAppointments />} />
         <Route path="/counselor-availability" element={<CounselorAvailability />} />
         <Route path="/settings" element={<CounselorSettings />} />
-      
 
-        {/* Dashboard Routes */}
+        {/* Dashboard Routes / Admin View */}
         <Route element={<ADashboardLayout />}>
           <Route path="/users" element={<UsersPage />} />
           <Route path="/asettings" element={<ProfileSettings />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/feedback" element={<FeedbackReviews />} />
+          <Route path="/admin/resources" element={<AdminResources />} />
         </Route>
       </Routes>
     </BrowserRouter>

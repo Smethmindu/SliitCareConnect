@@ -17,7 +17,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { sendBookingEmail } from "../utils/emailService.js";
 
 // ── Tiny inline calendar ─────────────────────────────────────────────────────
-function InlineCalendar({ selectedDate, onChange }) {
+function InlineCalendar({ selectedDate, onChange, availability }) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -61,6 +61,14 @@ function InlineCalendar({ selectedDate, onChange }) {
     return date < today;
   };
 
+  const isAvailableDay = (day) => {
+    if (!availability) return true; // if no availability loaded, assume all are available (or handle otherwise)
+    const date = new Date(viewYear, viewMonth, day);
+    const dayNames = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+    const dayName = dayNames[date.getDay()];
+    return availability[dayName]?.enabled;
+  };
+
   const blanks = Array.from({ length: firstDayOfMonth });
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
@@ -89,24 +97,28 @@ function InlineCalendar({ selectedDate, onChange }) {
         {blanks.map((_, i) => <div key={`b-${i}`} />)}
         {days.map((day) => {
           const past = isPast(day);
+          const available = isAvailableDay(day);
+          const disabled = past || !available;
           const sel = isSelected(day);
           return (
             <button
               key={day}
               onClick={() => handleDayClick(day)}
-              disabled={past}
+              disabled={disabled}
+              title={!available && !past ? "Counselor not available" : ""}
               style={{
                 padding: "6px 0",
                 borderRadius: "6px",
                 fontSize: "0.8rem",
                 fontWeight: sel ? 700 : 400,
                 border: "none",
-                cursor: past ? "default" : "pointer",
+                cursor: disabled ? "not-allowed" : "pointer",
                 backgroundColor: sel ? "#0ea5e9" : "transparent",
-                color: past ? "#d6d3d1" : sel ? "white" : "#292524",
+                color: past ? "#e7e5e4" : !available ? "#d6d3d1" : sel ? "white" : "#292524",
                 transition: "background-color 0.15s",
+                opacity: disabled && !past ? 0.6 : 1,
               }}
-              onMouseEnter={(e) => { if (!past && !sel) e.currentTarget.style.backgroundColor = "#e0f2fe"; }}
+              onMouseEnter={(e) => { if (!disabled && !sel) e.currentTarget.style.backgroundColor = "#e0f2fe"; }}
               onMouseLeave={(e) => { if (!sel) e.currentTarget.style.backgroundColor = "transparent"; }}
             >
               {day}
@@ -154,11 +166,55 @@ export function BookAppointment() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  
+  const [counselorAvailability, setCounselorAvailability] = useState(null);
 
-  const availableTimes = [
-    "09:00 AM", "10:00 AM", "11:00 AM",
-    "01:00 PM", "02:00 PM", "03:00 PM", "04:00 PM",
-  ];
+  // Fetch counselor availability when page loads
+  useEffect(() => {
+    if (counselorId === "demo-counselor-1") return;
+
+    const fetchAvailability = async () => {
+      try {
+        const response = await fetch(`http://localhost:3000/api/counselors/${counselorId}/availability`);
+        if (response.ok) {
+          const data = await response.json();
+          setCounselorAvailability(data.data?.counselor?.availability);
+        }
+      } catch (err) {
+        console.error("Error fetching availability:", err);
+      }
+    };
+    fetchAvailability();
+  }, [counselorId]);
+
+  // Compute available times based on selected date
+  const availableTimes = (() => {
+    if (!selectedDate || !counselorAvailability) {
+      // Fallback times if no date is picked yet or if using dummy counselor
+      return ["09:00 AM", "10:00 AM", "11:00 AM", "01:00 PM", "02:00 PM", "03:00 PM", "04:00 PM"];
+    }
+    
+    const dateObj = new Date(selectedDate);
+    const dayNames = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+    const dayOfWeek = dayNames[dateObj.getDay()];
+    const dayAvail = counselorAvailability[dayOfWeek];
+
+    if (!dayAvail || !dayAvail.enabled) return []; // Day not available
+
+    const slots = [];
+    let currentHour = parseInt(dayAvail.start.split(":")[0], 10);
+    const endHour = parseInt(dayAvail.end.split(":")[0], 10);
+
+    while (currentHour < endHour) {
+      const ampm = currentHour >= 12 ? "PM" : "AM";
+      let displayHour = currentHour > 12 ? currentHour - 12 : currentHour;
+      if (displayHour === 0) displayHour = 12;
+      const fHour = String(displayHour).padStart(2, "0");
+      slots.push(`${fHour}:00 ${ampm}`);
+      currentHour++;
+    }
+    return slots;
+  })();
 
   const canProceedStep1 = selectedDate && selectedTime;
 
@@ -169,14 +225,27 @@ export function BookAppointment() {
     setLoading(true);
     setError(null);
     try {
+      const storedToken = localStorage.getItem("token") || sessionStorage.getItem("token");
+      const storedUser = localStorage.getItem("user") || sessionStorage.getItem("user");
+      
+      if (!storedToken || !storedUser) {
+        throw new Error("You must be logged in to book an appointment.");
+      }
+
+      const user = JSON.parse(storedUser);
+      const studentName = `${user.firstName} ${user.lastName}`.trim();
+
       const response = await fetch("http://localhost:3000/api/bookings", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${storedToken}`
+        },
         body: JSON.stringify({
           counselorId,
           counselorName,
-          studentId: "demo-student-1",
-          studentName: "Sarah Jenkins",
+          studentId: user.id,
+          studentName,
           date: formatDateDisplay(selectedDate),
           time: selectedTime,
           sessionType: selectedType,
@@ -190,7 +259,7 @@ export function BookAppointment() {
       try {
         await sendBookingEmail({
           counselorName,
-          studentName: "Sarah Jenkins",
+          studentName,
           date: formatDateDisplay(selectedDate),
           time: selectedTime,
           sessionType: selectedType,
@@ -268,7 +337,7 @@ export function BookAppointment() {
                     Select Date
                   </h3>
                   <div style={{ padding: "1rem", border: "1px solid #e7e5e4", borderRadius: "0.75rem", backgroundColor: "#fafaf9" }}>
-                    <InlineCalendar selectedDate={selectedDate} onChange={setSelectedDate} />
+                    <InlineCalendar selectedDate={selectedDate} onChange={(date) => { setSelectedDate(date); setSelectedTime(null); }} availability={counselorAvailability} />
                   </div>
                   {selectedDate && (
                     <p style={{ fontSize: "0.8rem", color: "#0284c7", marginTop: "0.5rem", fontWeight: 500 }}>
@@ -284,27 +353,33 @@ export function BookAppointment() {
                     Available Times
                   </h3>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "0.5rem" }}>
-                    {availableTimes.map((time) => (
-                      <button
-                        key={time}
-                        onClick={() => setSelectedTime(time)}
-                        style={{
-                          padding: "0.5rem",
-                          borderRadius: "0.375rem",
-                          fontSize: "0.875rem",
-                          fontWeight: 500,
-                          transition: "all 0.2s",
-                          border: "1px solid",
-                          cursor: "pointer",
-                          outline: "none",
-                          ...(selectedTime === time
-                            ? { backgroundColor: "#f0f9ff", color: "#0369a1", borderColor: "#bae6fd" }
-                            : { backgroundColor: "white", borderColor: "#e7e5e4", color: "#57534e" }),
-                        }}
-                      >
-                        {time}
-                      </button>
-                    ))}
+                    {availableTimes.length > 0 ? (
+                      availableTimes.map((time) => (
+                        <button
+                          key={time}
+                          onClick={() => setSelectedTime(time)}
+                          style={{
+                            padding: "0.5rem",
+                            borderRadius: "0.375rem",
+                            fontSize: "0.875rem",
+                            fontWeight: 500,
+                            transition: "all 0.2s",
+                            border: "1px solid",
+                            cursor: "pointer",
+                            outline: "none",
+                            ...(selectedTime === time
+                              ? { backgroundColor: "#f0f9ff", color: "#0369a1", borderColor: "#bae6fd" }
+                              : { backgroundColor: "white", borderColor: "#e7e5e4", color: "#57534e" }),
+                          }}
+                        >
+                          {time}
+                        </button>
+                      ))
+                    ) : (
+                      <p style={{ gridColumn: 'span 2', color: '#78716c', fontSize: '0.875rem', fontStyle: 'italic', margin: 0 }}>
+                        {selectedDate ? "No available slots on this day." : "Please select a date first."}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>

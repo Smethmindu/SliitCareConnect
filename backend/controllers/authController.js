@@ -6,7 +6,8 @@ import jwt from 'jsonwebtoken';
 export const register = async (req, res) => {
   try {
     console.log('Registration request body:', req.body);
-    const { firstName, lastName, email, password, role = 'student', studentId } = req.body;
+    const { firstName, lastName, email, password, studentId } = req.body;
+    const role = 'student';
 
     // Validation
     if (!firstName || !lastName || !email || !password) {

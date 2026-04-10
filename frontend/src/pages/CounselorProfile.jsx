@@ -12,8 +12,11 @@ import {
 } from "lucide-react";
 
 export function CounselorProfile() {
-  useParams();
+  const { id } = useParams();
   const [currentUser, setCurrentUser] = useState(null);
+  const [counselor, setCounselor] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const stored = localStorage.getItem('user') || sessionStorage.getItem('user');
@@ -26,64 +29,81 @@ export function CounselorProfile() {
     }
   }, []);
 
+  // Fetch counselor data from backend
+  useEffect(() => {
+    const fetchCounselor = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch(`http://localhost:3000/api/counselors/${id}`);
+        if (response.ok) {
+          const data = await response.json();
+          const fetched = data.data?.counselor || data;
+          setCounselor(fetched);
+        } else {
+          setError("Counselor not found.");
+        }
+      } catch (err) {
+        console.error("Error fetching counselor:", err);
+        setError("Failed to load counselor profile.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    if (id) fetchCounselor();
+  }, [id]);
+
   const fadeIn = {
     initial: { opacity: 0, y: 10 },
     animate: { opacity: 1, y: 0 },
     transition: { duration: 0.4 },
   };
 
-  const counselor = {
-    name: "Dr. Emily Chen",
-    title: "Clinical Psychologist",
-    rating: 4.9,
-    reviews: 124,
-    online: true,
-    avatar: "https://i.pravatar.cc/150?u=emily",
-    bio: "Hi, I'm Dr. Emily. I specialize in helping university students navigate the complex challenges of academic pressure, anxiety, and life transitions. My approach is rooted in Cognitive Behavioral Therapy (CBT) and mindfulness practices. I believe in creating a warm, non-judgmental space where we can collaboratively work towards your mental wellness goals.",
-    specialties: [
-      "Anxiety",
-      "Depression",
-      "Mindfulness",
-      "Academic Stress",
-      "Life Transitions",
-    ],
-    education: [
-      "Ph.D. in Clinical Psychology, Stanford University",
-      "M.A. in Psychology, University of Michigan",
-      "Licensed Clinical Psychologist (CA #12345)",
-    ],
-    nextAvailable: "Tomorrow, 10:00 AM",
-  };
+  // Loading state
+  if (isLoading) {
+    return (
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "40vh" }}>
+        <p style={{ color: "#78716c", fontSize: "1.125rem", fontStyle: "italic" }}>Loading counselor profile...</p>
+      </div>
+    );
+  }
 
-  const reviews = [
-    {
-      id: 1,
-      name: "Sarah J.",
-      date: "October 12, 2023",
-      rating: 5,
-      comment:
-        "Dr. Chen is incredibly empathetic and really helped me manage my test anxiety. Highly recommend!",
-      avatar: "https://i.pravatar.cc/150?u=sarahj",
-    },
-    {
-      id: 2,
-      name: "Michael T.",
-      date: "September 28, 2023",
-      rating: 5,
-      comment:
-        "Very practical advice and a great listener. The mindfulness techniques we practiced have been a game changer.",
-      avatar: "https://i.pravatar.cc/150?u=michaelt",
-    },
-    {
-      id: 3,
-      name: "Anonymous Student",
-      date: "September 15, 2023",
-      rating: 4,
-      comment:
-        "Felt very comfortable talking to her. The sessions are well structured.",
-      avatar: "",
-    },
-  ];
+  // Error state
+  if (error || !counselor) {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "40vh", gap: "1rem" }}>
+        <p style={{ color: "#ef4444", fontSize: "1.125rem" }}>{error || "Counselor not found."}</p>
+        <Link to="/counselors" style={{ color: "#0ea5e9", textDecoration: "none", fontWeight: 500 }}>← Back to Counselors</Link>
+      </div>
+    );
+  }
+
+  // Derived fields from backend model
+  const counselorName = counselor.name || "Counselor";
+  const counselorTitle = counselor.speciality || "Wellness Counselor";
+  const counselorRating = counselor.rating || 0;
+  const counselorBio = counselor.bio || "This counselor has not added a bio yet.";
+  const counselorAvatar = counselor.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(counselorName)}&background=e0f2fe&color=0284c7&size=150`;
+  const specialtiesList = Array.isArray(counselor.specialities) && counselor.specialities.length > 0
+    ? counselor.specialities
+    : [counselorTitle];
+  const educationList = counselor.education
+    ? counselor.education.split("\n").filter(e => e.trim())
+    : [];
+  const credentialsList = counselor.credentials
+    ? counselor.credentials.split("\n").filter(c => c.trim())
+    : [];
+  const allEducation = [...educationList, ...credentialsList];
+  const nextAvailable = counselor.nextAvailable || "Check availability";
+
+  // Availability from backend model
+  const dayKeys = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+  const dayLabels = ["M", "T", "W", "T", "F", "S", "S"];
+  const availabilityDots = dayKeys.map(day => {
+    if (counselor.availability && counselor.availability[day]) {
+      return counselor.availability[day].enabled;
+    }
+    return false;
+  });
 
   return (
     <motion.div
@@ -173,8 +193,8 @@ export function CounselorProfile() {
                 }}
               >
                 <img
-                  src={counselor.avatar}
-                  alt="EC"
+                  src={counselorAvatar}
+                  alt={counselorName}
                   style={{ height: "100%", width: "100%", objectFit: "cover" }}
                 />
               </div>
@@ -199,7 +219,7 @@ export function CounselorProfile() {
                     margin: 0,
                   }}
                 >
-                  {counselor.name}
+                  {counselorName}
                 </h1>
                 <div
                   style={{
@@ -220,16 +240,7 @@ export function CounselorProfile() {
                     }}
                   />
                   <span style={{ fontWeight: "bold", color: "#b45309" }}>
-                    {counselor.rating}
-                  </span>
-                  <span
-                    style={{
-                      color: "rgba(180, 83, 9, 0.7)",
-                      fontSize: "0.875rem",
-                      marginLeft: "0.25rem",
-                    }}
-                  >
-                    ({counselor.reviews} reviews)
+                    {counselorRating}
                   </span>
                 </div>
               </div>
@@ -241,10 +252,10 @@ export function CounselorProfile() {
                   marginTop: 0,
                 }}
               >
-                {counselor.title}
+                {counselorTitle}
               </p>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-                {counselor.specialties.slice(0, 3).map((specialty) => (
+                {specialtiesList.slice(0, 3).map((specialty) => (
                   <span
                     key={specialty}
                     style={{
@@ -315,7 +326,7 @@ export function CounselorProfile() {
                   margin: 0,
                 }}
               >
-                {counselor.bio}
+                {counselorBio}
               </p>
             </div>
           </section>
@@ -334,7 +345,7 @@ export function CounselorProfile() {
               All Specialties
             </h2>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-              {counselor.specialties.map((specialty) => (
+              {specialtiesList.map((specialty) => (
                 <span
                   key={specialty}
                   style={{
@@ -355,6 +366,7 @@ export function CounselorProfile() {
             </div>
           </section>
 
+          {allEducation.length > 0 && (
           <section>
             <h2
               style={{
@@ -387,7 +399,7 @@ export function CounselorProfile() {
                   gap: "1rem",
                 }}
               >
-                {counselor.education.map((item, index) => (
+                {allEducation.map((item, index) => (
                   <li
                     key={index}
                     style={{
@@ -411,6 +423,7 @@ export function CounselorProfile() {
               </ul>
             </div>
           </section>
+          )}
 
           <section>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
@@ -450,111 +463,19 @@ export function CounselorProfile() {
             <div
               style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
             >
-              {reviews.map((review) => (
-                <div
-                  key={review.id}
-                  style={{
-                    backgroundColor: "white",
-                    borderRadius: "1rem",
-                    padding: "1.5rem",
-                    boxShadow:
-                      "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      marginBottom: "1rem",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.75rem",
-                      }}
-                    >
-                      <div
-                        style={{
-                          position: "relative",
-                          display: "inline-flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          height: "2.5rem",
-                          width: "2.5rem",
-                          borderRadius: "50%",
-                          backgroundColor: "#e7e5e4",
-                          color: "#57534e",
-                          fontSize: "0.875rem",
-                          overflow: "hidden",
-                          flexShrink: 0,
-                        }}
-                      >
-                        {review.avatar ? (
-                          <img
-                            src={review.avatar}
-                            alt={review.name.charAt(0)}
-                            style={{
-                              height: "100%",
-                              width: "100%",
-                              objectFit: "cover",
-                            }}
-                          />
-                        ) : (
-                          review.name.charAt(0)
-                        )}
-                      </div>
-                      <div>
-                        <h4
-                          style={{
-                            fontWeight: 600,
-                            color: "#1c1917",
-                            margin: "0 0 0.125rem 0",
-                          }}
-                        >
-                          {review.name}
-                        </h4>
-                        <p
-                          style={{
-                            fontSize: "0.875rem",
-                            color: "#78716c",
-                            margin: 0,
-                          }}
-                        >
-                          {review.date}
-                        </p>
-                      </div>
-                    </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.125rem",
-                      }}
-                    >
-                      {[...Array(5)].map((_, i) => (
-                        <StarIcon
-                          key={i}
-                          style={{
-                            height: "1rem",
-                            width: "1rem",
-                            ...(i < review.rating
-                              ? { color: "#fbbf24", fill: "#fbbf24" }
-                              : { color: "#e7e5e4" }),
-                          }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                  <p
-                    style={{ color: "#57534e", fontStyle: "italic", margin: 0 }}
-                  >
-                    "{review.comment}"
-                  </p>
-                </div>
-              ))}
+              <div
+                style={{
+                  backgroundColor: "white",
+                  borderRadius: "1rem",
+                  padding: "2rem",
+                  boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+                  textAlign: "center",
+                  color: "#78716c",
+                  fontStyle: "italic",
+                }}
+              >
+                No reviews yet. Be the first to leave feedback!
+              </div>
             </div>
           </section>
         </motion.div>
@@ -636,11 +557,11 @@ export function CounselorProfile() {
                     margin: 0,
                   }}
                 >
-                  {counselor.nextAvailable}
+                  {nextAvailable}
                 </p>
               </div>
 
-              <Link to={currentUser ? "/book" : "/register"} style={{ textDecoration: "none" }}>
+              <Link to={currentUser ? "/book" : "/register"} state={{ counselorId: id, counselorName }} style={{ textDecoration: "none" }}>
                 <button
                   style={{
                     width: "100%",
@@ -786,7 +707,7 @@ export function CounselorProfile() {
                   fontWeight: 500,
                 }}
               >
-                {["M", "T", "W", "T", "F", "S", "S"].map((day, i) => (
+                {dayLabels.map((day, i) => (
                   <div
                     key={i}
                     style={{ color: "#a8a29e", paddingBottom: "0.5rem" }}
@@ -794,7 +715,7 @@ export function CounselorProfile() {
                     {day}
                   </div>
                 ))}
-                {[true, true, true, false, true, false, false].map(
+                {availabilityDots.map(
                   (isAvailable, i) => (
                     <div
                       key={i}

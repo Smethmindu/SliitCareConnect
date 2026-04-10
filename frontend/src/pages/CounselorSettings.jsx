@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -22,6 +22,8 @@ import {
 export function CounselorSettings() {
   const location = useLocation();
   const [isEditing, setIsEditing] = useState(false);
+  const [counselorId, setCounselorId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const navItems = [
     { icon: LayoutDashboardIcon, label: "Dashboard", path: "/counselor-dashboard" },
@@ -30,19 +32,66 @@ export function CounselorSettings() {
   ];
 
   const [formData, setFormData] = useState({
-    firstName: "Emily",
-    lastName: "Chen",
-    email: "emily.chen@sliitcare.com",
-    dob: "1985-06-15",
-    speciality: "Anxiety",
-    specialitiesTags: "Anxiety, Depression, Mindfulness",
-    bio: "I am a licensed clinical psychologist with over 10 years of experience helping university students navigate academic stress, anxiety, and personal growth transitions.",
-    education: "Ph.D. in Clinical Psychology, Stanford University",
-    credentials: "State Licensed Psychologist (#PSY12345), Certified Cognitive Behavioral Therapist",
+    firstName: "",
+    lastName: "",
+    email: "",
+    dob: "",
+    speciality: "",
+    specialitiesTags: "",
+    bio: "",
+    education: "",
+    credentials: "",
   });
 
   const [errors, setErrors] = useState({});
   const [successMsg, setSuccessMsg] = useState("");
+
+  // Fetch the logged-in counselor's profile from the backend
+  useEffect(() => {
+    const loadCounselorProfile = async () => {
+      try {
+        const stored = localStorage.getItem('user') || sessionStorage.getItem('user');
+        if (!stored) {
+          setIsLoading(false);
+          return;
+        }
+        const user = JSON.parse(stored);
+        if (!user || !user.id) {
+          setIsLoading(false);
+          return;
+        }
+
+        // Fetch counselor profile by userId
+        const response = await fetch(`http://localhost:3000/api/counselors/user/${user.id}`);
+        if (response.ok) {
+          const data = await response.json();
+          const c = data.data?.counselor;
+          if (c) {
+            setCounselorId(c._id);
+            const nameParts = (c.name || "").split(" ");
+            setFormData({
+              firstName: nameParts[0] || "",
+              lastName: nameParts.slice(1).join(" ") || "",
+              email: c.email || "",
+              dob: c.dob ? new Date(c.dob).toISOString().split("T")[0] : "",
+              speciality: c.speciality || "",
+              specialitiesTags: Array.isArray(c.specialities) ? c.specialities.join(", ") : "",
+              bio: c.bio || "",
+              education: c.education || "",
+              credentials: c.credentials || "",
+            });
+          }
+        } else {
+          console.error("Counselor profile not found for this user.");
+        }
+      } catch (err) {
+        console.error("Error loading counselor profile:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadCounselorProfile();
+  }, []);
 
   const validateField = (name, value) => {
     let error = null;
@@ -70,7 +119,7 @@ export function CounselorSettings() {
         break;
       case "speciality":
         if (!value.trim()) error = "Primary role/speciality is required.";
-        else if (value.trim().length < 5) error = "Speciality title is too short.";
+        else if (value.trim().length < 3) error = "Speciality title is too short.";
         break;
       case "bio":
         if (!value.trim() || value.length < 20) error = "Bio must be at least 20 characters long.";
@@ -107,15 +156,55 @@ export function CounselorSettings() {
     setErrors((prev) => ({ ...prev, [name]: error }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validateAll()) {
-      // Simulate API call
-      setTimeout(() => {
+    if (!validateAll()) return;
+    if (!counselorId) {
+      alert("Counselor profile not found. Please contact admin.");
+      return;
+    }
+
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    if (!token) {
+      alert("You must be logged in.");
+      return;
+    }
+
+    try {
+      const specialitiesArr = formData.specialitiesTags
+        .split(",")
+        .map(s => s.trim())
+        .filter(Boolean);
+
+      const response = await fetch(`http://localhost:3000/api/counselors/${counselorId}/profile`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: `${formData.firstName} ${formData.lastName}`.trim(),
+          email: formData.email,
+          dob: formData.dob || undefined,
+          speciality: formData.speciality,
+          specialities: specialitiesArr,
+          bio: formData.bio,
+          education: formData.education,
+          credentials: formData.credentials,
+        }),
+      });
+
+      if (response.ok) {
         setSuccessMsg("Your profile has been successfully updated.");
         setIsEditing(false);
-        setTimeout(() => setSuccessMsg(""), 4000); // fade out
-      }, 500);
+        setTimeout(() => setSuccessMsg(""), 4000);
+      } else {
+        const errData = await response.json();
+        alert(`Failed to save: ${errData.message || "Unknown error"}`);
+      }
+    } catch (err) {
+      console.error("Error saving profile:", err);
+      alert("Network error while saving profile.");
     }
   };
 

@@ -51,51 +51,107 @@ export function CounselorDashboard() {
     : "Counselor";
 
 
-  const todaySessions = [
-    {
-      id: "1",
-      patient: "Sarah Jenkins",
-      type: "Video Call",
-      time: "10:00 AM - 10:50 AM",
-      status: "upcoming",
-      avatar: "https://i.pravatar.cc/150?u=sarahj",
-    },
-    {
-      id: "2",
-      patient: "Michael Thomas",
-      type: "In-Person",
-      time: "01:00 PM - 01:50 PM",
-      status: "upcoming",
-      avatar: "https://i.pravatar.cc/150?u=michaelt",
-    },
-    {
-      id: "3",
-      patient: "Emma Wilson",
-      type: "Video Call",
-      time: "03:00 PM - 03:50 PM",
-      status: "upcoming",
-      avatar: "https://i.pravatar.cc/150?u=emmaw",
-    },
-  ];
+  const [todaySessions, setTodaySessions] = useState([]);
+  const [pendingRequests, setPendingRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const pendingRequests = [
-    {
-      id: "101",
-      patient: "James Carter",
-      type: "Video Call",
-      requestedDate: "Oct 25, 2024",
-      requestedTime: "02:00 PM",
-      avatar: "https://i.pravatar.cc/150?u=jamesc",
-    },
-    {
-      id: "102",
-      patient: "Olivia Reed",
-      type: "In-Person",
-      requestedDate: "Oct 26, 2024",
-      requestedTime: "11:00 AM",
-      avatar: "https://i.pravatar.cc/150?u=oliviar",
-    },
-  ];
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const storedToken = localStorage.getItem("token") || sessionStorage.getItem("token");
+        const storedUser = localStorage.getItem("user") || sessionStorage.getItem("user");
+        if (!storedToken || !storedUser) {
+          setLoading(false);
+          return;
+        }
+
+        const user = JSON.parse(storedUser);
+        
+        // 1. Fetch Counselor ID using User ID
+        const profileRes = await fetch(`http://localhost:3000/api/counselors/user/${user.id}`);
+        if (!profileRes.ok) throw new Error("Counselor profile not found");
+        const profileData = await profileRes.json();
+        const counselorId = profileData.data?.counselor?._id;
+
+        if (counselorId) {
+          // 2. Fetch Bookings for this counselor
+          const bookingsRes = await fetch(`http://localhost:3000/api/bookings/counselor/${counselorId}`, {
+            headers: {
+              "Authorization": `Bearer ${storedToken}`
+            }
+          });
+          
+          if (bookingsRes.ok) {
+            const bookingsData = await bookingsRes.json();
+            
+            let bookings = [];
+            if (Array.isArray(bookingsData.data)) bookings = bookingsData.data;
+            else if (Array.isArray(bookingsData.data?.bookings)) bookings = bookingsData.data.bookings;
+            else if (Array.isArray(bookingsData.bookings)) bookings = bookingsData.bookings;
+            
+            // For now, map all upcoming to todaySessions and pending to pendingRequests (based on backend status)
+            // Backend probably uses 'pending', 'confirmed', etc. If no explicit status exists, we'll sort them.
+            const upcoming = bookings
+              .filter(b => b.status !== "cancelled" && b.status !== "completed")
+              .map(b => ({
+                id: b._id,
+                patient: b.studentName || "Student",
+                type: b.sessionType === "video" ? "Video Call" : b.sessionType === "phone" ? "Phone Call" : "In-Person",
+                time: b.time,
+                status: b.status || "upcoming",
+                avatar: "https://i.pravatar.cc/150?u=" + b.studentId,
+              }));
+              
+            setTodaySessions(upcoming);
+            
+            // Let's assume pending requests are those explicitly marked "pending" if your backend supports it,
+            // otherwise leave it empty or map a subset.
+            const pending = bookings
+              .filter(b => b.status === "pending")
+              .map(b => ({
+                id: b._id,
+                patient: b.studentName || "Student",
+                type: b.sessionType === "video" ? "Video Call" : b.sessionType === "phone" ? "Phone Call" : "In-Person",
+                requestedDate: b.date,
+                requestedTime: b.time,
+                avatar: "https://i.pravatar.cc/150?u=" + b.studentId,
+              }));
+              
+            setPendingRequests(pending);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching dashboard data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDashboardData();
+  }, []);
+
+  const handleUpdateStatus = async (bookingId, newStatus) => {
+    try {
+      const storedToken = localStorage.getItem("token") || sessionStorage.getItem("token");
+      const res = await fetch(`http://localhost:3000/api/bookings/${bookingId}/status`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${storedToken}`
+        },
+        body: JSON.stringify({ status: newStatus })
+      });
+      if (res.ok) {
+        // Reload to update UI with latest statuses correctly
+        window.location.reload(); 
+      } else {
+        const errorData = await res.json();
+        alert(errorData.message || `Failed to ${newStatus === 'confirmed' ? 'approve' : 'decline'} request.`);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error updating status");
+    }
+  };
 
   const navItems = [
     { icon: LayoutDashboardIcon, label: "Dashboard", path: "/counselor-dashboard" },
@@ -423,31 +479,34 @@ export function CounselorDashboard() {
                   </div>
 
                   <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                    {todaySessions.map((session, index) => (
-                      <div
-                        key={session.id}
-                        style={{
-                          display: "flex",
-                          alignItems: "flex-start",
-                          gap: "1rem",
-                        }}
-                      >
+                    {loading ? (
+                      <p style={{ color: "#78716c", fontSize: "0.875rem", textAlign: "center", padding: "2rem" }}>Loading schedule...</p>
+                    ) : todaySessions.length > 0 ? (
+                      todaySessions.map((session, index) => (
                         <div
+                          key={session.id}
                           style={{
-                            width: "4rem",
-                            textAlign: "right",
-                            paddingTop: "0.5rem",
-                            flexShrink: 0
+                            display: "flex",
+                            alignItems: "flex-start",
+                            gap: "1rem",
                           }}
                         >
-                          <span
+                          <div
                             style={{
-                              fontSize: "0.875rem",
-                              fontWeight: 500,
-                              color: "#57534e",
+                              width: "4rem",
+                              textAlign: "right",
+                              paddingTop: "0.5rem",
+                              flexShrink: 0
                             }}
                           >
-                            {session.time.split(" - ")[0]}
+                            <span
+                              style={{
+                                fontSize: "0.875rem",
+                                fontWeight: 500,
+                                color: "#57534e",
+                              }}
+                            >
+                              {session.time.split(" - ")[0]}
                           </span>
                         </div>
                         <div
@@ -611,7 +670,10 @@ export function CounselorDashboard() {
                           </div>
                         </div>
                       </div>
-                    ))}
+                      ))
+                    ) : (
+                      <p style={{ color: "#78716c", fontSize: "0.875rem", textAlign: "center", padding: "2rem", fontStyle: "italic", border: "1px dashed #e7e5e4", borderRadius: "1rem" }}>No upcoming sessions scheduled.</p>
+                    )}
                   </div>
                 </div>
 
@@ -639,7 +701,10 @@ export function CounselorDashboard() {
                   <div
                     style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
                   >
-                    {pendingRequests.map((req) => (
+                    {loading ? (
+                      <p style={{ color: "#78716c", fontSize: "0.875rem", textAlign: "center", padding: "2rem" }}>Loading requests...</p>
+                    ) : pendingRequests.length > 0 ? (
+                      pendingRequests.map((req) => (
                       <div
                         key={req.id}
                         style={{
@@ -750,6 +815,7 @@ export function CounselorDashboard() {
                           }}
                         >
                           <button
+                            onClick={() => handleUpdateStatus(req.id, 'declined')}
                             style={{
                               padding: "0.5rem 1.25rem",
                               fontSize: "0.875rem",
@@ -766,6 +832,7 @@ export function CounselorDashboard() {
                             Decline
                           </button>
                           <button
+                            onClick={() => handleUpdateStatus(req.id, 'confirmed')}
                             style={{
                               padding: "0.5rem 1.25rem",
                               fontSize: "0.875rem",
@@ -783,7 +850,10 @@ export function CounselorDashboard() {
                           </button>
                         </div>
                       </div>
-                    ))}
+                      ))
+                    ) : (
+                      <p style={{ color: "#78716c", fontSize: "0.875rem", textAlign: "center", padding: "2rem", fontStyle: "italic", border: "1px dashed #e7e5e4", borderRadius: "1rem" }}>No pending requests at this time.</p>
+                    )}
                   </div>
                 </div>
 

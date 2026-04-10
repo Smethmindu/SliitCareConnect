@@ -17,8 +17,9 @@ app.locals.dbReady = false;
 const connectDB = async () => {
   try {
     const mongoString =
+      process.env.MONGO_URI ||
       process.env.MONGO_STRING ||
-      'mongodb+srv://smethmindu_db_user:aInUauTAwOTo24r8@cluster0.aivy9fh.mongodb.net/?appName=Cluster0';
+      'mongodb+srv://smethmindu_db_user:aInUauTAwOTo24r8@cluster0.aivy9fh.mongodb.net/counseling_platform?retryWrites=true&w=majority&appName=Cluster0';
 
     console.log('Attempting to connect to MongoDB...');
     await mongoose.connect(mongoString);

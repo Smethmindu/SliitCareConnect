@@ -77,6 +77,30 @@ export const getCounselorById = async (req, res) => {
   }
 };
 
+// Get counselor by userId (for logged-in counselor to find their own profile)
+export const getCounselorByUserId = async (req, res) => {
+  try {
+    const counselor = await Counselor.findOne({ userId: req.params.userId });
+
+    if (!counselor) {
+      return res.status(404).json({
+        status: "fail",
+        message: "No counselor profile found for this user.",
+      });
+    }
+
+    res.status(200).json({
+      status: "success",
+      data: { counselor },
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
 // Update counselor profile
 export const updateCounselorProfile = async (req, res) => {
   try {

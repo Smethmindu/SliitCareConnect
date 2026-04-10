@@ -103,7 +103,7 @@ export function DashboardLayout() {
     ...(currentUser ? [{ icon: CalendarIcon, label: "Appointments", path: "/appointments" }] : []),
     { icon: UsersIcon, label: "Counselors", path: "/counselors" },
     ...(currentUser ? [{ icon: MessageSquareIcon, label: "Messages", path: "/messages" }] : []),
-    { icon: BookOpenIcon, label: "Resources", path: "/blog" },
+    { icon: BookOpenIcon, label: "Resources", path: "/resources" },
     { icon: MailIcon, label: "Contact Us", path: "/dashboard/contact" },
   ];
 

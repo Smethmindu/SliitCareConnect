@@ -1,48 +1,77 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon, VideoIcon, MapPinIcon } from "lucide-react";
-
-const mockAppointments = [
-  {
-    id: 1,
-    date: "16th September",
-    fullDate: "2026-09-16",
-    type: "Video Call",
-    counselor: "Dr. Emily Chen",
-    time: "10:00 AM - 11:00 AM",
-    status: "Upcoming",
-    notes: "I want to discuss my recent anxiety related to final exams.",
-    image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=300&q=80"
-  },
-  {
-    id: 2,
-    date: "13th September",
-    fullDate: "2026-09-13",
-    type: "In-Person",
-    counselor: "Dr. Marcus Rivera",
-    time: "02:00 PM - 03:00 PM",
-    status: "Completed",
-    notes: "General stress management.",
-    image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=300&q=80"
-  },
-  {
-    id: 3,
-    date: "10th September",
-    fullDate: "2026-09-10",
-    type: "Phone Call",
-    counselor: "Sarah Kim",
-    time: "11:00 AM - 11:30 AM",
-    status: "Canceled",
-    notes: "Career guidance.",
-    image: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=300&q=80"
-  }
-];
+import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon, VideoIcon, MapPinIcon, PhoneIcon } from "lucide-react";
 
 export function MyAppointments() {
-  const [activeTab, setActiveTab] = useState("All");
+  const [activeTab, setActiveTab] = useState("Pending");
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [expandedId, setExpandedId] = useState(null);
 
-  const filteredAppointments = mockAppointments.filter((app) => 
-    activeTab === "All" || app.status === activeTab
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        const storedToken = localStorage.getItem("token") || sessionStorage.getItem("token");
+        const storedUser = localStorage.getItem("user") || sessionStorage.getItem("user");
+        if (!storedToken || !storedUser) {
+          setLoading(false);
+          return;
+        }
+        
+        const user = JSON.parse(storedUser);
+        const response = await fetch(`http://localhost:3000/api/bookings/student/${user.id}`, {
+          headers: {
+            "Authorization": `Bearer ${storedToken}`
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          // The backend bookings controller gets student bookings
+          // Returns { status: 'success', data: [...] }
+          let fetchedBookings = [];
+          if (Array.isArray(data.data)) fetchedBookings = data.data;
+          else if (Array.isArray(data.data?.bookings)) fetchedBookings = data.data.bookings;
+          else if (Array.isArray(data.bookings)) fetchedBookings = data.bookings;
+          
+          // Map backend schema to frontend expected format
+          const mappedAppointments = fetchedBookings.map(b => {
+             let statusDisplay = "Pending"; // default back-end is 'pending'
+             if (b.status === "confirmed") statusDisplay = "Approved";
+             // we will not show completed/canceled in these two tabs unless we map them, 
+             // but user requested only Pending and Approved tabs.
+
+             // Map session type from 'video', 'in-person', 'phone'
+             let typeDisplay = "Video Call";
+             if (b.sessionType === "in-person") typeDisplay = "In-Person";
+             if (b.sessionType === "phone") typeDisplay = "Phone Call";
+
+             return {
+                id: b._id,
+                date: b.date, 
+                fullDate: b.date, 
+                type: typeDisplay,
+                counselor: b.counselorName || "Counselor",
+                time: b.time,
+                status: statusDisplay,
+                notes: b.notes || "No notes provided.",
+                image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=300&q=80"
+             };
+          });
+          
+          setAppointments(mappedAppointments);
+        }
+      } catch (error) {
+        console.error("Error fetching appointments:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAppointments();
+  }, []);
+
+  const filteredAppointments = appointments.filter((app) => 
+    app.status === activeTab
   );
 
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -82,7 +111,7 @@ export function MyAppointments() {
 
           {/* Filter Tabs */}
           <div style={{ display: "flex", gap: "0.75rem", marginBottom: "2rem", overflowX: "auto", paddingBottom: "0.5rem" }}>
-            {["All", "Upcoming", "Completed", "Canceled"].map((tab) => (
+            {["Pending", "Approved"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -108,7 +137,11 @@ export function MyAppointments() {
 
           {/* Appointment Cards */}
           <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-            {filteredAppointments.length > 0 ? (
+            {loading ? (
+              <div style={{ textAlign: "center", padding: "4rem", backgroundColor: "#fafaf9", borderRadius: "1rem" }}>
+                <p style={{ color: "#78716c", fontSize: "1rem" }}>Loading appointments...</p>
+              </div>
+            ) : filteredAppointments.length > 0 ? (
               filteredAppointments.map((app) => (
                 <motion.div
                   key={app.id}
@@ -141,6 +174,7 @@ export function MyAppointments() {
                       <span style={{ fontSize: "0.875rem", color: "#78716c", fontWeight: 500, display: "flex", alignItems: "center", gap: "0.25rem" }}>
                         {app.type === "Video Call" && <VideoIcon style={{width: "1rem", height: "1rem"}}/>}
                         {app.type === "In-Person" && <MapPinIcon style={{width: "1rem", height: "1rem"}}/>}
+                        {app.type === "Phone Call" && <PhoneIcon style={{width: "1rem", height: "1rem"}}/>}
                         {app.type}
                       </span>
                     </div>
@@ -154,29 +188,41 @@ export function MyAppointments() {
                     </p>
 
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", alignItems: "center", marginTop: "auto" }}>
-                      {app.status === "Upcoming" && (
+                      {app.status === "Pending" && (
                         <>
                           <button style={{ padding: "0.375rem 1rem", borderRadius: "9999px", fontSize: "0.75rem", fontWeight: 600, backgroundColor: "white", color: "#ef4444", border: "1px solid #fca5a5", cursor: "pointer", outline: "none" }}>
-                            Cancel Appointment
-                          </button>
-                          <button style={{ padding: "0.375rem 1rem", borderRadius: "9999px", fontSize: "0.75rem", fontWeight: 600, backgroundColor: "white", color: "#10b981", border: "1px solid #6ee7b7", cursor: "pointer", outline: "none" }}>
-                            Reschedule
+                            Cancel Request
                           </button>
                         </>
                       )}
-
-                      {(app.status === "Completed" || app.status === "Canceled") && (
-                        <span style={{ padding: "0.25rem 0.75rem", borderRadius: "9999px", fontSize: "0.75rem", fontWeight: 600, backgroundColor: "#f5f5f4", color: "#78716c", border: "1px solid #e7e5e4" }}>
-                          {app.status}
+                      {app.status === "Approved" && (
+                        <span style={{ padding: "0.25rem 0.75rem", borderRadius: "9999px", fontSize: "0.75rem", fontWeight: 600, backgroundColor: "#f0fdf4", color: "#166534", border: "1px solid #bbf7d0" }}>
+                          Approved
                         </span>
                       )}
 
                       <div style={{ marginLeft: "auto", position: "relative", group: "true" }}>
-                        <button style={{ color: "#0ea5e9", backgroundColor: "transparent", border: "none", fontSize: "0.875rem", fontWeight: 600, cursor: "pointer", textDecoration: "underline" }} title={app.notes}>
-                          Pre-session notes
+                        <button 
+                          onClick={() => setExpandedId(expandedId === app.id ? null : app.id)}
+                          style={{ color: "#0ea5e9", backgroundColor: "transparent", border: "none", fontSize: "0.875rem", fontWeight: 600, cursor: "pointer", textDecoration: "underline" }}
+                        >
+                          {expandedId === app.id ? 'Hide Pre-session notes' : 'View Pre-session notes'}
                         </button>
                       </div>
                     </div>
+
+                    {expandedId === app.id && (
+                      <motion.div 
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        style={{ width: "100%", marginTop: "1rem", paddingTop: "1rem", borderTop: "1px solid #f5f5f4" }}
+                      >
+                        <h4 style={{ margin: "0 0 0.5rem 0", fontSize: "0.875rem", fontWeight: 600, color: "#44403c" }}>Additional Session Notes</h4>
+                        <p style={{ margin: 0, fontSize: "0.875rem", color: "#57534e", lineHeight: "1.5" }}>
+                           {app.notes ? app.notes : "No additional session notes were recorded."}
+                        </p>
+                      </motion.div>
+                    )}
                   </div>
                 </motion.div>
               ))

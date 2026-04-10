@@ -1,8 +1,10 @@
 import express from "express";
+import { authenticate, authorize } from "../middleware/auth.js";
 import {
   createCounselor,
   getAllCounselors,
   getCounselorById,
+  getCounselorByUserId,
   updateCounselorProfile,
   getAvailability,
   updateAvailability,
@@ -12,14 +14,15 @@ import {
 const router = express.Router();
 
 // Public endpoints
-router.post("/", createCounselor);
 router.get("/", getAllCounselors);
+router.get("/user/:userId", getCounselorByUserId);
 router.get("/:id", getCounselorById);
 router.get("/:id/availability", getAvailability);
 
-// Protected endpoints (auth middleware to be added by auth team member)
-router.put("/:id/profile", updateCounselorProfile);
-router.put("/:id/availability", updateAvailability);
-router.delete("/:id", deleteCounselor);
+// Protected endpoints
+router.post("/", authenticate, authorize('admin', 'counselor'), createCounselor);
+router.put("/:id/profile", authenticate, authorize('admin', 'counselor'), updateCounselorProfile);
+router.put("/:id/availability", authenticate, authorize('admin', 'counselor'), updateAvailability);
+router.delete("/:id", authenticate, authorize('admin'), deleteCounselor);
 
 export default router;

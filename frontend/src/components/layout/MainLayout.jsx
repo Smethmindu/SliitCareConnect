@@ -162,7 +162,7 @@ export function MainLayout() {
                 Counselors
               </Link>
               <Link
-                to="/blog"
+                to="/resources"
                 style={{
                   fontSize: "0.875rem",
                   fontWeight: 500,

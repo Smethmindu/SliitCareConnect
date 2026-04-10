@@ -11,6 +11,7 @@ const availabilitySlotSchema = new mongoose.Schema(
 
 const counselorSchema = new mongoose.Schema(
   {
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     name: {
       type: String,
       required: [true, "Counselor name is required"],

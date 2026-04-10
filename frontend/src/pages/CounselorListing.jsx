@@ -1,70 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { SearchIcon, StarIcon, MapPinIcon, VideoIcon } from "lucide-react";
 
-const counselors = [
-  {
-    id: "1",
-    name: "Dr. Emily Chen",
-    title: "Clinical Psychologist",
-    rating: 4.9,
-    specialties: ["Anxiety", "Depression", "Mindfulness"],
-    online: true,
-    nextAvailable: "Tomorrow, 10 AM",
-    avatar: "https://i.pravatar.cc/150?u=emily",
-  },
-  {
-    id: "2",
-    name: "Dr. Marcus Rivera",
-    title: "Licensed Counselor",
-    rating: 4.8,
-    specialties: ["Stress Management", "Academic Pressure"],
-    online: true,
-    nextAvailable: "Today, 3 PM",
-    avatar: "https://i.pravatar.cc/150?u=marcus",
-  },
-  {
-    id: "3",
-    name: "Dr. Aisha Patel",
-    title: "Therapist",
-    rating: 4.9,
-    specialties: ["Relationship Issues", "Self-Esteem"],
-    online: false,
-    nextAvailable: "Wed, 9 AM",
-    avatar: "https://i.pravatar.cc/150?u=aisha",
-  },
-  {
-    id: "4",
-    name: "Sarah Kim",
-    title: "Wellness Coach",
-    rating: 4.7,
-    specialties: ["Mindfulness", "Stress", "Career Guidance"],
-    online: true,
-    nextAvailable: "Tomorrow, 1 PM",
-    avatar: "https://i.pravatar.cc/150?u=sarah",
-  },
-  {
-    id: "5",
-    name: "Dr. James Okafor",
-    title: "Psychiatrist",
-    rating: 4.8,
-    specialties: ["ADHD", "Anxiety", "Depression"],
-    online: false,
-    nextAvailable: "Thu, 11 AM",
-    avatar: "https://i.pravatar.cc/150?u=james",
-  },
-  {
-    id: "6",
-    name: "Dr. Lisa Nakamura",
-    title: "Art Therapist",
-    rating: 4.6,
-    specialties: ["Grief & Loss", "Self-Esteem", "Creativity"],
-    online: true,
-    nextAvailable: "Fri, 2 PM",
-    avatar: "https://i.pravatar.cc/150?u=lisa",
-  },
-];
+
 
 const filters = [
   "All",
@@ -76,8 +15,32 @@ const filters = [
 ];
 
 export function CounselorListing() {
+  const [counselors, setCounselors] = useState([]);
   const [activeFilter, setActiveFilter] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch real data from backend
+  useEffect(() => {
+    const fetchCounselors = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/counselors");
+        if (response.ok) {
+          const data = await response.json();
+          // Backend returns { status, data: { counselors: [...] } }
+          const fetchedData = data.data?.counselors || data.data || data;
+          setCounselors(Array.isArray(fetchedData) ? fetchedData : []);
+        } else {
+          console.error("Failed to fetch counselors");
+        }
+      } catch (error) {
+        console.error("Error fetching counselors:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchCounselors();
+  }, []);
 
   const fadeIn = {
     initial: { opacity: 0, y: 10 },
@@ -86,17 +49,18 @@ export function CounselorListing() {
   };
 
   const filteredCounselors = counselors.filter((counselor) => {
+    const specialtiesList = Array.isArray(counselor.specialities) ? counselor.specialities : [];
+    
     const matchesSearch =
-      counselor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      counselor.specialties.some((s) =>
-        s.toLowerCase().includes(searchQuery.toLowerCase())
+      (counselor.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+      specialtiesList.some((s) =>
+        (s || "").toLowerCase().includes(searchQuery.toLowerCase())
       );
 
     let matchesFilter = true;
     if (activeFilter !== "All") {
-      
-      matchesFilter = counselor.specialties.some((s) =>
-        s.toLowerCase().includes(activeFilter.toLowerCase())
+      matchesFilter = specialtiesList.some((s) =>
+        (s || "").toLowerCase().includes(activeFilter.toLowerCase())
       );
     }
 
@@ -282,9 +246,23 @@ export function CounselorListing() {
           gap: "1.5rem",
         }}
       >
-        {filteredCounselors.map((counselor) => (
+        {isLoading ? (
+          <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "3rem", color: "#78716c", fontStyle: "italic" }}>
+            Loading counselors...
+          </div>
+        ) : filteredCounselors.length === 0 ? (
+          <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "3rem", color: "#78716c" }}>
+            No counselors found.
+          </div>
+        ) : (
+          filteredCounselors.map((counselor) => {
+            const specialtyLabel = counselor.speciality || "Wellness Counselor";
+            const specialtiesArr = Array.isArray(counselor.specialities) ? counselor.specialities : [];
+            const avatarUrl = counselor.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(counselor.name || 'C')}&background=e0f2fe&color=0284c7`;
+            
+            return (
           <div
-            key={counselor.id}
+            key={counselor._id || counselor.id}
             style={{
               display: "flex",
               flexDirection: "column",
@@ -331,7 +309,7 @@ export function CounselorListing() {
                     }}
                   >
                     <img
-                      src={counselor.avatar}
+                      src={avatarUrl}
                       alt={counselor.name}
                       style={{
                         height: "100%",
@@ -366,7 +344,7 @@ export function CounselorListing() {
                       color: "#b45309",
                     }}
                   >
-                    {counselor.rating}
+                    {counselor.rating || 0}
                   </span>
                 </div>
               </div>
@@ -386,7 +364,7 @@ export function CounselorListing() {
                 <p
                   style={{ color: "#78716c", fontSize: "0.875rem", margin: 0 }}
                 >
-                  {counselor.title}
+                  {specialtyLabel}
                 </p>
               </div>
 
@@ -398,7 +376,7 @@ export function CounselorListing() {
                   marginBottom: "1.5rem",
                 }}
               >
-                {counselor.specialties.slice(0, 3).map((specialty) => (
+                {specialtiesArr.slice(0, 3).map((specialty) => (
                   <span
                     key={specialty}
                     style={{
@@ -468,7 +446,7 @@ export function CounselorListing() {
                       }}
                     ></span>
                   </span>
-                  Next available: {counselor.nextAvailable}
+                  Next available: {counselor.nextAvailable || "Checking..."}
                 </div>
                 <div
                   style={{
@@ -504,7 +482,7 @@ export function CounselorListing() {
               }}
             >
               <Link
-                to={`/counselors/${counselor.id}`}
+                to={`/counselors/${counselor._id || counselor.id}`}
                 style={{ textDecoration: "none" }}
               >
                 <button
@@ -528,7 +506,9 @@ export function CounselorListing() {
               </Link>
             </div>
           </div>
-        ))}
+          );
+        })
+        )}
       </motion.div>
     </motion.div>
   );

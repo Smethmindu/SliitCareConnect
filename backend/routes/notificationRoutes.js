@@ -1,4 +1,5 @@
 import express from 'express';
+import { authenticate } from '../middleware/auth.js';
 import {
   getNotifications,
   markAsRead,
@@ -7,8 +8,8 @@ import {
 
 const router = express.Router();
 
-router.get('/:userId', getNotifications);
-router.patch('/markAllRead/:userId', markAllAsRead);
-router.patch('/:id/read', markAsRead);
+router.get('/:userId', authenticate, getNotifications);
+router.patch('/markAllRead/:userId', authenticate, markAllAsRead);
+router.patch('/:id/read', authenticate, markAsRead);
 
 export default router;

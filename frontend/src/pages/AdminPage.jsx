@@ -210,10 +210,16 @@ export function AdminPage() {
 
   const handleAddUser = async () => {
     const token = getToken();
-    if (!token) return;
+    if (!token) {
+      alert('No token found. Please log in as admin first.');
+      return;
+    }
+
+    console.log('📤 Sending create user request:', newUser);
+    console.log('🔑 Token:', token.substring(0, 20) + '...');
 
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+      const response = await fetch(`${API_BASE_URL}/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -222,27 +228,28 @@ export function AdminPage() {
         body: JSON.stringify(newUser)
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setShowAddUserModal(false);
-          setNewUser({
-            firstName: '',
-            lastName: '',
-            email: '',
-            password: '',
-            role: 'student',
-            studentId: ''
-          });
-          setRefreshNonce(n => n + 1); // Refresh user list
-        }
+      console.log('📥 Response status:', response.status);
+      const data = await response.json();
+      console.log('📥 Response data:', data);
+
+      if (response.ok && data.success) {
+        alert(`✅ User "${newUser.firstName} ${newUser.lastName}" created successfully as ${newUser.role}!`);
+        setShowAddUserModal(false);
+        setNewUser({
+          firstName: '',
+          lastName: '',
+          email: '',
+          password: '',
+          role: 'student',
+          studentId: ''
+        });
+        setRefreshNonce(n => n + 1);
       } else {
-        const errorData = await response.json();
-        alert(errorData.message || 'Failed to add user');
+        alert(`❌ Failed: ${data.message || 'Unknown error'}\n${data.errors ? data.errors.join(', ') : ''}`);
       }
     } catch (error) {
-      console.error('Failed to add user:', error);
-      alert('Network error while adding user');
+      console.error('❌ Network error:', error);
+      alert(`Network error: ${error.message}`);
     }
   };
 

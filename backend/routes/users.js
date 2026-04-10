@@ -7,7 +7,8 @@ import {
   getAllUsers,
   getUserById,
   updateUser,
-  deleteUser
+  deleteUser,
+  createUser
 } from '../controllers/userController.js';
 
 const router = express.Router();
@@ -25,6 +26,9 @@ router.put('/change-password', authenticate, changePassword);
 
 // Get all users (Admin only)
 router.get('/', authenticate, authorize('admin'), getAllUsers);
+
+// Create new user (Admin only)
+router.post('/', authenticate, authorize('admin'), createUser);
 
 // Get user by ID (Admin only)
 router.get('/:id', authenticate, authorize('admin'), getUserById);
