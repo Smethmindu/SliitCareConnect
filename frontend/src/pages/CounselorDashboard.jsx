@@ -16,6 +16,7 @@ import {
   LogOutIcon,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 export function CounselorDashboard() {
   const location = useLocation();
@@ -61,6 +62,7 @@ export function CounselorDashboard() {
 
   const [todaySessions, setTodaySessions] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
+  const [allBookings, setAllBookings] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -97,8 +99,10 @@ export function CounselorDashboard() {
             else if (Array.isArray(bookingsData.data?.bookings)) bookings = bookingsData.data.bookings;
             else if (Array.isArray(bookingsData.bookings)) bookings = bookingsData.bookings;
             
-            // For now, map all upcoming to todaySessions and pending to pendingRequests (based on backend status)
-            // Backend probably uses 'pending', 'confirmed', etc. If no explicit status exists, we'll sort them.
+            // Store all bookings for stat calculations
+            setAllBookings(bookings);
+            
+            // Map all upcoming to todaySessions and pending to pendingRequests
             const upcoming = bookings
               .filter(b => b.status !== "cancelled" && b.status !== "completed")
               .map(b => ({
@@ -112,8 +116,6 @@ export function CounselorDashboard() {
               
             setTodaySessions(upcoming);
             
-            // Let's assume pending requests are those explicitly marked "pending" if your backend supports it,
-            // otherwise leave it empty or map a subset.
             const pending = bookings
               .filter(b => b.status === "pending")
               .map(b => ({
@@ -308,7 +310,7 @@ export function CounselorDashboard() {
                       Good morning, {currentUser?.firstName ? currentUser.firstName : "Counselor"}
                     </h1>
                     <p style={{ color: "#d1fae5", fontSize: "1.125rem", margin: 0 }}>
-                      You have 3 sessions scheduled today.
+                      You have {todaySessions.length} session{todaySessions.length !== 1 ? 's' : ''} scheduled today.
                     </p>
                   </div>
                   <div style={{ display: "flex", gap: "0.75rem" }}>
@@ -343,29 +345,48 @@ export function CounselorDashboard() {
                 gap: "1rem",
               }}
             >
-              {[
-                {
-                  icon: UsersIcon,
-                  label: "Patients",
-                  value: "42",
-                  color: "#0ea5e9",
-                  bg: "#e0f2fe",
-                },
-                {
-                  icon: CalendarIcon,
-                  label: "Sessions This Week",
-                  value: "18",
-                  color: "#10b981",
-                  bg: "#d1fae5",
-                },
-                {
-                  icon: ClockIcon,
-                  label: "Hours Completed",
-                  value: "124",
-                  color: "#8b5cf6",
-                  bg: "#ede9fe",
-                },
-              ].map((stat, i) => (
+              {(() => {
+                // Compute real stats from booking data
+                const uniquePatients = new Set(allBookings.filter(b => b.status !== "cancelled").map(b => b.studentId)).size;
+                
+                const now = new Date();
+                const startOfWeek = new Date(now);
+                startOfWeek.setDate(now.getDate() - now.getDay());
+                startOfWeek.setHours(0, 0, 0, 0);
+                const endOfWeek = new Date(startOfWeek);
+                endOfWeek.setDate(startOfWeek.getDate() + 7);
+                const sessionsThisWeek = allBookings.filter(b => {
+                  if (b.status === "cancelled") return false;
+                  const bookingDate = new Date(b.date);
+                  return bookingDate >= startOfWeek && bookingDate < endOfWeek;
+                }).length;
+                
+                const completedSessions = allBookings.filter(b => b.status === "completed").length;
+                
+                return [
+                  {
+                    icon: UsersIcon,
+                    label: "Total Patients",
+                    value: String(uniquePatients),
+                    color: "#0ea5e9",
+                    bg: "#e0f2fe",
+                  },
+                  {
+                    icon: CalendarIcon,
+                    label: "Sessions This Week",
+                    value: String(sessionsThisWeek),
+                    color: "#10b981",
+                    bg: "#d1fae5",
+                  },
+                  {
+                    icon: ClockIcon,
+                    label: "Hours Completed",
+                    value: String(completedSessions),
+                    color: "#8b5cf6",
+                    bg: "#ede9fe",
+                  },
+                ];
+              })().map((stat, i) => (
                 <div
                   key={i}
                   style={{
@@ -867,7 +888,7 @@ export function CounselorDashboard() {
 
               </motion.div>
 
-              {/*Quick Actions*/}
+              {/* Analytics Chart */}
               <motion.div
                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.3 }}
                 style={{ display: "flex", flexDirection: "column", gap: "1.5rem", minWidth: 0 }}
@@ -879,6 +900,9 @@ export function CounselorDashboard() {
                     borderRadius: "1rem",
                     boxShadow:
                       "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+                    flex: 1,
+                    display: "flex",
+                    flexDirection: "column"
                   }}
                 >
                   <h3
@@ -889,51 +913,66 @@ export function CounselorDashboard() {
                       marginTop: 0,
                     }}
                   >
-                    Quick Actions
+                    Sessions Trend
                   </h3>
-                  <div style={{ display: "grid", gap: "0.75rem" }}>
-                    <button
-                      style={{
-                        width: "100%",
-                        padding: "0.5rem 1rem",
-                        fontSize: "0.875rem",
-                        borderRadius: "0.375rem",
-                        fontWeight: 500,
-                        backgroundColor: "#f0f9ff",
-                        color: "#0369a1",
-                        border: "1px solid #bae6fd",
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.5rem",
-                        outline: "none",
-                      }}
-                    >
-                      <FileTextIcon style={{ height: "1.25rem", width: "1.25rem", flexShrink: 0 }} />{" "}
-                      Review Waiting List
-                    </button>
-                    <button
-                      style={{
-                        width: "100%",
-                        padding: "0.5rem 1rem",
-                        fontSize: "0.875rem",
-                        borderRadius: "0.375rem",
-                        fontWeight: 500,
-                        backgroundColor: "#f0fdf4",
-                        color: "#15803d",
-                        border: "1px solid #bbf7d0",
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.5rem",
-                        outline: "none",
-                      }}
-                    >
-                      <CheckCircleIcon
-                        style={{ height: "1.25rem", width: "1.25rem", flexShrink: 0 }}
-                      />{" "}
-                      Complete Session Notes
-                    </button>
+                  <div style={{ flex: 1, minHeight: "250px", width: "100%" }}>
+                    {(() => {
+                      const counts = {};
+                      allBookings.forEach(b => {
+                        if (b.status === "cancelled") return;
+                        const d = b.date;
+                        if (d) counts[d] = (counts[d] || 0) + 1;
+                      });
+                      
+                      const sorted = Object.entries(counts)
+                        .sort(([a], [b]) => new Date(a) - new Date(b))
+                        .slice(-7)
+                        .map(([date, count]) => ({
+                          name: new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                          sessions: count
+                        }));
+                        
+                      const chartData = sorted.length > 0 ? sorted : [
+                        { name: "Mon", sessions: 0 },
+                        { name: "Tue", sessions: 0 },
+                        { name: "Wed", sessions: 0 },
+                        { name: "Thu", sessions: 0 },
+                        { name: "Fri", sessions: 0 },
+                      ];
+
+                      return (
+                        <ResponsiveContainer width="100%" height="100%">
+                          <LineChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f5f5f4" />
+                            <XAxis 
+                              dataKey="name" 
+                              axisLine={false} 
+                              tickLine={false} 
+                              tick={{ fill: '#a8a29e', fontSize: 12 }} 
+                              dy={10} 
+                            />
+                            <YAxis 
+                              axisLine={false} 
+                              tickLine={false} 
+                              tick={{ fill: '#a8a29e', fontSize: 12 }} 
+                              allowDecimals={false}
+                            />
+                            <Tooltip 
+                              contentStyle={{ borderRadius: '0.5rem', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+                              cursor={{ stroke: '#f5f5f4', strokeWidth: 2 }}
+                            />
+                            <Line 
+                              type="monotone" 
+                              dataKey="sessions" 
+                              stroke="#0ea5e9" 
+                              strokeWidth={3}
+                              dot={{ r: 4, strokeWidth: 2, fill: "white", stroke: "#0ea5e9" }}
+                              activeDot={{ r: 6, stroke: "#0ea5e9", strokeWidth: 2, fill: "white" }}
+                            />
+                          </LineChart>
+                        </ResponsiveContainer>
+                      );
+                    })()}
                   </div>
                 </div>
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { LeafIcon } from "lucide-react";
+import { LeafIcon, EyeIcon, EyeOffIcon } from "lucide-react";
 
 const API_BASE_URL = "/api";
 
@@ -19,6 +19,8 @@ export function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -33,16 +35,27 @@ export function RegisterPage() {
     setError('');
     setLoading(true);
 
-    // Validate passwords match
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+    // Validate student ID
+    if (role === "student") {
+      const studentIdRegex = /^IT\d{8}$/i;
+      if (!studentIdRegex.test(formData.studentId)) {
+        setError("Student ID must start with 'IT' followed by 8 digits (e.g., IT23147164).");
+        setLoading(false);
+        return;
+      }
+    }
+
+    // Validate password complexity
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}$/;
+    if (!passwordRegex.test(formData.password)) {
+      setError("Password must be at least 8 characters long, and include an uppercase letter, a lowercase letter, and a special character.");
       setLoading(false);
       return;
     }
 
-    // Validate password length
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long');
+    // Validate passwords match
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
       setLoading(false);
       return;
     }
@@ -98,6 +111,13 @@ export function RegisterPage() {
         padding: "1rem",
       }}
     >
+      <style>
+        {`
+          input::placeholder {
+            color: #d6d3d1 !important;
+          }
+        `}
+      </style>
       <div
         style={{
           position: "absolute",
@@ -339,7 +359,7 @@ export function RegisterPage() {
                   name="studentId"
                   value={formData.studentId}
                   onChange={handleInputChange}
-                  placeholder="e.g. 10023456"
+                  placeholder="e.g. IT23147164"
                   required
                   disabled={loading}
                   style={{
@@ -355,6 +375,9 @@ export function RegisterPage() {
                     opacity: loading ? 0.7 : 1
                   }}
                 />
+                <p style={{ marginTop: "0.25rem", fontSize: "0.75rem", color: "#a8a29e", marginBottom: 0 }}>
+                  Must start with 'IT' followed by 8 digits
+                </p>
               </div>
             )}
 
@@ -379,27 +402,52 @@ export function RegisterPage() {
                 >
                   Password
                 </label>
-                <input
-                  name="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  placeholder="••••••••"
-                  required
-                  disabled={loading}
-                  style={{
-                    width: "100%",
-                    padding: "0.75rem 1rem",
-                    borderRadius: "0.75rem",
-                    backgroundColor: "white",
-                    border: "1px solid #e7e5e4",
-                    color: "#292524",
-                    fontSize: "0.875rem",
-                    outline: "none",
-                    boxSizing: "border-box",
-                    opacity: loading ? 0.7 : 1
-                  }}
-                />
+                <div style={{ position: "relative" }}>
+                  <input
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    placeholder="••••••••"
+                    required
+                    disabled={loading}
+                    style={{
+                      width: "100%",
+                      padding: "0.75rem 2.5rem 0.75rem 1rem",
+                      borderRadius: "0.75rem",
+                      backgroundColor: "white",
+                      border: "1px solid #e7e5e4",
+                      color: "#292524",
+                      fontSize: "0.875rem",
+                      outline: "none",
+                      boxSizing: "border-box",
+                      opacity: loading ? 0.7 : 1
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{
+                      position: "absolute",
+                      right: "0.75rem",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      color: "#a8a29e",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: 0
+                    }}
+                  >
+                    {showPassword ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />}
+                  </button>
+                </div>
+                <p style={{ marginTop: "0.25rem", fontSize: "0.75rem", color: "#a8a29e", marginBottom: 0, lineHeight: 1.4 }}>
+                  Min 8 chars, 1 uppercase, 1 lowercase, 1 special character
+                </p>
               </div>
               <div style={{ display: "flex", flexDirection: "column" }}>
                 <label
@@ -413,27 +461,49 @@ export function RegisterPage() {
                 >
                   Confirm Password
                 </label>
-                <input
-                  name="confirmPassword"
-                  type="password"
-                  value={formData.confirmPassword}
-                  onChange={handleInputChange}
-                  placeholder="••••••••"
-                  required
-                  disabled={loading}
-                  style={{
-                    width: "100%",
-                    padding: "0.75rem 1rem",
-                    borderRadius: "0.75rem",
-                    backgroundColor: "white",
-                    border: "1px solid #e7e5e4",
-                    color: "#292524",
-                    fontSize: "0.875rem",
-                    outline: "none",
-                    boxSizing: "border-box",
-                    opacity: loading ? 0.7 : 1
-                  }}
-                />
+                <div style={{ position: "relative" }}>
+                  <input
+                    name="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={formData.confirmPassword}
+                    onChange={handleInputChange}
+                    placeholder="••••••••"
+                    required
+                    disabled={loading}
+                    style={{
+                      width: "100%",
+                      padding: "0.75rem 2.5rem 0.75rem 1rem",
+                      borderRadius: "0.75rem",
+                      backgroundColor: "white",
+                      border: "1px solid #e7e5e4",
+                      color: "#292524",
+                      fontSize: "0.875rem",
+                      outline: "none",
+                      boxSizing: "border-box",
+                      opacity: loading ? 0.7 : 1
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    style={{
+                      position: "absolute",
+                      right: "0.75rem",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      color: "#a8a29e",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: 0
+                    }}
+                  >
+                    {showConfirmPassword ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />}
+                  </button>
+                </div>
               </div>
             </div>
 

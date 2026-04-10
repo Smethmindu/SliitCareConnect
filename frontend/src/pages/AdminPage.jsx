@@ -302,130 +302,68 @@ export function AdminPage() {
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: "1rem",
+        gap: "1.5rem",
         paddingBottom: "2rem",
-        backgroundColor: "#f4f5f7",
-        borderRadius: "0.9rem",
-        padding: "1.25rem",
       }}
     >
-      {/* Current User Profile Section */}
+      {/* Admin Profile Card */}
       {currentUser && (
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           style={{
-            ...cardStyle,
-            padding: "2rem",
-            background: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
-            border: "2px solid #3b82f6",
+            backgroundColor: "white",
+            borderRadius: "1.25rem",
+            border: "1px solid #f5f5f4",
+            padding: "2rem 2.5rem",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
             position: "relative",
             overflow: "hidden",
           }}
         >
-          {/* Background decoration */}
-          <div
-            style={{
-              position: "absolute",
-              top: "-50px",
-              right: "-50px",
-              width: "150px",
-              height: "150px",
-              borderRadius: "50%",
-              background: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
-              opacity: 0.1,
-            }}
-          />
-          
-          <div style={{ display: "flex", alignItems: "center", gap: "2rem", position: "relative", zIndex: 1 }}>
+          {/* Accent bar */}
+          <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "4px", background: "linear-gradient(90deg, #0ea5e9, #38bdf8, #7dd3fc)" }} />
+
+          <div style={{ display: "flex", alignItems: "center", gap: "1.75rem", flexWrap: "wrap" }}>
             <div
               style={{
-                width: "100px",
-                height: "100px",
-                borderRadius: "50%",
-                background: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
+                width: "80px",
+                height: "80px",
+                borderRadius: "1rem",
+                background: "linear-gradient(135deg, #0ea5e9, #0284c7)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: "2.5rem",
+                fontSize: "2rem",
                 fontWeight: "bold",
                 color: "white",
-                boxShadow: "0 8px 32px rgba(59, 130, 246, 0.3)",
-                border: "4px solid white",
+                boxShadow: "0 8px 24px rgba(14, 165, 233, 0.25)",
+                flexShrink: 0,
               }}
             >
               {currentUser.firstName?.[0]?.toUpperCase() || currentUser.email?.[0]?.toUpperCase() || "A"}
             </div>
             
-            <div style={{ flex: 1 }}>
-              <div style={{ marginBottom: "1rem" }}>
-                <h2 style={{ margin: 0, fontSize: "1.75rem", color: "#1e293b", marginBottom: "0.5rem" }}>
-                  Admin: {currentUser.firstName} {currentUser.lastName}
-                </h2>
-                <p style={{ margin: 0, fontSize: "1rem", color: "#64748b", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  📧 {currentUser.email}
-                </p>
-              </div>
+            <div style={{ flex: 1, minWidth: "200px" }}>
+              <h2 style={{ margin: 0, fontSize: "1.5rem", color: "#1c1917", fontWeight: 700, letterSpacing: "-0.02em" }}>
+                {currentUser.firstName} {currentUser.lastName}
+              </h2>
+              <p style={{ margin: "0.25rem 0 0", fontSize: "0.875rem", color: "#78716c" }}>
+                {currentUser.email}
+              </p>
               
-              <div style={{ display: "flex", gap: "1rem", alignItems: "center", flexWrap: "wrap" }}>
-                <span
-                  style={{
-                    background: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
-                    color: "white",
-                    padding: "0.5rem 1rem",
-                    borderRadius: "2rem",
-                    fontSize: "0.875rem",
-                    fontWeight: 600,
-                    textTransform: "capitalize",
-                    boxShadow: "0 4px 12px rgba(59, 130, 246, 0.3)",
-                  }}
-                >
-                  👑 {currentUser.role}
+              <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap", marginTop: "0.75rem" }}>
+                <span style={{ backgroundColor: "#0ea5e9", color: "white", padding: "0.25rem 0.75rem", borderRadius: "9999px", fontSize: "0.75rem", fontWeight: 600, textTransform: "capitalize" }}>
+                  {currentUser.role}
                 </span>
-                
                 {currentUser.studentId && (
-                  <span
-                    style={{
-                      backgroundColor: "#f1f5f9",
-                      color: "#475569",
-                      padding: "0.5rem 1rem",
-                      borderRadius: "2rem",
-                      fontSize: "0.875rem",
-                      fontWeight: 500,
-                      border: "1px solid #e2e8f0",
-                    }}
-                  >
-                    🆔 {currentUser.studentId}
+                  <span style={{ backgroundColor: "#f5f5f4", color: "#57534e", padding: "0.25rem 0.75rem", borderRadius: "9999px", fontSize: "0.75rem", fontWeight: 500 }}>
+                    ID: {currentUser.studentId}
                   </span>
                 )}
-                
-                <span
-                  style={{
-                    backgroundColor: "#eff6ff",
-                    color: "#1d4ed8",
-                    padding: "0.5rem 1rem",
-                    borderRadius: "2rem",
-                    fontSize: "0.875rem",
-                    fontWeight: 500,
-                    border: "1px solid #dbeafe",
-                  }}
-                >
-                  🛡️ Admin Access
-                </span>
-                
-                <span
-                  style={{
-                    backgroundColor: "#f0fdf4",
-                    color: "#166534",
-                    padding: "0.5rem 1rem",
-                    borderRadius: "2rem",
-                    fontSize: "0.875rem",
-                    fontWeight: 500,
-                    border: "1px solid #bbf7d0",
-                  }}
-                >
-                  📅 Joined {formatDate(currentUser.createdAt)}
+                <span style={{ backgroundColor: "#f0fdf4", color: "#166534", padding: "0.25rem 0.75rem", borderRadius: "9999px", fontSize: "0.75rem", fontWeight: 500 }}>
+                  Joined {formatDate(currentUser.createdAt)}
                 </span>
               </div>
             </div>
@@ -433,129 +371,164 @@ export function AdminPage() {
         </motion.section>
       )}
 
-      <section
-        style={{
-          ...cardStyle,
-          padding: "1.25rem 1.4rem",
-          backgroundColor: "#f7f7f8",
-        }}
-      >
-        <h1
-          style={{
-            margin: 0,
-            fontSize: "1.75rem",
-            color: "#1c1917",
-            letterSpacing: "-0.02em",
-          }}
-        >
-          Dashboard Overview
-        </h1>
-        <p style={{ marginTop: "0.5rem", color: "#57534e" }}>
-          Monitor users and review recent account activity.
-        </p>
-      </section>
-
+      {/* Stats Grid */}
       <section
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit,minmax(210px,1fr))",
-          gap: "0.9rem",
+          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+          gap: "1rem",
         }}
       >
-        {statCards.map((card) => (
-          <article key={card.label} style={{ ...cardStyle, padding: "1rem" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
+        {statCards.map((card, index) => (
+          <motion.article
+            key={card.label}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: index * 0.1 }}
+            style={{
+              backgroundColor: "white",
+              borderRadius: "1rem",
+              border: "1px solid #f5f5f4",
+              padding: "1.5rem",
+              boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+              transition: "transform 0.2s, box-shadow 0.2s",
+              cursor: "default",
+            }}
+            onMouseOver={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.06)"; }}
+            onMouseOut={(e) => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 1px 3px rgba(0,0,0,0.04)"; }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
               <div
                 style={{
-                  height: "46px",
-                  width: "46px",
-                  borderRadius: "0.65rem",
+                  height: "48px",
+                  width: "48px",
+                  borderRadius: "0.75rem",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontSize: "1.1rem",
+                  fontSize: "1.25rem",
                   background: card.bg,
                   color: "white",
+                  flexShrink: 0,
                 }}
               >
                 {card.icon}
               </div>
               <div>
-                <p style={{ margin: 0, fontSize: "1.9rem", lineHeight: 1, fontWeight: 700, color: "#1f2937" }}>
+                <p style={{ margin: 0, fontSize: "2rem", lineHeight: 1, fontWeight: 700, color: "#1c1917" }}>
                   {card.value}
                 </p>
-                <p style={{ margin: "0.35rem 0 0", color: "#6b7280", fontSize: "0.86rem" }}>{card.label}</p>
+                <p style={{ margin: "0.25rem 0 0", color: "#78716c", fontSize: "0.8rem", fontWeight: 500 }}>{card.label}</p>
               </div>
             </div>
-          </article>
+          </motion.article>
         ))}
       </section>
 
-      <section style={cardStyle}>
-        <h2 style={{ margin: 0, fontSize: "1.05rem", color: "#292524" }}>
+      <section style={{
+        backgroundColor: "white",
+        borderRadius: "1.25rem",
+        border: "1px solid #f5f5f4",
+        padding: "1.5rem 2rem",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+      }}>
+        <h2 style={{ margin: "0 0 1rem 0", fontSize: "1.05rem", color: "#1c1917", fontWeight: 600 }}>
           Quick Actions
         </h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "0.75rem", marginTop: "0.9rem" }}>
+        <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
           <button 
             onClick={() => setShowAddUserModal(true)}
             style={{
               border: "none",
-              borderRadius: "0.625rem",
-              padding: "0.75rem 1rem",
-              backgroundColor: "#10b981",
+              borderRadius: "0.75rem",
+              padding: "0.625rem 1.25rem",
+              backgroundColor: "#0ea5e9",
               color: "white",
               fontWeight: 600,
               cursor: "pointer",
-              transition: "background-color 0.2s",
+              transition: "all 0.2s",
+              fontSize: "0.875rem",
+              boxShadow: "0 2px 8px rgba(14, 165, 233, 0.25)",
             }}
-            onMouseOver={(e) => e.target.style.backgroundColor = "#059669"}
-            onMouseOut={(e) => e.target.style.backgroundColor = "#10b981"}
+            onMouseOver={(e) => e.target.style.backgroundColor = "#0284c7"}
+            onMouseOut={(e) => e.target.style.backgroundColor = "#0ea5e9"}
           >
             ➕ Add User
           </button>
-          <button onClick={() => handleQuickAction('exportUsers')} style={{ border: "1px solid #d6d3d1", borderRadius: "0.625rem", padding: "0.75rem 1rem", backgroundColor: "white", color: "#44403c", fontWeight: 600, cursor: "pointer" }}>
+          <button onClick={() => handleQuickAction('exportUsers')} style={{ border: "1px solid #e7e5e4", borderRadius: "0.75rem", padding: "0.625rem 1.25rem", backgroundColor: "white", color: "#44403c", fontWeight: 500, cursor: "pointer", fontSize: "0.875rem", transition: "all 0.2s" }}
+            onMouseOver={(e) => { e.currentTarget.style.backgroundColor = "#fafaf9"; e.currentTarget.style.borderColor = "#d6d3d1"; }}
+            onMouseOut={(e) => { e.currentTarget.style.backgroundColor = "white"; e.currentTarget.style.borderColor = "#e7e5e4"; }}
+          >
             📊 Export Users
           </button>
-          <button onClick={() => handleQuickAction('sendNotifications')} style={{ border: "1px solid #d6d3d1", borderRadius: "0.625rem", padding: "0.75rem 1rem", backgroundColor: "white", color: "#44403c", fontWeight: 600, cursor: "pointer" }}>
+          <button onClick={() => handleQuickAction('sendNotifications')} style={{ border: "1px solid #e7e5e4", borderRadius: "0.75rem", padding: "0.625rem 1.25rem", backgroundColor: "white", color: "#44403c", fontWeight: 500, cursor: "pointer", fontSize: "0.875rem", transition: "all 0.2s" }}
+            onMouseOver={(e) => { e.currentTarget.style.backgroundColor = "#fafaf9"; e.currentTarget.style.borderColor = "#d6d3d1"; }}
+            onMouseOut={(e) => { e.currentTarget.style.backgroundColor = "white"; e.currentTarget.style.borderColor = "#e7e5e4"; }}
+          >
             📢 Send Notifications
           </button>
-          <button onClick={() => window.open('/asettings', '_blank')} style={{ border: "1px solid #d6d3d1", borderRadius: "0.625rem", padding: "0.75rem 1rem", backgroundColor: "white", color: "#44403c", fontWeight: 600, cursor: "pointer" }}>
+          <button onClick={() => window.open('/asettings', '_blank')} style={{ border: "1px solid #e7e5e4", borderRadius: "0.75rem", padding: "0.625rem 1.25rem", backgroundColor: "white", color: "#44403c", fontWeight: 500, cursor: "pointer", fontSize: "0.875rem", transition: "all 0.2s" }}
+            onMouseOver={(e) => { e.currentTarget.style.backgroundColor = "#fafaf9"; e.currentTarget.style.borderColor = "#d6d3d1"; }}
+            onMouseOut={(e) => { e.currentTarget.style.backgroundColor = "white"; e.currentTarget.style.borderColor = "#e7e5e4"; }}
+          >
             ⚙️ Settings
           </button>
-          <button onClick={() => window.open('/feedback', '_blank')} style={{ border: "1px solid #3b82f6", borderRadius: "0.625rem", padding: "0.75rem 1rem", backgroundColor: "white", color: "#3b82f6", fontWeight: 600, cursor: "pointer" }}>
+          <button onClick={() => window.open('/feedback', '_blank')} style={{ border: "1px solid #bae6fd", borderRadius: "0.75rem", padding: "0.625rem 1.25rem", backgroundColor: "#f0f9ff", color: "#0369a1", fontWeight: 500, cursor: "pointer", fontSize: "0.875rem", transition: "all 0.2s" }}
+            onMouseOver={(e) => { e.currentTarget.style.backgroundColor = "#e0f2fe"; }}
+            onMouseOut={(e) => { e.currentTarget.style.backgroundColor = "#f0f9ff"; }}
+          >
             📊 Feedback & Reviews
           </button>
         </div>
       </section>
 
-      <section style={cardStyle}>
-        <h2 style={{ margin: 0, fontSize: "1.05rem", color: "#292524" }}>
-          Recent Users ({displayedUsers.length})
+      <section style={{
+        backgroundColor: "white",
+        borderRadius: "1.25rem",
+        border: "1px solid #f5f5f4",
+        padding: "1.5rem 2rem",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+      }}>
+        <h2 style={{ margin: "0 0 1.25rem 0", fontSize: "1.05rem", color: "#1c1917", fontWeight: 600 }}>
+          User Management
+          <span style={{ marginLeft: "0.5rem", fontSize: "0.8rem", fontWeight: 500, color: "#78716c" }}>
+            ({displayedUsers.length} users)
+          </span>
         </h2>
 
-        <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", marginTop: "0.9rem" }}>
+        <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", marginBottom: "1rem" }}>
           <input
             type="text"
-            placeholder="Search by name or email"
+            placeholder="Search by name or email..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             style={{
-              minWidth: "250px",
-              padding: "0.55rem 0.8rem",
-              border: "1px solid #d6d3d1",
-              borderRadius: "0.625rem",
+              flex: "1 1 250px",
+              maxWidth: "350px",
+              padding: "0.625rem 1rem",
+              border: "1px solid #e7e5e4",
+              borderRadius: "0.75rem",
               fontSize: "0.875rem",
+              color: "#1c1917",
+              outline: "none",
+              transition: "border-color 0.2s",
+              boxSizing: "border-box",
             }}
+            onFocus={(e) => e.target.style.borderColor = "#0ea5e9"}
+            onBlur={(e) => e.target.style.borderColor = "#e7e5e4"}
           />
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
             style={{
-              padding: "0.55rem 0.7rem",
-              border: "1px solid #d6d3d1",
-              borderRadius: "0.625rem",
+              padding: "0.625rem 0.75rem",
+              border: "1px solid #e7e5e4",
+              borderRadius: "0.75rem",
               fontSize: "0.875rem",
               backgroundColor: "white",
+              color: "#44403c",
+              cursor: "pointer",
+              outline: "none",
             }}
           >
             <option value="all">All Roles</option>
@@ -567,11 +540,14 @@ export function AdminPage() {
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
             style={{
-              padding: "0.55rem 0.7rem",
-              border: "1px solid #d6d3d1",
-              borderRadius: "0.625rem",
+              padding: "0.625rem 0.75rem",
+              border: "1px solid #e7e5e4",
+              borderRadius: "0.75rem",
               fontSize: "0.875rem",
               backgroundColor: "white",
+              color: "#44403c",
+              cursor: "pointer",
+              outline: "none",
             }}
           >
             <option value="all">All Statuses</option>
@@ -584,60 +560,105 @@ export function AdminPage() {
             onClick={() => setRefreshNonce((n) => n + 1)}
             style={{
               border: "none",
-              borderRadius: "0.625rem",
-              padding: "0.55rem 0.9rem",
-              backgroundColor: "#111827",
+              borderRadius: "0.75rem",
+              padding: "0.625rem 1.25rem",
+              backgroundColor: "#1c1917",
               color: "white",
               fontWeight: 600,
               cursor: "pointer",
+              fontSize: "0.875rem",
+              transition: "background-color 0.2s",
             }}
+            onMouseOver={(e) => e.target.style.backgroundColor = "#292524"}
+            onMouseOut={(e) => e.target.style.backgroundColor = "#1c1917"}
           >
             Refresh
           </button>
         </div>
 
         {error && (
-          <p style={{ marginTop: "0.75rem", color: "#b91c1c", fontSize: "0.88rem" }}>{error}</p>
+          <div style={{ padding: "0.75rem 1rem", backgroundColor: "#fef2f2", border: "1px solid #fecaca", borderRadius: "0.75rem", color: "#dc2626", fontSize: "0.875rem", marginBottom: "1rem" }}>
+            {error}
+          </div>
         )}
         {loading && (
-          <p style={{ marginTop: "0.75rem", color: "#57534e", fontSize: "0.88rem" }}>Loading users...</p>
+          <div style={{ padding: "0.75rem 1rem", backgroundColor: "#f0f9ff", border: "1px solid #bae6fd", borderRadius: "0.75rem", color: "#0369a1", fontSize: "0.875rem", marginBottom: "1rem" }}>
+            Loading users...
+          </div>
         )}
-        <div style={{ marginTop: "1rem", overflowX: "auto" }}>
+
+        <div style={{ overflowX: "auto", borderRadius: "0.75rem", border: "1px solid #f5f5f4" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "760px" }}>
             <thead>
-              <tr style={{ borderBottom: "1px solid #e7e5e4" }}>
-                <th style={{ textAlign: "left", padding: "0.65rem", color: "#78716c", fontSize: "0.82rem" }}>User</th>
-                <th style={{ textAlign: "left", padding: "0.65rem", color: "#78716c", fontSize: "0.82rem" }}>Role</th>
-                <th style={{ textAlign: "left", padding: "0.65rem", color: "#78716c", fontSize: "0.82rem" }}>Status</th>
-                <th style={{ textAlign: "left", padding: "0.65rem", color: "#78716c", fontSize: "0.82rem" }}>Joined</th>
-                <th style={{ textAlign: "right", padding: "0.65rem", color: "#78716c", fontSize: "0.82rem" }}>Actions</th>
+              <tr style={{ backgroundColor: "#fafaf9" }}>
+                <th style={{ textAlign: "left", padding: "0.75rem 1rem", color: "#78716c", fontSize: "0.75rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", borderBottom: "1px solid #f5f5f4" }}>User</th>
+                <th style={{ textAlign: "left", padding: "0.75rem 1rem", color: "#78716c", fontSize: "0.75rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", borderBottom: "1px solid #f5f5f4" }}>Role</th>
+                <th style={{ textAlign: "left", padding: "0.75rem 1rem", color: "#78716c", fontSize: "0.75rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", borderBottom: "1px solid #f5f5f4" }}>Status</th>
+                <th style={{ textAlign: "left", padding: "0.75rem 1rem", color: "#78716c", fontSize: "0.75rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", borderBottom: "1px solid #f5f5f4" }}>Joined</th>
+                <th style={{ textAlign: "right", padding: "0.75rem 1rem", color: "#78716c", fontSize: "0.75rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", borderBottom: "1px solid #f5f5f4" }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {displayedUsers.map((user) => {
                 const status = user.isActive ? (user.isEmailVerified ? "active" : "pending") : "suspended";
+                const userName = `${user.firstName || ""} ${user.lastName || ""}`.trim() || "-";
+                const initials = `${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}`.toUpperCase() || "?";
                 return (
-                <tr key={user._id} style={{ borderBottom: "1px solid #f5f5f4" }}>
-                  <td style={{ padding: "0.8rem 0.65rem" }}>
-                    <p style={{ margin: 0, color: "#1c1917", fontWeight: 600, fontSize: "0.88rem" }}>
-                      {`${user.firstName || ""} ${user.lastName || ""}`.trim() || "-"}
-                    </p>
-                    <p style={{ margin: "0.2rem 0 0", color: "#78716c", fontSize: "0.8rem" }}>{user.email || "-"}</p>
+                <tr
+                  key={user._id}
+                  style={{ borderBottom: "1px solid #f5f5f4", transition: "background-color 0.15s" }}
+                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = "#fafaf9"}
+                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                >
+                  <td style={{ padding: "0.875rem 1rem" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                      <div style={{
+                        width: "36px",
+                        height: "36px",
+                        borderRadius: "0.5rem",
+                        backgroundColor: user.role === "admin" ? "#0ea5e9" : user.role === "counselor" ? "#10b981" : "#8b5cf6",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "white",
+                        fontSize: "0.75rem",
+                        fontWeight: 700,
+                        flexShrink: 0,
+                      }}>
+                        {initials}
+                      </div>
+                      <div>
+                        <p style={{ margin: 0, color: "#1c1917", fontWeight: 600, fontSize: "0.875rem" }}>
+                          {userName}
+                        </p>
+                        <p style={{ margin: "0.125rem 0 0", color: "#a8a29e", fontSize: "0.8rem" }}>{user.email || "-"}</p>
+                      </div>
+                    </div>
                   </td>
-                  <td style={{ padding: "0.8rem 0.65rem", color: "#44403c", fontSize: "0.86rem", textTransform: "capitalize" }}>
-                    {user.role}
+                  <td style={{ padding: "0.875rem 1rem" }}>
+                    <span style={{
+                      padding: "0.2rem 0.6rem",
+                      borderRadius: "9999px",
+                      fontSize: "0.75rem",
+                      fontWeight: 600,
+                      textTransform: "capitalize",
+                      backgroundColor: user.role === "admin" ? "#f0f9ff" : user.role === "counselor" ? "#f0fdf4" : "#faf5ff",
+                      color: user.role === "admin" ? "#0369a1" : user.role === "counselor" ? "#166534" : "#7c3aed",
+                    }}>
+                      {user.role}
+                    </span>
                   </td>
-                  <td style={{ padding: "0.8rem 0.65rem" }}>
+                  <td style={{ padding: "0.875rem 1rem" }}>
                     <span
                       style={{
-                        borderRadius: "999px",
-                        padding: "0.2rem 0.55rem",
-                        fontSize: "0.74rem",
-                        fontWeight: 700,
+                        borderRadius: "9999px",
+                        padding: "0.2rem 0.6rem",
+                        fontSize: "0.75rem",
+                        fontWeight: 600,
                         textTransform: "capitalize",
                         backgroundColor:
                           status === "active"
-                            ? "#ecfdf5"
+                            ? "#f0fdf4"
                             : status === "pending"
                               ? "#fffbeb"
                               : "#fef2f2",
@@ -652,50 +673,62 @@ export function AdminPage() {
                       {status}
                     </span>
                   </td>
-                  <td style={{ padding: "0.8rem 0.65rem", color: "#57534e", fontSize: "0.85rem" }}>
+                  <td style={{ padding: "0.875rem 1rem", color: "#78716c", fontSize: "0.85rem" }}>
                     {formatDate(user.createdAt)}
                   </td>
-                  <td style={{ padding: "0.8rem 0.65rem", textAlign: "right" }}>
-                    <div style={{ display: "inline-flex", gap: "0.4rem" }}>
+                  <td style={{ padding: "0.875rem 1rem", textAlign: "right" }}>
+                    <div style={{ display: "inline-flex", gap: "0.375rem" }}>
                       <button
                         onClick={() => handleViewProfile(user._id)}
                         style={{
-                          border: "1px solid #3b82f6",
+                          border: "1px solid #bae6fd",
                           borderRadius: "0.5rem",
-                          padding: "0.34rem 0.6rem",
-                          backgroundColor: "#3b82f6",
-                          color: "white",
+                          padding: "0.3rem 0.65rem",
+                          backgroundColor: "#f0f9ff",
+                          color: "#0369a1",
                           fontSize: "0.8rem",
+                          fontWeight: 500,
                           cursor: "pointer",
+                          transition: "all 0.15s",
                         }}
+                        onMouseOver={(e) => { e.currentTarget.style.backgroundColor = "#e0f2fe"; }}
+                        onMouseOut={(e) => { e.currentTarget.style.backgroundColor = "#f0f9ff"; }}
                       >
                         View
                       </button>
                       <button
                         onClick={() => handleViewProfile(user._id)}
                         style={{
-                          border: "1px solid #3b82f6",
+                          border: "1px solid #bae6fd",
                           borderRadius: "0.5rem",
-                          padding: "0.34rem 0.6rem",
-                          backgroundColor: "#3b82f6",
-                          color: "white",
+                          padding: "0.3rem 0.65rem",
+                          backgroundColor: "#f0f9ff",
+                          color: "#0369a1",
                           fontSize: "0.8rem",
+                          fontWeight: 500,
                           cursor: "pointer",
+                          transition: "all 0.15s",
                         }}
+                        onMouseOver={(e) => { e.currentTarget.style.backgroundColor = "#e0f2fe"; }}
+                        onMouseOut={(e) => { e.currentTarget.style.backgroundColor = "#f0f9ff"; }}
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => handleDeleteUser(user._id, `${user.firstName} ${user.lastName}`)}
                         style={{
-                          border: "1px solid #dc2626",
+                          border: "1px solid #fecaca",
                           borderRadius: "0.5rem",
-                          padding: "0.34rem 0.6rem",
-                          backgroundColor: "#dc2626",
-                          color: "white",
+                          padding: "0.3rem 0.65rem",
+                          backgroundColor: "#fef2f2",
+                          color: "#dc2626",
                           fontSize: "0.8rem",
+                          fontWeight: 500,
                           cursor: "pointer",
+                          transition: "all 0.15s",
                         }}
+                        onMouseOver={(e) => { e.currentTarget.style.backgroundColor = "#fee2e2"; }}
+                        onMouseOut={(e) => { e.currentTarget.style.backgroundColor = "#fef2f2"; }}
                       >
                         Delete
                       </button>
@@ -706,8 +739,8 @@ export function AdminPage() {
               })}
               {!loading && displayedUsers.length === 0 && (
                 <tr>
-                  <td colSpan={5} style={{ padding: "1rem", textAlign: "center", color: "#78716c" }}>
-                    No users found.
+                  <td colSpan={5} style={{ padding: "3rem 1rem", textAlign: "center", color: "#a8a29e", fontSize: "0.875rem" }}>
+                    No users found matching your criteria.
                   </td>
                 </tr>
               )}
@@ -725,7 +758,8 @@ export function AdminPage() {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: "rgba(0,0,0,0.5)",
+            backgroundColor: "rgba(0,0,0,0.4)",
+            backdropFilter: "blur(4px)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -734,33 +768,31 @@ export function AdminPage() {
           onClick={() => setShowProfileModal(false)}
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
             onClick={(e) => e.stopPropagation()}
             style={{
               backgroundColor: "white",
-              borderRadius: "1rem",
+              borderRadius: "1.25rem",
               padding: "2rem",
               width: "90%",
               maxWidth: "500px",
               maxHeight: "80vh",
-              overflowY: "auto"
+              overflowY: "auto",
+              boxShadow: "0 24px 48px rgba(0,0,0,0.12)",
             }}
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-              <h2 style={{ margin: 0, fontSize: "1.25rem", color: "#1c1917" }}>
-                User Profile
+              <h2 style={{ margin: 0, fontSize: "1.25rem", color: "#1c1917", fontWeight: 700 }}>
+                Edit User Profile
               </h2>
               <button
                 onClick={() => setShowProfileModal(false)}
-                style={{
-                  border: "none",
-                  background: "none",
-                  fontSize: "1.5rem",
-                  cursor: "pointer",
-                  color: "#6b7280"
-                }}
+                style={{ border: "none", background: "#f5f5f4", width: "32px", height: "32px", borderRadius: "0.5rem", fontSize: "1.25rem", cursor: "pointer", color: "#78716c", display: "flex", alignItems: "center", justifyContent: "center", transition: "background-color 0.15s" }}
+                onMouseOver={(e) => e.currentTarget.style.backgroundColor = "#e7e5e4"}
+                onMouseOut={(e) => e.currentTarget.style.backgroundColor = "#f5f5f4"}
               >
                 ×
               </button>
@@ -768,23 +800,19 @@ export function AdminPage() {
 
             <div style={{ display: "grid", gap: "1rem", marginBottom: "1.5rem" }}>
               <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                <label style={{ fontSize: "0.875rem", fontWeight: 500, color: "#44403c" }}>First Name</label>
+                <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "#57534e", textTransform: "uppercase", letterSpacing: "0.05em" }}>First Name</label>
                 <input
                   type="text"
                   value={selectedUser.firstName || ""}
                   onChange={(e) => setSelectedUser({...selectedUser, firstName: e.target.value})}
-                  style={{
-                    width: "100%",
-                    padding: "0.75rem",
-                    border: "1px solid #d6d3d1",
-                    borderRadius: "0.5rem",
-                    fontSize: "0.875rem"
-                  }}
+                  style={{ width: "100%", padding: "0.625rem 0.875rem", border: "1px solid #e7e5e4", borderRadius: "0.75rem", fontSize: "0.875rem", color: "#1c1917", outline: "none", boxSizing: "border-box", transition: "border-color 0.2s" }}
+                  onFocus={(e) => e.target.style.borderColor = "#0ea5e9"}
+                  onBlur={(e) => e.target.style.borderColor = "#e7e5e4"}
                 />
               </div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                <label style={{ fontSize: "0.875rem", fontWeight: 500, color: "#44403c" }}>Last Name</label>
+                <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "#57534e", textTransform: "uppercase", letterSpacing: "0.05em" }}>Last Name</label>
                 <input
                   type="text"
                   value={selectedUser.lastName || ""}
@@ -800,7 +828,7 @@ export function AdminPage() {
               </div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                <label style={{ fontSize: "0.875rem", fontWeight: 500, color: "#44403c" }}>Email</label>
+                <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "#57534e", textTransform: "uppercase", letterSpacing: "0.05em" }}>Email</label>
                 <input
                   type="email"
                   value={selectedUser.email || ""}
@@ -816,7 +844,7 @@ export function AdminPage() {
               </div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                <label style={{ fontSize: "0.875rem", fontWeight: 500, color: "#44403c" }}>Role</label>
+                <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "#57534e", textTransform: "uppercase", letterSpacing: "0.05em" }}>Role</label>
                 <select
                   value={selectedUser.role || ""}
                   onChange={(e) => setSelectedUser({...selectedUser, role: e.target.value})}
@@ -837,7 +865,7 @@ export function AdminPage() {
 
               {selectedUser.role === 'student' && (
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                  <label style={{ fontSize: "0.875rem", fontWeight: 500, color: "#44403c" }}>Student ID</label>
+                  <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "#57534e", textTransform: "uppercase", letterSpacing: "0.05em" }}>Student ID</label>
                   <input
                     type="text"
                     value={selectedUser.studentId || ""}
@@ -903,7 +931,8 @@ export function AdminPage() {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: "rgba(0,0,0,0.5)",
+            backgroundColor: "rgba(0,0,0,0.4)",
+            backdropFilter: "blur(4px)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -911,31 +940,31 @@ export function AdminPage() {
           }}
           onClick={() => setShowAddUserModal(false)}
         >
-          <div
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
             style={{
               backgroundColor: "white",
-              borderRadius: "1rem",
+              borderRadius: "1.25rem",
               padding: "2rem",
               width: "90%",
               maxWidth: "500px",
               maxHeight: "80vh",
-              overflowY: "auto"
+              overflowY: "auto",
+              boxShadow: "0 24px 48px rgba(0,0,0,0.12)",
             }}
             onClick={(e) => e.stopPropagation()}
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-              <h2 style={{ margin: 0, fontSize: "1.25rem", color: "#1c1917" }}>
+              <h2 style={{ margin: 0, fontSize: "1.25rem", color: "#1c1917", fontWeight: 700 }}>
                 Add New User
               </h2>
               <button
                 onClick={() => setShowAddUserModal(false)}
-                style={{
-                  border: "none",
-                  background: "none",
-                  fontSize: "1.5rem",
-                  cursor: "pointer",
-                  color: "#6b7280"
-                }}
+                style={{ border: "none", background: "#f5f5f4", width: "32px", height: "32px", borderRadius: "0.5rem", fontSize: "1.25rem", cursor: "pointer", color: "#78716c", display: "flex", alignItems: "center", justifyContent: "center", transition: "background-color 0.15s" }}
+                onMouseOver={(e) => e.currentTarget.style.backgroundColor = "#e7e5e4"}
+                onMouseOut={(e) => e.currentTarget.style.backgroundColor = "#f5f5f4"}
               >
                 ×
               </button>
@@ -943,91 +972,69 @@ export function AdminPage() {
 
             <div style={{ display: "grid", gap: "1rem", marginBottom: "1.5rem" }}>
               <div>
-                <label style={{ display: "block", marginBottom: "0.25rem", fontSize: "0.875rem", color: "#374151", fontWeight: 500 }}>
+                <label style={{ display: "block", marginBottom: "0.375rem", fontSize: "0.8rem", color: "#57534e", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
                   First Name
                 </label>
                 <input
                   type="text"
                   value={newUser.firstName}
                   onChange={(e) => setNewUser({...newUser, firstName: e.target.value})}
-                  style={{
-                    width: "100%",
-                    padding: "0.5rem",
-                    border: "1px solid #d1d5db",
-                    borderRadius: "0.375rem",
-                    fontSize: "0.875rem"
-                  }}
+                  style={{ width: "100%", padding: "0.625rem 0.875rem", border: "1px solid #e7e5e4", borderRadius: "0.75rem", fontSize: "0.875rem", color: "#1c1917", outline: "none", boxSizing: "border-box", transition: "border-color 0.2s" }}
+                  onFocus={(e) => e.target.style.borderColor = "#0ea5e9"}
+                  onBlur={(e) => e.target.style.borderColor = "#e7e5e4"}
                   placeholder="Enter first name"
                 />
               </div>
               <div>
-                <label style={{ display: "block", marginBottom: "0.25rem", fontSize: "0.875rem", color: "#374151", fontWeight: 500 }}>
+                <label style={{ display: "block", marginBottom: "0.375rem", fontSize: "0.8rem", color: "#57534e", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
                   Last Name
                 </label>
                 <input
                   type="text"
                   value={newUser.lastName}
                   onChange={(e) => setNewUser({...newUser, lastName: e.target.value})}
-                  style={{
-                    width: "100%",
-                    padding: "0.5rem",
-                    border: "1px solid #d1d5db",
-                    borderRadius: "0.375rem",
-                    fontSize: "0.875rem"
-                  }}
+                  style={{ width: "100%", padding: "0.625rem 0.875rem", border: "1px solid #e7e5e4", borderRadius: "0.75rem", fontSize: "0.875rem", color: "#1c1917", outline: "none", boxSizing: "border-box", transition: "border-color 0.2s" }}
+                  onFocus={(e) => e.target.style.borderColor = "#0ea5e9"}
+                  onBlur={(e) => e.target.style.borderColor = "#e7e5e4"}
                   placeholder="Enter last name"
                 />
               </div>
               <div>
-                <label style={{ display: "block", marginBottom: "0.25rem", fontSize: "0.875rem", color: "#374151", fontWeight: 500 }}>
+                <label style={{ display: "block", marginBottom: "0.375rem", fontSize: "0.8rem", color: "#57534e", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
                   Email
                 </label>
                 <input
                   type="email"
                   value={newUser.email}
                   onChange={(e) => setNewUser({...newUser, email: e.target.value})}
-                  style={{
-                    width: "100%",
-                    padding: "0.5rem",
-                    border: "1px solid #d1d5db",
-                    borderRadius: "0.375rem",
-                    fontSize: "0.875rem"
-                  }}
+                  style={{ width: "100%", padding: "0.625rem 0.875rem", border: "1px solid #e7e5e4", borderRadius: "0.75rem", fontSize: "0.875rem", color: "#1c1917", outline: "none", boxSizing: "border-box", transition: "border-color 0.2s" }}
+                  onFocus={(e) => e.target.style.borderColor = "#0ea5e9"}
+                  onBlur={(e) => e.target.style.borderColor = "#e7e5e4"}
                   placeholder="Enter email address"
                 />
               </div>
               <div>
-                <label style={{ display: "block", marginBottom: "0.25rem", fontSize: "0.875rem", color: "#374151", fontWeight: 500 }}>
+                <label style={{ display: "block", marginBottom: "0.375rem", fontSize: "0.8rem", color: "#57534e", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
                   Password
                 </label>
                 <input
                   type="password"
                   value={newUser.password}
                   onChange={(e) => setNewUser({...newUser, password: e.target.value})}
-                  style={{
-                    width: "100%",
-                    padding: "0.5rem",
-                    border: "1px solid #d1d5db",
-                    borderRadius: "0.375rem",
-                    fontSize: "0.875rem"
-                  }}
+                  style={{ width: "100%", padding: "0.625rem 0.875rem", border: "1px solid #e7e5e4", borderRadius: "0.75rem", fontSize: "0.875rem", color: "#1c1917", outline: "none", boxSizing: "border-box", transition: "border-color 0.2s" }}
+                  onFocus={(e) => e.target.style.borderColor = "#0ea5e9"}
+                  onBlur={(e) => e.target.style.borderColor = "#e7e5e4"}
                   placeholder="Enter password"
                 />
               </div>
               <div>
-                <label style={{ display: "block", marginBottom: "0.25rem", fontSize: "0.875rem", color: "#374151", fontWeight: 500 }}>
+                <label style={{ display: "block", marginBottom: "0.375rem", fontSize: "0.8rem", color: "#57534e", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
                   Role
                 </label>
                 <select
                   value={newUser.role}
                   onChange={(e) => setNewUser({...newUser, role: e.target.value})}
-                  style={{
-                    width: "100%",
-                    padding: "0.5rem",
-                    border: "1px solid #d1d5db",
-                    borderRadius: "0.375rem",
-                    fontSize: "0.875rem"
-                  }}
+                  style={{ width: "100%", padding: "0.625rem 0.875rem", border: "1px solid #e7e5e4", borderRadius: "0.75rem", fontSize: "0.875rem", backgroundColor: "white", color: "#1c1917", cursor: "pointer", outline: "none" }}
                 >
                   <option value="student">Student</option>
                   <option value="counselor">Counselor</option>
@@ -1036,57 +1043,41 @@ export function AdminPage() {
               </div>
               {(newUser.role === 'student') && (
                 <div>
-                  <label style={{ display: "block", marginBottom: "0.25rem", fontSize: "0.875rem", color: "#374151", fontWeight: 500 }}>
+                  <label style={{ display: "block", marginBottom: "0.375rem", fontSize: "0.8rem", color: "#57534e", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
                     Student ID
                   </label>
                   <input
                     type="text"
                     value={newUser.studentId}
                     onChange={(e) => setNewUser({...newUser, studentId: e.target.value})}
-                    style={{
-                      width: "100%",
-                      padding: "0.5rem",
-                      border: "1px solid #d1d5db",
-                      borderRadius: "0.375rem",
-                      fontSize: "0.875rem"
-                    }}
+                    style={{ width: "100%", padding: "0.625rem 0.875rem", border: "1px solid #e7e5e4", borderRadius: "0.75rem", fontSize: "0.875rem", color: "#1c1917", outline: "none", boxSizing: "border-box", transition: "border-color 0.2s" }}
+                    onFocus={(e) => e.target.style.borderColor = "#0ea5e9"}
+                    onBlur={(e) => e.target.style.borderColor = "#e7e5e4"}
                     placeholder="Enter student ID"
                   />
                 </div>
               )}
             </div>
 
-            <div style={{ display: "flex", gap: "1rem", justifyContent: "flex-end" }}>
+            <div style={{ display: "flex", gap: "0.75rem", justifyContent: "flex-end" }}>
               <button
                 onClick={() => setShowAddUserModal(false)}
-                style={{
-                  border: "1px solid #d6d3d1",
-                  borderRadius: "0.5rem",
-                  padding: "0.75rem 1.5rem",
-                  backgroundColor: "white",
-                  color: "#44403c",
-                  fontSize: "0.875rem",
-                  cursor: "pointer"
-                }}
+                style={{ border: "1px solid #e7e5e4", borderRadius: "0.75rem", padding: "0.625rem 1.25rem", backgroundColor: "white", color: "#57534e", fontSize: "0.875rem", fontWeight: 500, cursor: "pointer", transition: "all 0.15s" }}
+                onMouseOver={(e) => e.currentTarget.style.backgroundColor = "#fafaf9"}
+                onMouseOut={(e) => e.currentTarget.style.backgroundColor = "white"}
               >
                 Cancel
               </button>
               <button
                 onClick={handleAddUser}
-                style={{
-                  border: "1px solid #10b981",
-                  borderRadius: "0.5rem",
-                  padding: "0.75rem 1.5rem",
-                  backgroundColor: "#10b981",
-                  color: "white",
-                  fontSize: "0.875rem",
-                  cursor: "pointer"
-                }}
+                style={{ border: "none", borderRadius: "0.75rem", padding: "0.625rem 1.25rem", backgroundColor: "#10b981", color: "white", fontSize: "0.875rem", fontWeight: 600, cursor: "pointer", transition: "all 0.15s", boxShadow: "0 2px 8px rgba(16, 185, 129, 0.25)" }}
+                onMouseOver={(e) => e.currentTarget.style.backgroundColor = "#059669"}
+                onMouseOut={(e) => e.currentTarget.style.backgroundColor = "#10b981"}
               >
                 Add User
               </button>
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
     </div>
