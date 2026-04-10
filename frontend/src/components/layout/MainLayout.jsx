@@ -253,10 +253,22 @@ export function MainLayout() {
                       style={{
                         display: "flex",
                         alignItems: "center",
-                        gap: "0.75rem",
-                        cursor: "default",
+                        gap: "1.25rem",
                       }}
                     >
+                      <Link
+                        to="/profile"
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.75rem",
+                          cursor: "pointer",
+                          textDecoration: "none",
+                          transition: "opacity 0.2s"
+                        }}
+                        onMouseOver={(e) => e.currentTarget.style.opacity = 0.8}
+                        onMouseOut={(e) => e.currentTarget.style.opacity = 1}
+                      >
                       <div style={{ textAlign: "right" }}>
                         <p
                           style={{
@@ -278,17 +290,19 @@ export function MainLayout() {
                           display: "inline-flex",
                           alignItems: "center",
                           justifyContent: "center",
-                          height: "2rem",
-                          width: "2rem",
+                          height: "2.25rem",
+                          width: "2.25rem",
                           borderRadius: "50%",
-                          backgroundColor: "#e7e5e4",
-                          color: "#57534e",
+                          background: "linear-gradient(135deg, #0ea5e9, #38bdf8)",
+                          color: "white",
                           fontSize: "0.875rem",
                           fontWeight: "bold",
+                          boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
                         }}
                       >
                         {userInitials}
                       </div>
+                    </Link>
                       <button
                         onClick={handleLogout}
                         style={{

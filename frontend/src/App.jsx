@@ -7,6 +7,7 @@ import { UsersPage } from "./pages/UsersPage";
 import { ProfileSettings } from "./pages/ProfileSettings";
 import { AdminPage } from "./pages/AdminPage";
 import { FeedbackReviews } from "./pages/FeedbackReviews";
+import { StudentProfile } from "./pages/StudentProfile";
 import { AMainLayout } from "./components/layout/AMainLayout.jsx";
 import { ADashboardLayout } from "./components/layout/ADashboardLayout.jsx";
 
@@ -67,6 +68,7 @@ export function App() {
           <Route path="/resources" element={<Resources />} />
           <Route path="/quiz" element={<Quiz />} />
           <Route path="/feedback" element={<FeedbackPage />} />
+          <Route path="/profile" element={<StudentProfile />} />
         </Route>
 
         {/* Counselor specific Routes / Counselor View */}
