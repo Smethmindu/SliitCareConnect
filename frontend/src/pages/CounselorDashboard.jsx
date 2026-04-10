@@ -102,9 +102,15 @@ export function CounselorDashboard() {
             // Store all bookings for stat calculations
             setAllBookings(bookings);
             
-            // Map all upcoming to todaySessions and pending to pendingRequests
-            const upcoming = bookings
-              .filter(b => b.status !== "cancelled" && b.status !== "completed")
+            // Filter TODAY's confirmed sessions only for "Today's Schedule"
+            const todayStr = new Date().toISOString().split("T")[0];
+            const todayConfirmed = bookings
+              .filter(b => {
+                if (b.status === "cancelled" || b.status === "completed") return false;
+                // Only show bookings whose date matches today
+                const bookingDate = b.date ? new Date(b.date).toISOString().split("T")[0] : "";
+                return bookingDate === todayStr;
+              })
               .map(b => ({
                 id: b._id,
                 patient: b.studentName || "Student",
@@ -114,7 +120,7 @@ export function CounselorDashboard() {
                 avatar: "https://i.pravatar.cc/150?u=" + b.studentId,
               }));
               
-            setTodaySessions(upcoming);
+            setTodaySessions(todayConfirmed);
             
             const pending = bookings
               .filter(b => b.status === "pending")

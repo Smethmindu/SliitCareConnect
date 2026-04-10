@@ -199,15 +199,44 @@ export const getAllFeedbackAdmin = async (req, res) => {
       return res.status(403).json({ message: "Only admins can view all feedback" });
     }
 
-    const feedbackList = await Feedback.find()
-      .populate("studentId", "firstName lastName")
-      .populate("counselorId", "firstName lastName")
-      .sort({ createdAt: -1 });
+    const feedbackList = await Feedback.find().sort({ createdAt: -1 }).lean();
+
+    // Manually resolve counselor and student names since the schema uses plain strings
+    const { User } = await import('../models/User.js');
+    const Counselor = (await import('../models/counselorModel.js')).default;
+
+    const enriched = await Promise.all(
+      feedbackList.map(async (fb) => {
+        // Look up counselor name
+        let counselorName = "Unknown Counselor";
+        if (fb.counselorId) {
+          try {
+            const counselor = await Counselor.findById(fb.counselorId).select('name');
+            if (counselor) counselorName = counselor.name;
+          } catch (e) { /* invalid id format */ }
+        }
+
+        // Look up student name
+        let studentName = "Anonymous User";
+        if (!fb.isAnonymous && fb.studentId) {
+          try {
+            const student = await User.findById(fb.studentId).select('firstName lastName');
+            if (student) studentName = `${student.firstName} ${student.lastName}`;
+          } catch (e) { /* invalid id format */ }
+        }
+
+        return {
+          ...fb,
+          counselorName,
+          studentName,
+        };
+      })
+    );
 
     return res.status(200).json({
       success: true,
-      totalFeedbacks: feedbackList.length,
-      feedbacks: feedbackList,
+      totalFeedbacks: enriched.length,
+      feedbacks: enriched,
     });
   } catch (err) {
     console.error(err);

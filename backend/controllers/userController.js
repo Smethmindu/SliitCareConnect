@@ -236,6 +236,12 @@ export const deleteUser = async (req, res) => {
       });
     }
     
+    // If user is a counselor, also delete the linked Counselor profile
+    if (user.role === 'counselor') {
+      await Counselor.findOneAndDelete({ userId: user._id });
+      console.log(`Deleted linked counselor profile for user ${user._id}`);
+    }
+    
     await User.findByIdAndDelete(req.params.id);
     
     res.json({

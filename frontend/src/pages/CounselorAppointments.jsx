@@ -91,9 +91,9 @@ export function CounselorAppointments() {
             else if (Array.isArray(bookingsData.data?.bookings)) fetchedBookings = bookingsData.data.bookings;
             else if (Array.isArray(bookingsData.bookings)) fetchedBookings = bookingsData.bookings;
             
-            // Filter only approved appointments
-            const approved = fetchedBookings
-              .filter(b => b.status === "confirmed")
+            // Show all non-cancelled appointments
+            const activeBookings = fetchedBookings
+              .filter(b => b.status !== "cancelled")
               .map(b => {
                  let typeDisplay = "Video Call";
                  if (b.sessionType === "in-person") typeDisplay = "In-Person";
@@ -105,12 +105,13 @@ export function CounselorAppointments() {
                     type: typeDisplay,
                     patient: b.studentName || "Student",
                     time: b.time,
+                    status: b.status || "pending",
                     notes: b.notes || "No additional notes.",
                     avatar: "https://i.pravatar.cc/150?u=" + b.studentId,
                  };
               });
               
-            setAppointments(approved);
+            setAppointments(activeBookings);
           }
         }
       } catch (err) {

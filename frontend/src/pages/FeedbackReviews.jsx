@@ -44,7 +44,7 @@ export function FeedbackReviews() {
       return acc;
     }, {});
     const counselorStats = feedbacks.reduce((acc, review) => {
-      const name = review.counselorId ? `${review.counselorId.firstName} ${review.counselorId.lastName}` : "Unknown Counselor";
+      const name = review.counselorName || "Unknown Counselor";
       acc[name] = (acc[name] || 0) + 1;
       return acc;
     }, {});
@@ -388,8 +388,8 @@ export function FeedbackReviews() {
             </thead>
             <tbody>
               {feedbacks.slice(0, 10).map((review) => {
-                const sName = review.isAnonymous ? "Anonymous User" : (review.studentId ? `${review.studentId.firstName} ${review.studentId.lastName}` : "Unknown Student");
-                const cName = review.counselorId ? `${review.counselorId.firstName} ${review.counselorId.lastName}` : "Unknown Counselor";
+                const sName = review.studentName || "Anonymous User";
+                const cName = review.counselorName || "Unknown Counselor";
                 const cat = review.survey?.primaryReason || review.tags?.[0] || 'General';
                 return (
                   <tr key={review._id} style={{ borderBottom: "1px solid #e5e7eb" }}>
