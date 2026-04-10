@@ -17,6 +17,14 @@ router.post(
   feedbackController.createFeedback
 );
 
+// Get all feedback for admin
+router.get(
+  "/admin/all",
+  authenticate,
+  authorize("admin"),
+  feedbackController.getAllFeedbackAdmin
+);
+
 // View all feedback for a specific counselor
 router.get(
   "/counselor/:counselorId",

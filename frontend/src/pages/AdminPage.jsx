@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { LogOutIcon, UserIcon, SettingsIcon, BellIcon } from "lucide-react";
+import { LogOutIcon, UserIcon, SettingsIcon, BellIcon, Users, UserCheck, Briefcase, Clock } from "lucide-react";
 
 const API_BASE_URL = "http://localhost:3000/api";
 
@@ -119,10 +119,10 @@ export function AdminPage() {
   const pendingUsers = users.filter((u) => u.isEmailVerified === false).length;
 
   const statCards = [
-    { label: "Total Users", value: totalUsers, icon: "👥", bg: "linear-gradient(135deg,#5b67d8,#7f8cff)" },
-    { label: "Active Users", value: activeUsers, icon: "✅", bg: "linear-gradient(135deg,#ff5ca8,#ff8cc4)" },
-    { label: "Counselors", value: counselors, icon: "🏢", bg: "linear-gradient(135deg,#2fc8ff,#6adfff)" },
-    { label: "Pending Requests", value: pendingUsers, icon: "⏳", bg: "linear-gradient(135deg,#ff8f70,#ffd85f)" },
+    { label: "Total Users", value: totalUsers, icon: <Users size={20} />, bg: "linear-gradient(135deg,#5b67d8,#7f8cff)" },
+    { label: "Active Users", value: activeUsers, icon: <UserCheck size={20} />, bg: "linear-gradient(135deg,#ff5ca8,#ff8cc4)" },
+    { label: "Counselors", value: counselors, icon: <Briefcase size={20} />, bg: "linear-gradient(135deg,#2fc8ff,#6adfff)" },
+    { label: "Pending Requests", value: pendingUsers, icon: <Clock size={20} />, bg: "linear-gradient(135deg,#ff8f70,#ffd85f)" },
   ];
 
   const handleViewProfile = async (userId) => {
@@ -473,7 +473,7 @@ export function AdminPage() {
           >
             ⚙️ Settings
           </button>
-          <button onClick={() => window.open('/feedback', '_blank')} style={{ border: "1px solid #bae6fd", borderRadius: "0.75rem", padding: "0.625rem 1.25rem", backgroundColor: "#f0f9ff", color: "#0369a1", fontWeight: 500, cursor: "pointer", fontSize: "0.875rem", transition: "all 0.2s" }}
+          <button onClick={() => window.open('/admin/feedback', '_blank')} style={{ border: "1px solid #bae6fd", borderRadius: "0.75rem", padding: "0.625rem 1.25rem", backgroundColor: "#f0f9ff", color: "#0369a1", fontWeight: 500, cursor: "pointer", fontSize: "0.875rem", transition: "all 0.2s" }}
             onMouseOver={(e) => { e.currentTarget.style.backgroundColor = "#e0f2fe"; }}
             onMouseOut={(e) => { e.currentTarget.style.backgroundColor = "#f0f9ff"; }}
           >

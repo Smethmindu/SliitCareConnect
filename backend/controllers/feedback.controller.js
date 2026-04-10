@@ -191,3 +191,26 @@ export const deleteFeedback = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
+
+export const getAllFeedbackAdmin = async (req, res) => {
+  try {
+    const role = req.user.role;
+    if (role !== "admin") {
+      return res.status(403).json({ message: "Only admins can view all feedback" });
+    }
+
+    const feedbackList = await Feedback.find()
+      .populate("studentId", "firstName lastName")
+      .populate("counselorId", "firstName lastName")
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      totalFeedbacks: feedbackList.length,
+      feedbacks: feedbackList,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+};

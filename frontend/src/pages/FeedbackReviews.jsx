@@ -4,34 +4,70 @@ import { motion } from "framer-motion";
 export function FeedbackReviews() {
   const [activeTab, setActiveTab] = useState("overview");
   const [timeRange, setTimeRange] = useState("month");
+  const [feedbacks, setFeedbacks] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Dummy data for demonstration
-  const dummyReviews = [
-    { id: 1, student: "Alice Johnson", counselor: "Dr. Sarah Smith", rating: 5, date: "2024-03-15", category: "Academic Support", comment: "Excellent counseling session, very helpful!" },
-    { id: 2, student: "Bob Williams", counselor: "Dr. John Davis", rating: 4, date: "2024-03-14", category: "Personal Issues", comment: "Good session, but could be more focused." },
-    { id: 3, student: "Carol Brown", counselor: "Dr. Emily Wilson", rating: 5, date: "2024-03-13", category: "Career Guidance", comment: "Very professional and insightful." },
-    { id: 4, student: "David Miller", counselor: "Dr. Michael Taylor", rating: 3, date: "2024-03-12", category: "Academic Support", comment: "Average session, needs improvement." },
-    { id: 5, student: "Eva Davis", counselor: "Dr. Sarah Smith", rating: 5, date: "2024-03-11", category: "Personal Issues", comment: "Outstanding support and guidance." },
-    { id: 6, student: "Frank Wilson", counselor: "Dr. John Davis", rating: 4, date: "2024-03-10", category: "Career Guidance", comment: "Helpful career advice." },
-    { id: 7, student: "Grace Johnson", counselor: "Dr. Emily Wilson", rating: 5, date: "2024-03-09", category: "Academic Support", comment: "Amazing counselor, very understanding." },
-    { id: 8, student: "Henry Brown", counselor: "Dr. Michael Taylor", rating: 4, date: "2024-03-08", category: "Personal Issues", comment: "Good experience overall." }
-  ];
+  useEffect(() => {
+    const fetchFeedbacks = async () => {
+      try {
+        const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+        const res = await fetch("/api/feedback/admin/all", {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setFeedbacks(data.feedbacks || []);
+        }
+      } catch (err) {
+        console.error("Error fetching admin feedbacks:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchFeedbacks();
+  }, []);
 
-  // Calculate statistics from dummy data
   const calculateStats = () => {
-    const totalReviews = dummyReviews.length;
-    const avgRating = (dummyReviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews).toFixed(1);
+    const totalReviews = feedbacks.length;
+    let avgRating = "0.0";
+    if (totalReviews > 0) {
+      avgRating = (feedbacks.reduce((sum, review) => sum + review.rating, 0) / totalReviews).toFixed(1);
+    }
     const ratingDistribution = [1, 2, 3, 4, 5].map(rating => 
-      dummyReviews.filter(review => review.rating === rating).length
+      feedbacks.filter(review => review.rating === rating).length
     );
-    const categoryStats = dummyReviews.reduce((acc, review) => {
-      acc[review.category] = (acc[review.category] || 0) + 1;
+    const categoryStats = feedbacks.reduce((acc, review) => {
+      const cat = review.survey?.primaryReason || review.tags?.[0] || 'General';
+      acc[cat] = (acc[cat] || 0) + 1;
       return acc;
     }, {});
-    const counselorStats = dummyReviews.reduce((acc, review) => {
-      acc[review.counselor] = (acc[review.counselor] || 0) + 1;
+    const counselorStats = feedbacks.reduce((acc, review) => {
+      const name = review.counselorId ? `${review.counselorId.firstName} ${review.counselorId.lastName}` : "Unknown Counselor";
+      acc[name] = (acc[name] || 0) + 1;
       return acc;
     }, {});
+
+    const monthlyData = {};
+    feedbacks.forEach(review => {
+      const month = new Date(review.createdAt || new Date()).toLocaleString('default', { month: 'short' });
+      if (!monthlyData[month]) {
+        monthlyData[month] = { count: 0, sum: 0 };
+      }
+      monthlyData[month].count += 1;
+      monthlyData[month].sum += review.rating;
+    });
+
+    const monthlyTrend = Object.keys(monthlyData).map(month => ({
+      month,
+      reviews: monthlyData[month].count,
+      avgRating: Number((monthlyData[month].sum / monthlyData[month].count).toFixed(1))
+    }));
+
+    if (monthlyTrend.length === 0) {
+      monthlyTrend.push({ month: 'Jan', reviews: 0, avgRating: 0 }); 
+    }
 
     return {
       totalReviews,
@@ -39,14 +75,7 @@ export function FeedbackReviews() {
       ratingDistribution,
       categoryStats,
       counselorStats,
-      monthlyTrend: [
-        { month: 'Jan', reviews: 45, avgRating: 4.2 },
-        { month: 'Feb', reviews: 52, avgRating: 4.5 },
-        { month: 'Mar', reviews: 48, avgRating: 4.3 },
-        { month: 'Apr', reviews: 61, avgRating: 4.6 },
-        { month: 'May', reviews: 58, avgRating: 4.4 },
-        { month: 'Jun', reviews: 67, avgRating: 4.7 }
-      ]
+      monthlyTrend
     };
   };
 
@@ -171,7 +200,7 @@ export function FeedbackReviews() {
                   borderRadius: "2px" 
                 }} />
                 <span style={{ fontSize: "0.875rem", color: "#374151" }}>
-                  {item.label}: {item.value} ({((item.value / total) * 100).toFixed(1)}%)
+                  {item.label}: {item.value} ({total > 0 ? ((item.value / total) * 100).toFixed(1) : 0}%)
                 </span>
               </div>
             ))}
@@ -180,6 +209,10 @@ export function FeedbackReviews() {
       </div>
     );
   };
+
+  if (loading) {
+    return <div style={{ padding: "2rem", textAlign: "center", color: "#6b7280" }}>Loading dashboard insights...</div>;
+  }
 
   return (
     <div
@@ -354,27 +387,37 @@ export function FeedbackReviews() {
               </tr>
             </thead>
             <tbody>
-              {dummyReviews.slice(0, 5).map((review) => (
-                <tr key={review.id} style={{ borderBottom: "1px solid #e5e7eb" }}>
-                  <td style={{ padding: "0.75rem", color: "#1f2937" }}>{review.student}</td>
-                  <td style={{ padding: "0.75rem", color: "#1f2937" }}>{review.counselor}</td>
-                  <td style={{ padding: "0.75rem", color: "#1f2937" }}>
-                    <span style={{ 
-                      backgroundColor: review.rating >= 4 ? "#dcfce7" : review.rating >= 3 ? "#fef3c7" : "#fee2e2",
-                      color: review.rating >= 4 ? "#166534" : review.rating >= 3 ? "#92400e" : "#991b1b",
-                      padding: "0.25rem 0.5rem",
-                      borderRadius: "0.25rem",
-                      fontSize: "0.75rem",
-                      fontWeight: 600
-                    }}>
-                      {"⭐".repeat(review.rating)}
-                    </span>
-                  </td>
-                  <td style={{ padding: "0.75rem", color: "#1f2937" }}>{review.category}</td>
-                  <td style={{ padding: "0.75rem", color: "#1f2937" }}>{review.date}</td>
-                  <td style={{ padding: "0.75rem", color: "#1f2937", maxWidth: "200px" }}>{review.comment}</td>
+              {feedbacks.slice(0, 10).map((review) => {
+                const sName = review.isAnonymous ? "Anonymous User" : (review.studentId ? `${review.studentId.firstName} ${review.studentId.lastName}` : "Unknown Student");
+                const cName = review.counselorId ? `${review.counselorId.firstName} ${review.counselorId.lastName}` : "Unknown Counselor";
+                const cat = review.survey?.primaryReason || review.tags?.[0] || 'General';
+                return (
+                  <tr key={review._id} style={{ borderBottom: "1px solid #e5e7eb" }}>
+                    <td style={{ padding: "0.75rem", color: "#1f2937" }}>{sName}</td>
+                    <td style={{ padding: "0.75rem", color: "#1f2937" }}>{cName}</td>
+                    <td style={{ padding: "0.75rem", color: "#1f2937" }}>
+                      <span style={{ 
+                        backgroundColor: review.rating >= 4 ? "#dcfce7" : review.rating >= 3 ? "#fef3c7" : "#fee2e2",
+                        color: review.rating >= 4 ? "#166534" : review.rating >= 3 ? "#92400e" : "#991b1b",
+                        padding: "0.25rem 0.5rem",
+                        borderRadius: "0.25rem",
+                        fontSize: "0.75rem",
+                        fontWeight: 600
+                      }}>
+                        {"⭐".repeat(review.rating)}
+                      </span>
+                    </td>
+                    <td style={{ padding: "0.75rem", color: "#1f2937" }}>{cat}</td>
+                    <td style={{ padding: "0.75rem", color: "#1f2937" }}>{new Date(review.createdAt).toLocaleDateString()}</td>
+                    <td style={{ padding: "0.75rem", color: "#1f2937", maxWidth: "200px" }}>{review.comment || 'No comment'}</td>
+                  </tr>
+                );
+              })}
+              {feedbacks.length === 0 && (
+                <tr>
+                   <td colSpan="6" style={{ padding: "1rem", textAlign: "center", color: "#6b7280" }}>No feedback submitted yet.</td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

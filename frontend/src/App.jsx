@@ -80,7 +80,7 @@ export function App() {
           <Route path="/users" element={<UsersPage />} />
           <Route path="/asettings" element={<ProfileSettings />} />
           <Route path="/admin" element={<AdminPage />} />
-          <Route path="/feedback" element={<FeedbackReviews />} />
+          <Route path="/admin/feedback" element={<FeedbackReviews />} />
           <Route path="/admin/resources" element={<AdminResources />} />
         </Route>
       </Routes>
