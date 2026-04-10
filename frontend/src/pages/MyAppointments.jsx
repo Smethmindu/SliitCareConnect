@@ -73,6 +73,40 @@ export function MyAppointments() {
     fetchAppointments();
   }, []);
 
+  const handleCancelBooking = async (bookingId) => {
+    const confirmCancel = window.confirm("Are you sure you want to cancel this appointment request?");
+    if (!confirmCancel) return;
+
+    try {
+      const storedToken = localStorage.getItem("token") || sessionStorage.getItem("token");
+      if (!storedToken) {
+        alert("You must be logged in to cancel an appointment.");
+        return;
+      }
+
+      const response = await fetch(`http://localhost:3000/api/bookings/${bookingId}/status`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${storedToken}`
+        },
+        body: JSON.stringify({ status: "cancelled" })
+      });
+
+      if (response.ok) {
+        // Remove the cancelled appointment from local state
+        setAppointments(prev => prev.filter(app => app.id !== bookingId));
+        alert("Appointment request cancelled successfully.");
+      } else {
+        const errorData = await response.json();
+        alert(errorData.message || "Failed to cancel the appointment. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error cancelling appointment:", error);
+      alert("Network error. Please try again.");
+    }
+  };
+
   const filteredAppointments = appointments.filter((app) => 
     app.status === activeTab
   );
@@ -193,7 +227,12 @@ export function MyAppointments() {
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", alignItems: "center", marginTop: "auto" }}>
                       {app.status === "Pending" && (
                         <>
-                          <button style={{ padding: "0.375rem 1rem", borderRadius: "9999px", fontSize: "0.75rem", fontWeight: 600, backgroundColor: "white", color: "#ef4444", border: "1px solid #fca5a5", cursor: "pointer", outline: "none" }}>
+                          <button 
+                            onClick={() => handleCancelBooking(app.id)}
+                            style={{ padding: "0.375rem 1rem", borderRadius: "9999px", fontSize: "0.75rem", fontWeight: 600, backgroundColor: "white", color: "#ef4444", border: "1px solid #fca5a5", cursor: "pointer", outline: "none", transition: "all 0.2s" }}
+                            onMouseOver={(e) => { e.currentTarget.style.backgroundColor = '#fef2f2'; }}
+                            onMouseOut={(e) => { e.currentTarget.style.backgroundColor = 'white'; }}
+                          >
                             Cancel Request
                           </button>
                         </>
