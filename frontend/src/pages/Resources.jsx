@@ -13,6 +13,7 @@ export default function Resources() {
   const [loading, setLoading] = useState(true);
   const [activeTopic, setActiveTopic] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeTab, setActiveTab] = useState("Library");
 
   const topics = ["All", "Anxiety", "Depression", "Academic Stress", "Mindfulness", "Relationships"];
   const categories = ["VIDEO", "AUDIO", "BOOK", "IMAGE"];
@@ -103,18 +104,43 @@ export default function Resources() {
         paddingBottom: "3rem",
       }}
     >
-      {/* Header & Search */}
-      <motion.div variants={fadeIn} style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-        <div>
-          <h1 style={{ fontSize: "1.875rem", fontFamily: "sans-serif", fontWeight: "bold", color: "#1c1917", marginBottom: "0.5rem", marginTop: 0 }}>
-            Wellness Resources
-          </h1>
-          <p style={{ color: "#78716c", fontSize: "1.125rem", margin: 0 }}>
-            Articles, videos, and guides to support your mental health journey.
-          </p>
-        </div>
+      {/* Top Level Tabs */}
+      <div style={{ display: "flex", gap: "2rem", borderBottom: "1px solid #e7e5e4", paddingBottom: "0.5rem" }}>
+        {["Library", "Self-Assessment Quiz"].map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            style={{
+              background: "none",
+              border: "none",
+              padding: "0.5rem 0",
+              fontSize: "1.125rem",
+              fontWeight: 600,
+              color: activeTab === tab ? "#0ea5e9" : "#78716c",
+              borderBottom: activeTab === tab ? "2px solid #0ea5e9" : "2px solid transparent",
+              cursor: "pointer",
+              transition: "all 0.2s"
+            }}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
 
-        <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", gap: "1rem", alignItems: "center", justifyContent: "space-between" }}>
+      {activeTab === "Library" && (
+        <>
+          {/* Header & Search */}
+          <motion.div variants={fadeIn} style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+            <div>
+              <h1 style={{ fontSize: "1.875rem", fontFamily: "sans-serif", fontWeight: "bold", color: "#1c1917", marginBottom: "0.5rem", marginTop: 0 }}>
+                Wellness Resources
+              </h1>
+              <p style={{ color: "#78716c", fontSize: "1.125rem", margin: 0 }}>
+                Articles, videos, and guides to support your mental health journey.
+              </p>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", gap: "1rem", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ position: "relative", width: "100%", maxWidth: "24rem" }}>
             <div style={{ position: "absolute", inset: "0 0 0 1rem", display: "flex", alignItems: "center", pointerEvents: "none" }}>
               <SearchIcon style={{ height: "1.25rem", width: "1.25rem", color: "#a8a29e" }} />
@@ -239,11 +265,22 @@ export default function Resources() {
           })
         )}
       </motion.section>
+      </>
+      )}
 
-      {/* Quiz Section */}
-      <motion.section variants={fadeIn}>
-        <Quiz />
-      </motion.section>
+      {activeTab === "Self-Assessment Quiz" && (
+        <motion.section variants={fadeIn}>
+          <div style={{ marginBottom: "2rem" }}>
+            <h1 style={{ fontSize: "1.875rem", fontFamily: "sans-serif", fontWeight: "bold", color: "#1c1917", marginBottom: "0.5rem", marginTop: 0 }}>
+              Self-Assessment Quiz
+            </h1>
+            <p style={{ color: "#78716c", fontSize: "1.125rem", margin: 0 }}>
+              Take a short quiz to evaluate your current stress levels and get personalized recommendations.
+            </p>
+          </div>
+          <Quiz />
+        </motion.section>
+      )}
 
       {/* Support Banner */}
       <motion.section variants={fadeIn} style={{ backgroundColor: "#1e1b4b", borderRadius: "1.5rem", padding: "3rem", color: "white", display: "flex", flexDirection: "row", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "2rem", position: "relative", overflow: "hidden", boxShadow: "0 10px 15px -3px rgba(30, 27, 75, 0.4)" }}>

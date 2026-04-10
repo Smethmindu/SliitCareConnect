@@ -125,7 +125,7 @@ export default function Quiz() {
       <div 
         className="quiz-start-banner" 
         style={{ 
-          background: 'linear-gradient(135deg, var(--blue) 0%, #3b82f6 100%)', 
+          background: 'linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%)', 
           color: 'white', 
           borderRadius: '24px', 
           padding: '48px 40px', 
@@ -147,7 +147,7 @@ export default function Quiz() {
           onClick={() => setStarted(true)}
           style={{ 
             background: 'white', 
-            color: 'var(--blue-dark)', 
+            color: '#0369a1', 
             border: 'none', 
             borderRadius: '16px', 
             padding: '20px 36px', 
@@ -308,7 +308,7 @@ export default function Quiz() {
             </button>
             <button 
               onClick={closeQuiz}
-              style={{ background: 'transparent', border: '2px solid var(--border)', color: '#475569', padding: '16px 32px', borderRadius: '16px', fontSize: '18px', fontWeight: 600, cursor: 'pointer' }}
+              style={{ background: 'transparent', border: '2px solid #e2e8f0', color: '#475569', padding: '16px 32px', borderRadius: '16px', fontSize: '18px', fontWeight: 600, cursor: 'pointer' }}
             >
               Close Assessment
             </button>
@@ -317,10 +317,10 @@ export default function Quiz() {
       ) : (
         <div className="quiz-card" style={{ width: '100%', maxWidth: '800px', background: 'white', borderRadius: '32px', padding: '56px', boxShadow: '0 24px 64px rgba(0,0,0,0.06)', margin: 'auto' }}>
           <div className="quiz-progress" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px' }}>
-            <span style={{ color: 'var(--muted)', fontSize: '16px', fontWeight: 600 }}>
+            <span style={{ color: '#64748b', fontSize: '16px', fontWeight: 600 }}>
               Question {currentIndex + 1} of {questions.length}
             </span>
-            <button onClick={closeQuiz} style={{ background: 'none', border: 'none', color: 'var(--muted)', cursor: 'pointer', fontSize: '16px', fontWeight: 500 }}>
+            <button onClick={closeQuiz} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: '16px', fontWeight: 500 }}>
               Exit
             </button>
           </div>
@@ -346,7 +346,7 @@ export default function Quiz() {
                   fontSize: '18px',
                   background: answers[currentIndex] === option.value ? '#e9f5fc' : '#f8fafc',
                   border: `2px solid ${answers[currentIndex] === option.value ? '#bde1f4' : 'transparent'}`,
-                  color: answers[currentIndex] === option.value ? 'var(--blue-dark)' : '#334155',
+                  color: answers[currentIndex] === option.value ? '#0369a1' : '#334155',
                   textAlign: 'left',
                   cursor: 'pointer',
                   fontWeight: answers[currentIndex] === option.value ? 600 : 400
