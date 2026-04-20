@@ -18,6 +18,7 @@ export function CounselorListing() {
   const [counselors, setCounselors] = useState([]);
   const [activeFilter, setActiveFilter] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("Highest Rated");
   const [isLoading, setIsLoading] = useState(true);
   const [ratings, setRatings] = useState({});
 
@@ -79,24 +80,34 @@ export function CounselorListing() {
     transition: { duration: 0.4 },
   };
 
-  const filteredCounselors = counselors.filter((counselor) => {
-    const specialtiesList = Array.isArray(counselor.specialities) ? counselor.specialities : [];
-    
-    const matchesSearch =
-      (counselor.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-      specialtiesList.some((s) =>
-        (s || "").toLowerCase().includes(searchQuery.toLowerCase())
-      );
+  const filteredCounselors = counselors
+    .filter((counselor) => {
+      const specialtiesList = Array.isArray(counselor.specialities) ? counselor.specialities : [];
 
-    let matchesFilter = true;
-    if (activeFilter !== "All") {
-      matchesFilter = specialtiesList.some((s) =>
-        (s || "").toLowerCase().includes(activeFilter.toLowerCase())
-      );
-    }
+      const matchesSearch =
+        (counselor.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+        specialtiesList.some((s) =>
+          (s || "").toLowerCase().includes(searchQuery.toLowerCase())
+        );
 
-    return matchesSearch && matchesFilter;
-  });
+      let matchesFilter = true;
+      if (activeFilter !== "All") {
+        matchesFilter = specialtiesList.some((s) =>
+          (s || "").toLowerCase().includes(activeFilter.toLowerCase())
+        );
+      }
+
+      return matchesSearch && matchesFilter;
+    })
+    .sort((a, b) => {
+      if (sortBy === "Name (A-Z)") {
+        return (a.name || "").localeCompare(b.name || "");
+      }
+      // Highest Rated
+      const ratingA = parseFloat(ratings[a._id || a.id]) || parseFloat(a.rating) || 0;
+      const ratingB = parseFloat(ratings[b._id || b.id]) || parseFloat(b.rating) || 0;
+      return ratingB - ratingA;
+    });
 
   return (
     <motion.div
@@ -202,6 +213,8 @@ export function CounselorListing() {
               Sort by:
             </span>
             <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
               style={{
                 width: "100%",
                 padding: "0.75rem 1rem",
@@ -214,8 +227,8 @@ export function CounselorListing() {
                 cursor: "pointer",
               }}
             >
-              <option>Highest Rated</option>
-              <option>Name (A-Z)</option>
+              <option value="Highest Rated">Highest Rated</option>
+              <option value="Name (A-Z)">Name (A-Z)</option>
             </select>
           </div>
         </div>

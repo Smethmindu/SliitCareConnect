@@ -322,7 +322,7 @@ export function DashboardLayout() {
                 }}
               >
                 <Link
-                  to="/settings"
+                  to="/profile"
                   style={{
                     display: "flex",
                     alignItems: "center",

@@ -31,6 +31,7 @@ import { CounselorDashboard } from "./pages/CounselorDashboard";
 import { CounselorAppointments } from "./pages/CounselorAppointments";
 import { CounselorAvailability } from "./pages/CounselorAvailability";
 import { CounselorSettings } from "./pages/CounselorSettings";
+import { CounselorMessages } from "./pages/CounselorMessages";
 
 // Feature Pages
 import Resources from "./pages/Resources";
@@ -76,6 +77,7 @@ export function App() {
         <Route path="/counselor-appointments" element={<CounselorAppointments />} />
         <Route path="/counselor-availability" element={<CounselorAvailability />} />
         <Route path="/settings" element={<CounselorSettings />} />
+        <Route path="/counselor-messages" element={<CounselorMessages />} />
 
         {/* Dashboard Routes / Admin View */}
         <Route element={<ADashboardLayout />}>

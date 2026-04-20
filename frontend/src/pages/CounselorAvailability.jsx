@@ -1,21 +1,86 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   ClockIcon,
+  CheckCircleIcon,
+  Loader2Icon,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+const defaultSchedule = {
+  monday: { enabled: true, start: "09:00", end: "17:00" },
+  tuesday: { enabled: true, start: "09:00", end: "17:00" },
+  wednesday: { enabled: true, start: "09:00", end: "17:00" },
+  thursday: { enabled: true, start: "09:00", end: "17:00" },
+  friday: { enabled: true, start: "09:00", end: "15:00" },
+  saturday: { enabled: false, start: "10:00", end: "14:00" },
+  sunday: { enabled: false, start: "09:00", end: "17:00" },
+};
+
 export function CounselorAvailability() {
   const navigate = useNavigate();
-  const [schedule, setSchedule] = useState({
-    monday: { enabled: true, start: "09:00", end: "17:00" },
-    tuesday: { enabled: true, start: "09:00", end: "17:00" },
-    wednesday: { enabled: true, start: "09:00", end: "17:00" },
-    thursday: { enabled: true, start: "09:00", end: "17:00" },
-    friday: { enabled: true, start: "09:00", end: "15:00" },
-    saturday: { enabled: false, start: "10:00", end: "14:00" },
-    sunday: { enabled: false, start: "09:00", end: "17:00" },
-  });
+  const [schedule, setSchedule] = useState(defaultSchedule);
+  const [counselorId, setCounselorId] = useState(null);
+  const [loadingData, setLoadingData] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState(null); // 'success' | 'error' | null
+
+  // Load counselor ID and existing availability on mount
+  useEffect(() => {
+    const loadAvailability = async () => {
+      try {
+        const storedToken = localStorage.getItem("token") || sessionStorage.getItem("token");
+        const storedUser = localStorage.getItem("user") || sessionStorage.getItem("user");
+        if (!storedToken || !storedUser) {
+          setLoadingData(false);
+          return;
+        }
+
+        const user = JSON.parse(storedUser);
+
+        // 1. Get counselor profile ID from user ID
+        const profileRes = await fetch(`http://localhost:3000/api/counselors/user/${user.id}`);
+        if (!profileRes.ok) {
+          console.error("Counselor profile not found");
+          setLoadingData(false);
+          return;
+        }
+        const profileData = await profileRes.json();
+        const cId = profileData.data?.counselor?._id;
+        setCounselorId(cId);
+
+        if (!cId) {
+          setLoadingData(false);
+          return;
+        }
+
+        // 2. Fetch existing availability
+        const availRes = await fetch(`http://localhost:3000/api/counselors/${cId}/availability`);
+        if (availRes.ok) {
+          const availData = await availRes.json();
+          const existingAvailability = availData.data?.availability;
+          if (existingAvailability) {
+            // Merge with defaults to ensure all days exist
+            setSchedule((prev) => ({
+              ...prev,
+              ...Object.fromEntries(
+                Object.entries(existingAvailability).map(([day, val]) => [
+                  day,
+                  { ...prev[day], ...val },
+                ])
+              ),
+            }));
+          }
+        }
+      } catch (error) {
+        console.error("Error loading availability:", error);
+      } finally {
+        setLoadingData(false);
+      }
+    };
+
+    loadAvailability();
+  }, []);
 
   const fadeIn = {
     initial: { opacity: 0, y: 10 },
@@ -28,6 +93,45 @@ export function CounselorAvailability() {
       ...prev,
       [day]: { ...prev[day], enabled: !prev[day].enabled },
     }));
+  };
+
+  const handleSave = async () => {
+    if (!counselorId) {
+      setSaveStatus("error");
+      return;
+    }
+
+    setSaving(true);
+    setSaveStatus(null);
+
+    try {
+      const storedToken = localStorage.getItem("token") || sessionStorage.getItem("token");
+      const response = await fetch(
+        `http://localhost:3000/api/counselors/${counselorId}/availability`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${storedToken}`,
+          },
+          body: JSON.stringify({ availability: schedule }),
+        }
+      );
+
+      if (response.ok) {
+        setSaveStatus("success");
+        setTimeout(() => navigate("/counselor-dashboard"), 1500);
+      } else {
+        const errData = await response.json();
+        console.error("Failed to save availability:", errData.message);
+        setSaveStatus("error");
+      }
+    } catch (error) {
+      console.error("Error saving availability:", error);
+      setSaveStatus("error");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const ToggleSwitch = ({ checked, onChange }) => (
@@ -63,6 +167,16 @@ export function CounselorAvailability() {
       />
     </button>
   );
+
+  if (loadingData) {
+    return (
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "400px", color: "#78716c" }}>
+        <Loader2Icon style={{ height: "2rem", width: "2rem", animation: "spin 1s linear infinite" }} />
+        <span style={{ marginLeft: "0.75rem", fontSize: "1rem" }}>Loading availability...</span>
+        <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -130,24 +244,77 @@ export function CounselorAvailability() {
             Cancel
           </button>
           <button
+            disabled={saving || !counselorId}
             style={{
               flex: 1,
               padding: "0.5rem 1rem",
               borderRadius: "0.375rem",
               fontSize: "0.875rem",
               fontWeight: 500,
-              backgroundColor: "#0ea5e9",
+              backgroundColor: saving ? "#7dd3fc" : "#0ea5e9",
               color: "white",
               border: "none",
-              cursor: "pointer",
+              cursor: saving || !counselorId ? "not-allowed" : "pointer",
               outline: "none",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "0.5rem",
+              opacity: !counselorId ? 0.5 : 1,
             }}
-            onClick={() => navigate("/counselor-dashboard")}
+            onClick={handleSave}
           >
-            Save Changes
+            {saving ? (
+              <>
+                <Loader2Icon style={{ height: "1rem", width: "1rem", animation: "spin 1s linear infinite" }} />
+                Saving...
+              </>
+            ) : (
+              "Save Changes"
+            )}
           </button>
         </div>
       </motion.div>
+
+      {/* Save status feedback */}
+      {saveStatus === "success" && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            padding: "0.75rem 1rem",
+            backgroundColor: "#dcfce7",
+            border: "1px solid #bbf7d0",
+            borderRadius: "0.75rem",
+            color: "#166534",
+            fontSize: "0.875rem",
+            fontWeight: 500,
+          }}
+        >
+          <CheckCircleIcon style={{ height: "1.25rem", width: "1.25rem" }} />
+          Availability saved successfully! Redirecting...
+        </motion.div>
+      )}
+      {saveStatus === "error" && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          style={{
+            padding: "0.75rem 1rem",
+            backgroundColor: "#fef2f2",
+            border: "1px solid #fecaca",
+            borderRadius: "0.75rem",
+            color: "#b91c1c",
+            fontSize: "0.875rem",
+            fontWeight: 500,
+          }}
+        >
+          ⚠️ {counselorId ? "Failed to save availability. Please try again." : "Counselor profile not found. Please set up your profile first."}
+        </motion.div>
+      )}
 
       <motion.div
         variants={fadeIn}
@@ -307,6 +474,8 @@ export function CounselorAvailability() {
           </div>
         </div>
       </motion.div>
+
+      <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
     </motion.div>
   );
 }

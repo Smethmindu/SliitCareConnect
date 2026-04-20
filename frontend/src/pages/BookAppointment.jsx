@@ -168,6 +168,7 @@ export function BookAppointment() {
   const [success, setSuccess] = useState(false);
   
   const [counselorAvailability, setCounselorAvailability] = useState(null);
+  const [bookedSlots, setBookedSlots] = useState([]);
 
   // Fetch counselor availability when page loads
   useEffect(() => {
@@ -178,7 +179,7 @@ export function BookAppointment() {
         const response = await fetch(`http://localhost:3000/api/counselors/${counselorId}/availability`);
         if (response.ok) {
           const data = await response.json();
-          setCounselorAvailability(data.data?.counselor?.availability);
+          setCounselorAvailability(data.data?.availability);
         }
       } catch (err) {
         console.error("Error fetching availability:", err);
@@ -187,6 +188,31 @@ export function BookAppointment() {
     fetchAvailability();
   }, [counselorId]);
 
+  // Fetch already-booked slots when a date is selected
+  useEffect(() => {
+    if (!selectedDate || counselorId === "demo-counselor-1") {
+      setBookedSlots([]);
+      return;
+    }
+
+    const fetchBookedSlots = async () => {
+      try {
+        const dateStr = formatDateDisplay(selectedDate);
+        const response = await fetch(
+          `http://localhost:3000/api/bookings/slots/${counselorId}?date=${encodeURIComponent(dateStr)}`
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setBookedSlots(data.data?.bookedTimes || []);
+        }
+      } catch (err) {
+        console.error("Error fetching booked slots:", err);
+        setBookedSlots([]);
+      }
+    };
+    fetchBookedSlots();
+  }, [selectedDate, counselorId]);
+
   // Compute available times based on selected date
   const availableTimes = (() => {
     if (!selectedDate || !counselorAvailability) {
@@ -194,7 +220,8 @@ export function BookAppointment() {
       return ["09:00 AM", "10:00 AM", "11:00 AM", "01:00 PM", "02:00 PM", "03:00 PM", "04:00 PM"];
     }
     
-    const dateObj = new Date(selectedDate);
+    const [y, m, d] = selectedDate.split("-").map(Number);
+    const dateObj = new Date(y, m - 1, d);
     const dayNames = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
     const dayOfWeek = dayNames[dateObj.getDay()];
     const dayAvail = counselorAvailability[dayOfWeek];
@@ -210,7 +237,11 @@ export function BookAppointment() {
       let displayHour = currentHour > 12 ? currentHour - 12 : currentHour;
       if (displayHour === 0) displayHour = 12;
       const fHour = String(displayHour).padStart(2, "0");
-      slots.push(`${fHour}:00 ${ampm}`);
+      const timeStr = `${fHour}:00 ${ampm}`;
+      // Only include if not already booked
+      if (!bookedSlots.includes(timeStr)) {
+        slots.push(timeStr);
+      }
       currentHour++;
     }
     return slots;

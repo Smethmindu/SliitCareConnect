@@ -13,6 +13,7 @@ import counselorRoutes from "./routes/counselorRoutes.js";
 import resourceRoutes from "./routes/resource.routes.js";
 import feedbackRoutes from "./routes/feedback.routes.js";
 import quizRoutes from "./routes/quiz.routes.js";
+import messageRoutes from "./routes/messageRoutes.js";
 
 const app = express();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -59,6 +60,7 @@ app.use("/api/counselors", counselorRoutes);
 app.use("/api/resources", resourceRoutes);
 app.use("/api/feedback", feedbackRoutes);
 app.use("/api/quiz", quizRoutes);
+app.use("/api/messages", messageRoutes);
 
 // 404 handler
 app.use((req, res) => {

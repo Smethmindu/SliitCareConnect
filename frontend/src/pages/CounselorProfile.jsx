@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   StarIcon,
@@ -9,10 +9,12 @@ import {
   PhoneIcon,
   CalendarIcon,
   ChevronLeftIcon,
+  MessageSquareIcon,
 } from "lucide-react";
 
 export function CounselorProfile() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState(null);
   const [counselor, setCounselor] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -610,6 +612,61 @@ export function CounselorProfile() {
                   Book Now
                 </button>
               </Link>
+
+              {/* Send Message Button */}
+              {currentUser && (
+                <button
+                  onClick={async () => {
+                    try {
+                      const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+                      const res = await fetch("http://localhost:3000/api/messages/conversations", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                        body: JSON.stringify({
+                          participant1: {
+                            userId: currentUser.id,
+                            role: currentUser.role || "student",
+                            name: `${currentUser.firstName || ""} ${currentUser.lastName || ""}`.trim(),
+                          },
+                          participant2: {
+                            userId: counselor.userId || id,
+                            role: "counselor",
+                            name: counselorName,
+                            avatar: counselorAvatar,
+                          },
+                        }),
+                      });
+                      if (res.ok) {
+                        navigate("/messages");
+                      }
+                    } catch (err) {
+                      console.error("Error creating conversation:", err);
+                    }
+                  }}
+                  style={{
+                    width: "100%",
+                    padding: "0.75rem 1.5rem",
+                    fontSize: "1rem",
+                    borderRadius: "0.5rem",
+                    fontWeight: 500,
+                    backgroundColor: "white",
+                    color: "#0ea5e9",
+                    border: "2px solid #0ea5e9",
+                    cursor: "pointer",
+                    outline: "none",
+                    transition: "all 0.3s",
+                    boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "0.5rem",
+                    marginTop: "0.75rem",
+                  }}
+                >
+                  <MessageSquareIcon style={{ height: "1.125rem", width: "1.125rem" }} />
+                  Send Message
+                </button>
+              )}
             </div>
 
             <div

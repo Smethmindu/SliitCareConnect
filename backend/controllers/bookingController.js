@@ -98,3 +98,28 @@ export const updateBookingStatus = async (req, res) => {
     res.status(500).json({ status: 'error', message: err.message });
   }
 };
+
+// GET /api/bookings/slots/:counselorId?date=... — Get booked time slots for a counselor on a date
+export const getBookedSlots = async (req, res) => {
+  try {
+    const { counselorId } = req.params;
+    const { date } = req.query; // expects the formatted date string e.g. "Monday, April 21, 2026"
+
+    if (!date) {
+      return res.status(400).json({ status: 'error', message: 'Date query parameter is required.' });
+    }
+
+    // Find all non-cancelled/declined bookings for this counselor on this date
+    const bookings = await Booking.find({
+      counselorId,
+      date,
+      status: { $nin: ['cancelled', 'declined'] },
+    }).select('time');
+
+    const bookedTimes = bookings.map((b) => b.time);
+
+    res.status(200).json({ status: 'success', data: { bookedTimes } });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+};
