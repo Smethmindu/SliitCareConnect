@@ -4,7 +4,6 @@ import {
   CalendarIcon,
   LayoutDashboardIcon,
   MessageSquareIcon,
-  BellIcon,
   LogOutIcon,
   VideoIcon,
   MapPinIcon,
@@ -12,6 +11,7 @@ import {
   ClockIcon
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { NotificationBell } from "../components/NotificationBell";
 
 export function CounselorAppointments() {
   const location = useLocation();
@@ -91,9 +91,9 @@ export function CounselorAppointments() {
             else if (Array.isArray(bookingsData.data?.bookings)) fetchedBookings = bookingsData.data.bookings;
             else if (Array.isArray(bookingsData.bookings)) fetchedBookings = bookingsData.bookings;
             
-            // Show all non-cancelled appointments
+            // Show only approved (confirmed) appointments
             const activeBookings = fetchedBookings
-              .filter(b => b.status !== "cancelled")
+              .filter(b => b.status === "confirmed")
               .map(b => {
                  let typeDisplay = "Video Call";
                  if (b.sessionType === "in-person") typeDisplay = "In-Person";
@@ -155,7 +155,7 @@ export function CounselorAppointments() {
   return (
     <div style={{ height: "100vh", backgroundColor: "#fdfbf7", display: "flex", flexDirection: "column", overflow: "hidden" }}>
       {/* Header */}
-      <header style={{ flexShrink: 0, width: "100%", backgroundColor: "rgba(255, 255, 255, 0.95)", backdropFilter: "blur(12px)", borderBottom: "1px solid #f5f5f4" }}>
+      <header style={{ flexShrink: 0, width: "100%", backgroundColor: "rgba(255, 255, 255, 0.95)", backdropFilter: "blur(12px)", borderBottom: "1px solid #f5f5f4", position: "relative", zIndex: 50 }}>
         <div style={{ maxWidth: "1600px", margin: "0 auto", padding: "0 1.5rem", display: "flex", justifyContent: "space-between", alignItems: "center", height: "4rem" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", textDecoration: "none" }}>
@@ -169,10 +169,7 @@ export function CounselorAppointments() {
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-             <button style={{ padding: "0.5rem", color: "#a8a29e", background: "none", border: "none", position: "relative", cursor: "pointer" }}>
-              <BellIcon style={{ height: "1.25rem", width: "1.25rem" }} />
-              <span style={{ position: "absolute", top: "0.375rem", right: "0.375rem", height: "0.5rem", width: "0.5rem", backgroundColor: "#f87171", borderRadius: "50%", border: "2px solid white" }}></span>
-            </button>
+             <NotificationBell />
             <div style={{ height: "2rem", width: "1px", backgroundColor: "#e7e5e4", margin: "0 0.25rem" }}></div>
             <Link to="/settings" style={{ display: "flex", alignItems: "center", gap: "0.75rem", textDecoration: "none" }}>
               <div style={{ textAlign: "right" }}>

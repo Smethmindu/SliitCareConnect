@@ -1,9 +1,22 @@
 import Notification from '../models/Notification.js';
+import { User } from '../models/User.js';
 
 // GET /api/notifications/:userId — Get all notifications for a user
 export const getNotifications = async (req, res) => {
   try {
-    const notifications = await Notification.find({ recipientId: req.params.userId }).sort({
+    const requestedUserId = req.params.userId;
+
+    // Fetch the user to determine their role
+    const requestingUser = await User.findById(requestedUserId).select('role');
+
+    let filter = { recipientId: requestedUserId };
+
+    // Only admins should see new_signup notifications
+    if (!requestingUser || requestingUser.role !== 'admin') {
+      filter.type = { $ne: 'new_signup' };
+    }
+
+    const notifications = await Notification.find(filter).sort({
       isRead: 1,
       createdAt: -1,
     });
@@ -42,3 +55,39 @@ export const markAllAsRead = async (req, res) => {
     res.status(500).json({ status: 'error', message: err.message });
   }
 };
+
+// POST /api/notifications/broadcast — Admin sends notification to users
+export const sendBroadcast = async (req, res) => {
+  try {
+    const { message, target } = req.body; // target: 'all' | 'students' | 'counselors'
+
+    if (!message) {
+      return res.status(400).json({ status: 'error', message: 'Message is required.' });
+    }
+
+    // Build query based on target
+    let query = {};
+    if (target === 'students') query.role = 'student';
+    else if (target === 'counselors') query.role = 'counselor';
+    // 'all' = no filter (gets students + counselors, not admins)
+    else query.role = { $in: ['student', 'counselor'] };
+
+    const users = await User.find(query).select('_id');
+
+    const notifications = users.map((user) => ({
+      recipientId: user._id.toString(),
+      type: 'admin_broadcast',
+      message,
+    }));
+
+    await Notification.insertMany(notifications);
+
+    res.status(201).json({
+      status: 'success',
+      message: `Notification sent to ${notifications.length} users.`,
+    });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+};
+

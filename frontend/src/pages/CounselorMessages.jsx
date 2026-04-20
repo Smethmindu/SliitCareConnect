@@ -12,10 +12,10 @@ import {
   MessageSquareIcon,
   CalendarIcon,
   LayoutDashboardIcon,
-  BellIcon,
   LogOutIcon,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { NotificationBell } from "../components/NotificationBell";
 
 const API = "http://localhost:3000/api/messages";
 
@@ -210,7 +210,7 @@ export function CounselorMessages() {
   return (
     <div style={{ height: "100vh", backgroundColor: "#fdfbf7", display: "flex", flexDirection: "column", overflow: "hidden" }}>
       {/* Header */}
-      <header style={{ flexShrink: 0, width: "100%", backgroundColor: "rgba(255, 255, 255, 0.95)", backdropFilter: "blur(12px)", borderBottom: "1px solid #f5f5f4" }}>
+      <header style={{ flexShrink: 0, width: "100%", backgroundColor: "rgba(255, 255, 255, 0.95)", backdropFilter: "blur(12px)", borderBottom: "1px solid #f5f5f4", position: "relative", zIndex: 50 }}>
         <div style={{ maxWidth: "1600px", margin: "0 auto", padding: "0 1.5rem", display: "flex", justifyContent: "space-between", alignItems: "center", height: "4rem" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", textDecoration: "none" }}>
@@ -223,10 +223,7 @@ export function CounselorMessages() {
             </div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-            <button style={{ padding: "0.5rem", color: "#a8a29e", background: "none", border: "none", position: "relative", cursor: "pointer" }}>
-              <BellIcon style={{ height: "1.25rem", width: "1.25rem" }} />
-              <span style={{ position: "absolute", top: "0.375rem", right: "0.375rem", height: "0.5rem", width: "0.5rem", backgroundColor: "#f87171", borderRadius: "50%", border: "2px solid white" }} />
-            </button>
+            <NotificationBell />
             <div style={{ height: "2rem", width: "1px", backgroundColor: "#e7e5e4", margin: "0 0.25rem" }} />
             <Link to="/settings" style={{ display: "flex", alignItems: "center", gap: "0.75rem", textDecoration: "none" }}>
               <div style={{ textAlign: "right" }}>

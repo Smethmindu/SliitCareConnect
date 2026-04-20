@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Outlet, Link, useNavigate } from "react-router-dom";
-import { LeafIcon, BellIcon, LogOutIcon } from "lucide-react";
+import { LeafIcon, LogOutIcon } from "lucide-react";
+import { NotificationBell } from "../NotificationBell";
 
 export function MainLayout() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -216,31 +217,7 @@ export function MainLayout() {
             >
               {currentUser ? (
                 <>
-                  <button
-                    style={{
-                      padding: "0.5rem",
-                      color: "#a8a29e",
-                      background: "none",
-                      border: "none",
-                      position: "relative",
-                      cursor: "pointer",
-                    }}
-                    title="Notifications"
-                    >
-                      <BellIcon style={{ height: "1.25rem", width: "1.25rem" }} />
-                      <span
-                        style={{
-                          position: "absolute",
-                          top: "0.375rem",
-                          right: "0.375rem",
-                          height: "0.5rem",
-                          width: "0.5rem",
-                          backgroundColor: "#f87171",
-                          borderRadius: "50%",
-                          border: "2px solid white",
-                        }}
-                      ></span>
-                    </button>
+                  <NotificationBell />
                     <div
                       style={{
                         height: "2rem",

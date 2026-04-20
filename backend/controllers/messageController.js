@@ -1,5 +1,6 @@
 import Conversation from '../models/Conversation.js';
 import Message from '../models/Message.js';
+import Notification from '../models/Notification.js';
 
 // POST /api/messages/conversations — Get or create a conversation between two users
 export const getOrCreateConversation = async (req, res) => {
@@ -107,11 +108,27 @@ export const sendMessage = async (req, res) => {
     });
 
     // Update conversation's last message
-    await Conversation.findByIdAndUpdate(conversationId, {
+    const conversation = await Conversation.findByIdAndUpdate(conversationId, {
       lastMessage: text.length > 80 ? text.substring(0, 80) + '...' : text,
       lastMessageAt: new Date(),
       lastMessageSenderId: senderId,
-    });
+    }, { new: true });
+
+    // Notify the other participant
+    try {
+      if (conversation) {
+        const recipient = conversation.participants.find((p) => p.userId !== senderId);
+        if (recipient) {
+          await Notification.create({
+            recipientId: recipient.userId,
+            type: 'new_message',
+            message: `New message from ${senderName || 'Someone'}: "${text.length > 40 ? text.substring(0, 40) + '...' : text}"`,
+          });
+        }
+      }
+    } catch (notifErr) {
+      console.error('Failed to send message notification:', notifErr);
+    }
 
     res.status(201).json({ status: 'success', data: message });
   } catch (err) {

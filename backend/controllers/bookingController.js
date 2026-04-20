@@ -1,5 +1,6 @@
 import Booking from '../models/Booking.js';
 import Notification from '../models/Notification.js';
+import Counselor from '../models/counselorModel.js';
 
 // POST /api/bookings — Create a new booking
 export const createBooking = async (req, res) => {
@@ -19,13 +20,20 @@ export const createBooking = async (req, res) => {
       status: 'pending',
     });
 
-    // Notify the counselor about this new booking
-    await Notification.create({
-      recipientId: counselorId,
-      type: 'new_booking',
-      message: `New booking request from ${studentName} on ${date} at ${time}.`,
-      bookingId: booking._id,
-    });
+    // Resolve the counselor's User _id from the Counselor profile
+    try {
+      const counselorProfile = await Counselor.findById(counselorId).select('userId');
+      const recipientUserId = counselorProfile?.userId?.toString() || counselorId;
+
+      await Notification.create({
+        recipientId: recipientUserId,
+        type: 'new_booking',
+        message: `New appointment request from ${studentName} on ${date} at ${time}.`,
+        bookingId: booking._id,
+      });
+    } catch (notifErr) {
+      console.error('Failed to send booking notification:', notifErr);
+    }
 
     res.status(201).json({
       status: 'success',
@@ -93,6 +101,23 @@ export const updateBookingStatus = async (req, res) => {
       bookingId: booking._id,
     });
 
+    // If student cancels, also notify the counselor
+    if (status === 'cancelled') {
+      try {
+        const counselorProfile = await Counselor.findById(booking.counselorId).select('userId');
+        const recipientUserId = counselorProfile?.userId?.toString() || booking.counselorId;
+
+        await Notification.create({
+          recipientId: recipientUserId,
+          type: 'booking_cancelled',
+          message: `${booking.studentName} has cancelled their appointment on ${booking.date} at ${booking.time}.`,
+          bookingId: booking._id,
+        });
+      } catch (notifErr) {
+        console.error('Failed to send cancellation notification to counselor:', notifErr);
+      }
+    }
+
     res.status(200).json({ status: 'success', data: booking });
   } catch (err) {
     res.status(500).json({ status: 'error', message: err.message });
@@ -103,13 +128,12 @@ export const updateBookingStatus = async (req, res) => {
 export const getBookedSlots = async (req, res) => {
   try {
     const { counselorId } = req.params;
-    const { date } = req.query; // expects the formatted date string e.g. "Monday, April 21, 2026"
+    const { date } = req.query;
 
     if (!date) {
       return res.status(400).json({ status: 'error', message: 'Date query parameter is required.' });
     }
 
-    // Find all non-cancelled/declined bookings for this counselor on this date
     const bookings = await Booking.find({
       counselorId,
       date,

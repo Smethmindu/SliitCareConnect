@@ -253,6 +253,38 @@ export function AdminPage() {
     }
   };
 
+  const [showBroadcastModal, setShowBroadcastModal] = useState(false);
+  const [broadcastMsg, setBroadcastMsg] = useState("");
+  const [broadcastTarget, setBroadcastTarget] = useState("all");
+  const [broadcastSending, setBroadcastSending] = useState(false);
+
+  const handleSendBroadcast = async () => {
+    if (!broadcastMsg.trim()) return;
+    setBroadcastSending(true);
+    try {
+      const token = getToken();
+      const res = await fetch(`${API_BASE_URL}/notifications/broadcast`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ message: broadcastMsg.trim(), target: broadcastTarget }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        alert(`✅ ${data.message}`);
+        setShowBroadcastModal(false);
+        setBroadcastMsg("");
+        setBroadcastTarget("all");
+      } else {
+        const err = await res.json();
+        alert(`❌ Failed: ${err.message || "Unknown error"}`);
+      }
+    } catch (err) {
+      alert(`Network error: ${err.message}`);
+    } finally {
+      setBroadcastSending(false);
+    }
+  };
+
   const handleQuickAction = async (action) => {
     const token = getToken();
     if (!token) return;
@@ -270,19 +302,6 @@ export function AdminPage() {
           a.download = 'users.csv';
           a.click();
         }
-      } else if (action === 'sendNotifications') {
-        // Send notifications to all users
-        await fetch(`${API_BASE_URL}/users/notify`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            message: 'System maintenance scheduled for tonight',
-            type: 'system'
-          })
-        });
       }
     } catch (error) {
       console.error('Quick action failed:', error);
@@ -461,7 +480,7 @@ export function AdminPage() {
           >
             📊 Export Users
           </button>
-          <button onClick={() => handleQuickAction('sendNotifications')} style={{ border: "1px solid #e7e5e4", borderRadius: "0.75rem", padding: "0.625rem 1.25rem", backgroundColor: "white", color: "#44403c", fontWeight: 500, cursor: "pointer", fontSize: "0.875rem", transition: "all 0.2s" }}
+          <button onClick={() => setShowBroadcastModal(true)} style={{ border: "1px solid #e7e5e4", borderRadius: "0.75rem", padding: "0.625rem 1.25rem", backgroundColor: "white", color: "#44403c", fontWeight: 500, cursor: "pointer", fontSize: "0.875rem", transition: "all 0.2s" }}
             onMouseOver={(e) => { e.currentTarget.style.backgroundColor = "#fafaf9"; e.currentTarget.style.borderColor = "#d6d3d1"; }}
             onMouseOut={(e) => { e.currentTarget.style.backgroundColor = "white"; e.currentTarget.style.borderColor = "#e7e5e4"; }}
           >
@@ -1076,6 +1095,82 @@ export function AdminPage() {
               >
                 Add User
               </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Broadcast Notification Modal */}
+      {showBroadcastModal && (
+        <div
+          style={{
+            position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+            backgroundColor: "rgba(0,0,0,0.4)", backdropFilter: "blur(4px)",
+            display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000,
+          }}
+          onClick={() => setShowBroadcastModal(false)}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              backgroundColor: "white", borderRadius: "1.25rem", padding: "2rem",
+              width: "90%", maxWidth: "480px", boxShadow: "0 24px 48px rgba(0,0,0,0.12)",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+              <h2 style={{ margin: 0, fontSize: "1.25rem", color: "#1c1917", fontWeight: 700 }}>
+                📢 Send Notification
+              </h2>
+              <button
+                onClick={() => setShowBroadcastModal(false)}
+                style={{ border: "none", background: "#f5f5f4", width: "32px", height: "32px", borderRadius: "0.5rem", fontSize: "1.25rem", cursor: "pointer", color: "#78716c", display: "flex", alignItems: "center", justifyContent: "center" }}
+              >×</button>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+              <div>
+                <label style={{ fontSize: "0.875rem", fontWeight: 500, color: "#44403c", display: "block", marginBottom: "0.5rem" }}>Target Audience</label>
+                <select
+                  value={broadcastTarget}
+                  onChange={(e) => setBroadcastTarget(e.target.value)}
+                  style={{ width: "100%", padding: "0.75rem", border: "1px solid #e7e5e4", borderRadius: "0.75rem", fontSize: "0.875rem", backgroundColor: "white", color: "#1c1917", outline: "none", cursor: "pointer" }}
+                >
+                  <option value="all">All Users (Students & Counselors)</option>
+                  <option value="students">Students Only</option>
+                  <option value="counselors">Counselors Only</option>
+                </select>
+              </div>
+
+              <div>
+                <label style={{ fontSize: "0.875rem", fontWeight: 500, color: "#44403c", display: "block", marginBottom: "0.5rem" }}>Notification Message</label>
+                <textarea
+                  value={broadcastMsg}
+                  onChange={(e) => setBroadcastMsg(e.target.value)}
+                  placeholder="Type your notification message here..."
+                  rows={4}
+                  style={{ width: "100%", padding: "0.75rem", border: "1px solid #e7e5e4", borderRadius: "0.75rem", fontSize: "0.875rem", backgroundColor: "#fafaf9", color: "#1c1917", outline: "none", resize: "vertical", fontFamily: "inherit", boxSizing: "border-box" }}
+                />
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem", marginTop: "0.5rem" }}>
+                <button
+                  onClick={() => setShowBroadcastModal(false)}
+                  style={{ padding: "0.75rem 1.5rem", backgroundColor: "white", color: "#57534e", borderRadius: "0.75rem", fontWeight: 500, fontSize: "0.875rem", border: "1px solid #e7e5e4", cursor: "pointer" }}
+                >Cancel</button>
+                <button
+                  onClick={handleSendBroadcast}
+                  disabled={!broadcastMsg.trim() || broadcastSending}
+                  style={{
+                    padding: "0.75rem 1.5rem", borderRadius: "0.75rem", fontWeight: 600, fontSize: "0.875rem", border: "none", cursor: broadcastMsg.trim() && !broadcastSending ? "pointer" : "not-allowed",
+                    backgroundColor: broadcastMsg.trim() && !broadcastSending ? "#0ea5e9" : "#d6d3d1", color: "white",
+                    boxShadow: broadcastMsg.trim() ? "0 2px 8px rgba(14, 165, 233, 0.25)" : "none",
+                    transition: "all 0.2s",
+                  }}
+                >{broadcastSending ? "Sending..." : "Send Notification"}</button>
+              </div>
             </div>
           </motion.div>
         </div>

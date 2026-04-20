@@ -1,6 +1,7 @@
 import { User } from '../models/User.js';
 import { generateToken } from '../middleware/auth.js';
 import jwt from 'jsonwebtoken';
+import Notification from '../models/Notification.js';
 
 // Register new user
 export const register = async (req, res) => {
@@ -40,6 +41,23 @@ export const register = async (req, res) => {
     console.log('User object created, attempting to save...');
     await user.save();
     console.log('User saved successfully');
+
+    // Notify all admins about the new signup
+    try {
+      const admins = await User.find({ role: 'admin', _id: { $ne: user._id } }).select('_id');
+      if (admins.length > 0) {
+        await Notification.insertMany(
+          admins.map((admin) => ({
+            recipientId: admin._id.toString(),
+            type: 'new_signup',
+            message: `New student ${firstName} ${lastName} has signed up.`,
+          }))
+        );
+        console.log(`Signup notification sent to ${admins.length} admin(s)`);
+      }
+    } catch (notifErr) {
+      console.error('Failed to send signup notifications:', notifErr);
+    }
 
     // Generate token
     const token = generateToken(user._id);

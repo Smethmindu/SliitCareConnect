@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LeafIcon,
-  BellIcon,
   SettingsIcon,
   LogOutIcon,
   LayoutDashboardIcon,
   UsersIcon,
 } from "lucide-react";
+import { NotificationBell } from "../NotificationBell";
 
 function getToken() {
   return localStorage.getItem("token") ?? sessionStorage.getItem("token") ?? null;
@@ -154,30 +154,7 @@ export function ADashboardLayout() {
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-            <button
-              style={{
-                padding: "0.5rem",
-                color: "#a8a29e",
-                background: "none",
-                border: "none",
-                position: "relative",
-                cursor: "pointer",
-              }}
-            >
-              <BellIcon style={{ height: "1.25rem", width: "1.25rem" }} />
-              <span
-                style={{
-                  position: "absolute",
-                  top: "0.375rem",
-                  right: "0.375rem",
-                  height: "0.5rem",
-                  width: "0.5rem",
-                  backgroundColor: "#f87171",
-                  borderRadius: "50%",
-                  border: "2px solid white",
-                }}
-              ></span>
-            </button>
+            <NotificationBell />
             <div
               style={{
                 height: "2rem",
