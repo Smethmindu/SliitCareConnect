@@ -105,7 +105,7 @@ export function DashboardLayout() {
 
   const navItems = [
     { icon: HomeIcon, label: "Home", path: "/" },
-    ...(currentUser ? [{ icon: LayoutDashboardIcon, label: "Dashboard", path: "/dashboard" }] : []),
+    ...(currentUser ? [{ icon: LayoutDashboardIcon, label: "Dashboard", path: "/profile" }] : []),
     ...(currentUser ? [{ icon: CalendarIcon, label: "Appointments", path: "/appointments" }] : []),
     { icon: UsersIcon, label: "Counselors", path: "/counselors" },
     ...(currentUser ? [{ icon: MessageSquareIcon, label: "Messages", path: "/messages" }] : []),
