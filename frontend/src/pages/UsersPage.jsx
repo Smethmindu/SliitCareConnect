@@ -130,14 +130,31 @@ export function UsersPage() {
     { name: 'Pending', value: users.filter(u => !u.isEmailVerified).length, color: '#f59e0b' },
   ];
 
-  const monthlyData = [
-    { month: 'Jan', users: 12 },
-    { month: 'Feb', users: 19 },
-    { month: 'Mar', users: 25 },
-    { month: 'Apr', users: 18 },
-    { month: 'May', users: 22 },
-    { month: 'Jun', users: 30 },
-  ];
+  // Compute real monthly registration data from user createdAt dates
+  const monthlyData = (() => {
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const now = new Date();
+    const months = [];
+
+    // Build last 6 months (including current)
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      months.push({
+        month: monthNames[d.getMonth()],
+        year: d.getFullYear(),
+        monthIndex: d.getMonth(),
+      });
+    }
+
+    return months.map(({ month, year, monthIndex }) => {
+      const count = users.filter((u) => {
+        if (!u.createdAt) return false;
+        const created = new Date(u.createdAt);
+        return created.getMonth() === monthIndex && created.getFullYear() === year;
+      }).length;
+      return { month, users: count };
+    });
+  })();
 
   const generatePDFReport = () => {
     // Generate HTML content for the report
@@ -437,7 +454,7 @@ export function UsersPage() {
               }}>
                 <div style={{
                   width: "100%",
-                  height: `${(item.users / Math.max(...monthlyData.map(m => m.users))) * 200}px`,
+                  height: `${(item.users / Math.max(1, ...monthlyData.map(m => m.users))) * 200}px`,
                   backgroundColor: "#3b82f6",
                   borderRadius: "4px 4px 0 0",
                   transition: "height 0.3s ease",
