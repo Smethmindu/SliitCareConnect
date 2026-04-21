@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { LogOutIcon, UserIcon, SettingsIcon, BellIcon, Users, UserCheck, Briefcase, Clock } from "lucide-react";
 
 const API_BASE_URL = "http://localhost:3000/api";
@@ -16,6 +17,7 @@ function formatDate(value) {
 }
 
 export function AdminPage() {
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
@@ -486,13 +488,13 @@ export function AdminPage() {
           >
             📢 Send Notifications
           </button>
-          <button onClick={() => window.open('/asettings', '_blank')} style={{ border: "1px solid #e7e5e4", borderRadius: "0.75rem", padding: "0.625rem 1.25rem", backgroundColor: "white", color: "#44403c", fontWeight: 500, cursor: "pointer", fontSize: "0.875rem", transition: "all 0.2s" }}
+          <button onClick={() => navigate('/asettings')} style={{ border: "1px solid #e7e5e4", borderRadius: "0.75rem", padding: "0.625rem 1.25rem", backgroundColor: "white", color: "#44403c", fontWeight: 500, cursor: "pointer", fontSize: "0.875rem", transition: "all 0.2s" }}
             onMouseOver={(e) => { e.currentTarget.style.backgroundColor = "#fafaf9"; e.currentTarget.style.borderColor = "#d6d3d1"; }}
             onMouseOut={(e) => { e.currentTarget.style.backgroundColor = "white"; e.currentTarget.style.borderColor = "#e7e5e4"; }}
           >
             ⚙️ Settings
           </button>
-          <button onClick={() => window.open('/admin/feedback', '_blank')} style={{ border: "1px solid #bae6fd", borderRadius: "0.75rem", padding: "0.625rem 1.25rem", backgroundColor: "#f0f9ff", color: "#0369a1", fontWeight: 500, cursor: "pointer", fontSize: "0.875rem", transition: "all 0.2s" }}
+          <button onClick={() => navigate('/admin/feedback')} style={{ border: "1px solid #bae6fd", borderRadius: "0.75rem", padding: "0.625rem 1.25rem", backgroundColor: "#f0f9ff", color: "#0369a1", fontWeight: 500, cursor: "pointer", fontSize: "0.875rem", transition: "all 0.2s" }}
             onMouseOver={(e) => { e.currentTarget.style.backgroundColor = "#e0f2fe"; }}
             onMouseOut={(e) => { e.currentTarget.style.backgroundColor = "#f0f9ff"; }}
           >

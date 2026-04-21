@@ -103,13 +103,18 @@ export function CounselorDashboard() {
             setAllBookings(bookings);
             
             // Filter TODAY's confirmed sessions only for "Today's Schedule"
-            const todayStr = new Date().toISOString().split("T")[0];
+            // Filter TODAY's confirmed sessions only for "Today's Schedule"
+            // Use local date string comparison to avoid UTC timezone offset issues causing wrong days
+            const todayStr = new Date().toLocaleDateString("en-US", { 
+              weekday: "long", 
+              year: "numeric", 
+              month: "long", 
+              day: "numeric" 
+            });
             const todayConfirmed = bookings
               .filter(b => {
-                if (b.status === "cancelled" || b.status === "completed") return false;
-                // Only show bookings whose date matches today
-                const bookingDate = b.date ? new Date(b.date).toISOString().split("T")[0] : "";
-                return bookingDate === todayStr;
+                if (b.status !== "confirmed") return false;
+                return b.date === todayStr;
               })
               .map(b => ({
                 id: b._id,
