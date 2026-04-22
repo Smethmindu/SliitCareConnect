@@ -11,8 +11,8 @@ Your role:
 - Do NOT provide medical diagnoses or prescribe treatments. Always recommend speaking with a qualified counselor for serious concerns.
 - Be warm, friendly, and use occasional emojis to feel approachable.`;
 
-// Model priority list — falls back if the primary model is overloaded
-const MODELS = ["gemini-2.5-flash", "gemini-2.0-flash-lite", "gemini-2.0-flash"];
+// Model priority list — try lighter models first to avoid quota issues on free tier
+const MODELS = ["gemini-2.0-flash-lite", "gemini-2.0-flash", "gemini-2.5-flash"];
 
 // Reuse a single SDK instance for performance
 let genAIInstance = null;
@@ -110,7 +110,21 @@ export const handleChat = async (req, res) => {
     if (status === 429 || status === 403 || error?.message?.includes("API key") || error?.message?.includes("API_KEY_INVALID") || error?.message?.includes("PERMISSION_DENIED")) {
       // Reset cached instance so a new/updated key can be picked up on next request
       genAIInstance = null;
-      console.error("Chatbot: API key may be invalid or revoked. Please generate a new key at https://aistudio.google.com/apikey");
+
+      // Check if it's a quota exhaustion (limit: 0) vs temporary rate limit
+      const isQuotaExhausted = error?.message?.includes("limit: 0");
+      
+      if (isQuotaExhausted) {
+        console.error("Chatbot: FREE TIER QUOTA EXHAUSTED (limit: 0). You need to either:");
+        console.error("  1. Create a NEW Google Cloud project at https://aistudio.google.com/apikey");
+        console.error("  2. Or enable billing on the current project at https://console.cloud.google.com/billing");
+        return res.status(200).json({
+          response:
+            "I'm currently unavailable because my free usage quota has been reached. The administrator needs to set up a new API key from a different Google Cloud project. Please try again later! 🔧",
+        });
+      }
+
+      console.error("Chatbot: API key may be invalid or rate-limited. Check https://aistudio.google.com/apikey");
       return res.status(200).json({
         response:
           "There seems to be an issue with my API configuration. The API key may have been revoked. Please contact the administrator to generate a new key. 🔧",
