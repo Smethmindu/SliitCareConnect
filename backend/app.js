@@ -14,6 +14,7 @@ import resourceRoutes from "./routes/resource.routes.js";
 import feedbackRoutes from "./routes/feedback.routes.js";
 import quizRoutes from "./routes/quiz.routes.js";
 import messageRoutes from "./routes/messageRoutes.js";
+import chatbotRoutes from "./routes/chatbotRoutes.js";
 
 const app = express();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -61,6 +62,7 @@ app.use("/api/resources", resourceRoutes);
 app.use("/api/feedback", feedbackRoutes);
 app.use("/api/quiz", quizRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/chat", chatbotRoutes);
 
 // 404 handler
 app.use((req, res) => {

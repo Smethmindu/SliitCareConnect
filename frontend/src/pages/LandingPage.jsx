@@ -8,6 +8,7 @@ import {
   BrainCircuitIcon,
 } from "lucide-react";
 import heroImg from "../assets/counselors.png";
+import { Chatbot } from "../components/Chatbot";
 
 export function LandingPage() {
   const fadeIn = {
@@ -361,6 +362,7 @@ export function LandingPage() {
           </div>
         </div>
       </section>
+      <Chatbot />
     </div>
   );
 }
