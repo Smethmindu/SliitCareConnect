@@ -32,13 +32,15 @@ export function Chatbot() {
     setIsLoading(true);
 
     try {
-      const baseUrl = 'http://localhost:3000'; // Define base API URL in case proxy doesn't catch
+      const baseUrl = 'http://localhost:3000';
+      // Send conversation history (excluding the initial greeting) for multi-turn context
+      const history = messages.slice(1).map((m) => ({ role: m.role, text: m.text }));
       const response = await fetch(`${baseUrl}/api/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message: userMessage }),
+        body: JSON.stringify({ message: userMessage, history }),
       });
 
       const data = await response.json();
