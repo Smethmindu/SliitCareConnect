@@ -107,19 +107,13 @@ export const handleChat = async (req, res) => {
     // Provide user-friendly error messages based on error type
     const status = error?.status || error?.response?.status;
 
-    if (status === 429) {
-      return res.status(200).json({
-        response:
-          "I'm receiving a lot of requests right now. Please wait a moment and try again! ⏳",
-      });
-    }
-
-    if (status === 403 || error?.message?.includes("API key")) {
-      // Reset cached instance so a new key can be picked up
+    if (status === 429 || status === 403 || error?.message?.includes("API key") || error?.message?.includes("API_KEY_INVALID") || error?.message?.includes("PERMISSION_DENIED")) {
+      // Reset cached instance so a new/updated key can be picked up on next request
       genAIInstance = null;
+      console.error("Chatbot: API key may be invalid or revoked. Please generate a new key at https://aistudio.google.com/apikey");
       return res.status(200).json({
         response:
-          "There seems to be an issue with my API configuration. Please contact the administrator. 🔧",
+          "There seems to be an issue with my API configuration. The API key may have been revoked. Please contact the administrator to generate a new key. 🔧",
       });
     }
 
