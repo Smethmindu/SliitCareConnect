@@ -6,6 +6,8 @@ import {
   LogOutIcon,
   LayoutDashboardIcon,
   UsersIcon,
+  BookOpenIcon,
+  MessageSquareIcon,
 } from "lucide-react";
 import { NotificationBell } from "../NotificationBell";
 
@@ -104,8 +106,10 @@ export function ADashboardLayout() {
   };
 
   const navItems = [
+    { icon: LayoutDashboardIcon, label: "Admin Dashboard", path: "/admin" },
     { icon: UsersIcon, label: "Users", path: "/users" },
-    { icon: UsersIcon, label: "Admin Dashboard", path: "/admin" },
+    { icon: BookOpenIcon, label: "Resources", path: "/admin/resources" },
+    { icon: MessageSquareIcon, label: "Feedback", path: "/admin/feedback" },
   ];
 
   return (

@@ -81,7 +81,11 @@ export function RegisterPage() {
       if (data.success) {
         setSuccess(true);
         
-        // Store token and user data
+        // Store token and user data - clear both storages first
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('user');
         localStorage.setItem('token', data.data.token);
         localStorage.setItem('user', JSON.stringify(data.data.user));
         

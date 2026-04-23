@@ -13,8 +13,26 @@ const ResourceSchema = new mongoose.Schema(
 
     fileUrl: { type: String, required: true },
 
-    uploadedBy: { type: String, required: true }, // ADMIN ID
+    uploadedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
 
+    status: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "approved",
+    },
+
+    reviewedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+
+    reviewedAt: { type: Date },
+
+    rejectionReason: { type: String },
   },
   { timestamps: true }
 );

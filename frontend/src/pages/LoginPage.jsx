@@ -64,6 +64,12 @@ export function LoginPage() {
         console.log('🎭 User role:', user.role);
         
         // Store token and user data
+        // IMPORTANT: Always clear BOTH storages first to prevent stale credentials
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('user');
+
         if (rememberMe) {
           console.log('💾 Storing in localStorage');
           localStorage.setItem('token', token);

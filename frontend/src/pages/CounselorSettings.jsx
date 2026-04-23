@@ -16,6 +16,7 @@ import {
   CheckCircleIcon,
   AlertCircleIcon,
   Edit2Icon,
+  BookOpenIcon,
 } from "lucide-react";
 import { NotificationBell } from "../components/NotificationBell";
 
@@ -29,6 +30,7 @@ export function CounselorSettings() {
     { icon: LayoutDashboardIcon, label: "Dashboard", path: "/counselor-dashboard" },
     { icon: CalendarIcon, label: "Appointments", path: "/counselor-appointments" },
     { icon: MessageSquareIcon, label: "Messages", path: "/counselor-messages" },
+    { icon: BookOpenIcon, label: "Resources", path: "/counselor-resources" },
   ];
 
   const [formData, setFormData] = useState({

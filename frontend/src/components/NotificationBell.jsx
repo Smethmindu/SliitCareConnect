@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { BellIcon, CheckIcon, XIcon, MegaphoneIcon, CalendarIcon, MessageSquareIcon, UserPlusIcon } from "lucide-react";
+import { BellIcon, CheckIcon, XIcon, MegaphoneIcon, CalendarIcon, MessageSquareIcon, UserPlusIcon, BookOpenIcon } from "lucide-react";
 
 const API = "http://localhost:3000/api/notifications";
 
@@ -38,6 +38,9 @@ function getNotifIcon(type) {
     case "new_message": return <MessageSquareIcon style={{ height: "1rem", width: "1rem", color: "#8b5cf6" }} />;
     case "new_signup": return <UserPlusIcon style={{ height: "1rem", width: "1rem", color: "#0ea5e9" }} />;
     case "admin_broadcast": return <MegaphoneIcon style={{ height: "1rem", width: "1rem", color: "#f97316" }} />;
+    case "resource_pending": return <BookOpenIcon style={{ height: "1rem", width: "1rem", color: "#f59e0b" }} />;
+    case "resource_approved": return <CheckIcon style={{ height: "1rem", width: "1rem", color: "#16a34a" }} />;
+    case "resource_rejected": return <XIcon style={{ height: "1rem", width: "1rem", color: "#dc2626" }} />;
     default: return <BellIcon style={{ height: "1rem", width: "1rem", color: "#78716c" }} />;
   }
 }

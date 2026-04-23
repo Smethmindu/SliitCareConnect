@@ -11,7 +11,8 @@ const notificationSchema = new mongoose.Schema(
       enum: [
         'new_booking', 'booking_confirmed', 'booking_declined',
         'booking_cancelled', 'booking_completed',
-        'new_signup', 'new_message', 'admin_broadcast'
+        'new_signup', 'new_message', 'admin_broadcast',
+        'resource_pending', 'resource_approved', 'resource_rejected'
       ],
       required: true,
     },
@@ -22,6 +23,10 @@ const notificationSchema = new mongoose.Schema(
     bookingId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Booking',
+    },
+    resourceId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Resource',
     },
     isRead: {
       type: Boolean,

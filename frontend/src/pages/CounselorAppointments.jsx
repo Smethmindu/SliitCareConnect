@@ -8,7 +8,8 @@ import {
   VideoIcon,
   MapPinIcon,
   PhoneIcon,
-  ClockIcon
+  ClockIcon,
+  BookOpenIcon
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { NotificationBell } from "../components/NotificationBell";
@@ -150,6 +151,7 @@ export function CounselorAppointments() {
     { icon: LayoutDashboardIcon, label: "Dashboard", path: "/counselor-dashboard" },
     { icon: CalendarIcon, label: "Appointments", path: "/counselor-appointments" },
     { icon: MessageSquareIcon, label: "Messages", path: "/counselor-messages" },
+    { icon: BookOpenIcon, label: "Resources", path: "/counselor-resources" },
   ];
 
   return (
