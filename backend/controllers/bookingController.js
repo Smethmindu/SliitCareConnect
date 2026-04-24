@@ -1,8 +1,16 @@
+/**
+ * MEMBER 3: Booking & Notifications
+ * BOOKING CONTROLLER
+ * This file handles the entire lifecycle of an appointment (create, list, update status).
+ */
 import Booking from '../models/Booking.js';
 import Notification from '../models/Notification.js';
 import Counselor from '../models/counselorModel.js';
 
-// POST /api/bookings — Create a new booking
+/**
+ * CREATE A NEW BOOKING
+ * Saves the appointment details and sends a notification to the counselor.
+ */
 export const createBooking = async (req, res) => {
   try {
     const { counselorId, counselorName, studentId, studentName, date, time, sessionType, notes } =
@@ -44,7 +52,10 @@ export const createBooking = async (req, res) => {
   }
 };
 
-// GET /api/bookings/student/:studentId — Get all bookings for a student
+/**
+ * GET STUDENT BOOKINGS
+ * Retrieves all appointments for a specific student, sorted by date.
+ */
 export const getStudentBookings = async (req, res) => {
   try {
     const bookings = await Booking.find({ studentId: req.params.studentId }).sort({
@@ -68,7 +79,11 @@ export const getCounselorBookings = async (req, res) => {
   }
 };
 
-// PATCH /api/bookings/:id/status — Update booking status
+/**
+ * UPDATE BOOKING STATUS
+ * Allows counselors to confirm/decline and students to cancel.
+ * Also sends relevant notifications to both parties.
+ */
 export const updateBookingStatus = async (req, res) => {
   try {
     const { status } = req.body;
@@ -124,7 +139,11 @@ export const updateBookingStatus = async (req, res) => {
   }
 };
 
-// GET /api/bookings/slots/:counselorId?date=... — Get booked time slots for a counselor on a date
+/**
+ * GET BOOKED SLOTS
+ * Returns a list of times that are already taken for a specific counselor on a specific date.
+ * Used by the frontend to disable booked time slots in the calendar.
+ */
 export const getBookedSlots = async (req, res) => {
   try {
     const { counselorId } = req.params;
@@ -134,6 +153,9 @@ export const getBookedSlots = async (req, res) => {
       return res.status(400).json({ status: 'error', message: 'Date query parameter is required.' });
     }
 
+    // --- CONFLICT PREVENTION ---
+    // We only count slots as "booked" if they are 'pending', 'confirmed', or 'completed'.
+    // Cancelled or Declined slots are ignored so other students can book them.
     const bookings = await Booking.find({
       counselorId,
       date,

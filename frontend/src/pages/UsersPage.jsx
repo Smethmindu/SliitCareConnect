@@ -1,3 +1,9 @@
+/**
+ * MEMBER 1: Auth & User Management
+ * ADMIN USERS MANAGEMENT PAGE
+ * This page provides administrators with a birds-eye view of all registered 
+ * users, including registration trends, role distribution, and directory management.
+ */
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
@@ -130,7 +136,12 @@ export function UsersPage() {
     { name: 'Pending', value: users.filter(u => !u.isEmailVerified).length, color: '#f59e0b' },
   ];
 
-  // Compute real monthly registration data from user createdAt dates
+  /**
+   * COMPUTE REGISTRATION TRENDS
+   * This logic parses the 'createdAt' timestamps of all users to build a 
+   * 6-month historical view of registration activity for the dashboard chart.
+   * It ensures that even months with 0 registrations are represented.
+   */
   const monthlyData = (() => {
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const now = new Date();
@@ -156,6 +167,13 @@ export function UsersPage() {
     });
   })();
 
+  /**
+   * PDF REPORT GENERATION
+   * Dynamically constructs an HTML document containing current user statistics 
+   * and a full directory listing, then triggers a browser download.
+   * This workflow utilizes high-fidelity HTML templates with custom CSS to
+   * ensure the output is print-friendly and professional for management reporting.
+   */
   const generatePDFReport = () => {
     // Generate HTML content for the report
     const reportHTML = `

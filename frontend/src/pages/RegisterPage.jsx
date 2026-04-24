@@ -1,3 +1,9 @@
+/**
+ * MEMBER 1: Auth & User Management
+ * STUDENT REGISTRATION PAGE
+ * This page handles the creation of new student accounts, including 
+ * validation of university credentials and secure storage of session tokens.
+ */
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -6,15 +12,16 @@ import { LeafIcon, EyeIcon, EyeOffIcon } from "lucide-react";
 const API_BASE_URL = "/api";
 
 export function RegisterPage() {
+  // --- STATE MANAGEMENT ---
   const navigate = useNavigate();
-  const [role, setRole] = useState("student");
+  const [role, setRole] = useState("student"); // Fixed to student for public registration
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     email: '',
     password: '',
     confirmPassword: '',
-    studentId: ''
+    studentId: '' // Required for academic verification
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -30,12 +37,21 @@ export function RegisterPage() {
     }));
   };
 
+  /**
+   * HANDLE REGISTRATION
+   * 1. Validates input patterns (IT ID, Password complexity).
+   * 2. Purges any stale local data to prevent role-leakage.
+   * 3. Submits data to the backend.
+   */
   const handleRegister = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
-    // Validate student ID
+    // --- VALIDATION: STUDENT ID ---
+    // Enforces format: IT + 8 digits (e.g. IT21000000)
+    // This regex ensures only students from the IT faculty can register
+    // through the public portal.
     if (role === "student") {
       const studentIdRegex = /^IT\d{8}$/i;
       if (!studentIdRegex.test(formData.studentId)) {
@@ -45,7 +61,8 @@ export function RegisterPage() {
       }
     }
 
-    // Validate password complexity
+    // --- VALIDATION: PASSWORD ---
+    // Enforces security: 8+ chars, upper, lower, special
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}$/;
     if (!passwordRegex.test(formData.password)) {
       setError("Password must be at least 8 characters long, and include an uppercase letter, a lowercase letter, and a special character.");
@@ -81,11 +98,15 @@ export function RegisterPage() {
       if (data.success) {
         setSuccess(true);
         
-        // Store token and user data - clear both storages first
+        // --- SECURITY: STORAGE PURGE ---
+        // We clear both storage areas to ensure no credentials from previous 
+        // sessions (e.g. a counselor logging in on the same machine) remain.
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         sessionStorage.removeItem('token');
         sessionStorage.removeItem('user');
+        
+        // Save new student credentials
         localStorage.setItem('token', data.data.token);
         localStorage.setItem('user', JSON.stringify(data.data.user));
         

@@ -1,3 +1,8 @@
+/**
+ * MEMBER 2: Counselor & Public Pages
+ * COUNSELOR CONTROLLER
+ * This file handles all data operations related to counselor profiles, specialties, and schedules.
+ */
 import Counselor from "../models/counselorModel.js";
 
 // Create a new counselor
@@ -16,7 +21,10 @@ export const createCounselor = async (req, res) => {
   }
 };
 
-// Get all counselors (with optional filter & search)
+/**
+ * GET ALL COUNSELORS
+ * Fetches the list of counselors. Supports filtering by specialty and searching by name.
+ */
 export const getAllCounselors = async (req, res) => {
   try {
     const { specialty, search } = req.query;
@@ -101,7 +109,10 @@ export const getCounselorByUserId = async (req, res) => {
   }
 };
 
-// Update counselor profile
+/**
+ * UPDATE COUNSELOR PROFILE
+ * Allows counselors to update their biography, education, and credentials.
+ */
 export const updateCounselorProfile = async (req, res) => {
   try {
     const { name, email, dob, speciality, specialities, bio, education, credentials } = req.body;
@@ -157,7 +168,10 @@ export const getAvailability = async (req, res) => {
   }
 };
 
-// Update counselor availability
+/**
+ * UPDATE AVAILABILITY
+ * Updates the weekly schedule (days and times) when a counselor is free to see students.
+ */
 export const updateAvailability = async (req, res) => {
   try {
     const counselor = await Counselor.findByIdAndUpdate(

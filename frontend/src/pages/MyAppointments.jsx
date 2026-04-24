@@ -1,3 +1,9 @@
+/**
+ * MEMBER 3: Booking & Notifications
+ * MY APPOINTMENTS PAGE
+ * This page allows students to track the status of their session requests (Pending, Approved, Completed)
+ * and manage their upcoming schedule.
+ */
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -35,15 +41,17 @@ export function MyAppointments() {
           else if (Array.isArray(data.data?.bookings)) fetchedBookings = data.data.bookings;
           else if (Array.isArray(data.bookings)) fetchedBookings = data.bookings;
           
-          // Map backend schema to frontend expected format
+          // --- DATA SCHEMA MAPPING ---
+          // The backend uses technical status strings (confirmed, pending, completed).
+          // We map these to human-friendly labels used in the Tab filters.
+          // This abstraction layer ensures that even if the backend changes 
+          // its naming convention, the student UI remains consistent.
           const mappedAppointments = fetchedBookings.map(b => {
-             let statusDisplay = "Pending"; // default back-end is 'pending'
-             if (b.status === "confirmed") statusDisplay = "Approved";
-             if (b.status === "completed") statusDisplay = "Completed";
-             // we will not show canceled in these tabs unless we map them, 
-             // but user requested Pending, Approved, and Completed tabs.
-
-             // Map session type from 'video', 'in-person', 'phone'
+             let statusDisplay = "Pending"; 
+             if (b.status === "confirmed") statusDisplay = "Approved"; 
+             if (b.status === "completed") statusDisplay = "Completed"; 
+             
+             // Convert technical sessionType strings into display labels
              let typeDisplay = "Video Call";
              if (b.sessionType === "in-person") typeDisplay = "In-Person";
              if (b.sessionType === "phone") typeDisplay = "Phone Call";
@@ -73,6 +81,11 @@ export function MyAppointments() {
     fetchAppointments();
   }, []);
 
+  /**
+   * CANCEL BOOKING
+   * Sends a PATCH request to update the status to 'cancelled'.
+   * This removes the request from the student's active view.
+   */
   const handleCancelBooking = async (bookingId) => {
     const confirmCancel = window.confirm("Are you sure you want to cancel this appointment request?");
     if (!confirmCancel) return;
@@ -225,6 +238,11 @@ export function MyAppointments() {
                     </p>
 
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", alignItems: "center", marginTop: "auto" }}>
+                      {/* CONDITIONAL ACTION LOGIC:
+                          - Pending: Allows student to 'Cancel' the request.
+                          - Approved: Informational status only.
+                          - Completed: Enables the 'Leave Feedback' bridge to feedback.jsx.
+                      */}
                       {app.status === "Pending" && (
                         <>
                           <button 

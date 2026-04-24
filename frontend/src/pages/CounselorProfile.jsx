@@ -1,3 +1,9 @@
+/**
+ * MEMBER 2: Counselor & Public Pages (Student/Public View)
+ * COUNSELOR PROFILE PAGE
+ * This page displays the full details of a specific counselor, including their 
+ * biography, education, reviews from other students, and booking options.
+ */
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -13,13 +19,14 @@ import {
 } from "lucide-react";
 
 export function CounselorProfile() {
-  const { id } = useParams();
+  // --- STATE MANAGEMENT ---
+  const { id } = useParams(); // Counselor ID from the URL
   const navigate = useNavigate();
-  const [currentUser, setCurrentUser] = useState(null);
-  const [counselor, setCounselor] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null); // Used to show/hide messaging and booking
+  const [counselor, setCounselor] = useState(null); // Full counselor profile data
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [feedbacks, setFeedbacks] = useState([]);
+  const [feedbacks, setFeedbacks] = useState([]); // List of reviews for this counselor
 
   useEffect(() => {
     const stored = localStorage.getItem('user') || sessionStorage.getItem('user');
@@ -33,6 +40,10 @@ export function CounselorProfile() {
   }, []);
 
   // Fetch counselor data from backend
+  /**
+   * FETCH COUNSELOR DATA
+   * Loads the profile biography, specialty, and availability from the backend.
+   */
   useEffect(() => {
     const fetchCounselor = async () => {
       try {
@@ -55,6 +66,10 @@ export function CounselorProfile() {
     if (id) fetchCounselor();
   }, [id]);
 
+  /**
+   * FETCH FEEDBACKS
+   * Loads student reviews specifically for this counselor to display in the "Reviews" section.
+   */
   useEffect(() => {
     const fetchFeedbacks = async () => {
       try {
@@ -95,14 +110,24 @@ export function CounselorProfile() {
     );
   }
 
-  // Derived fields from backend model
+  // --- DERIVED FIELDS ---
+  // These variables format the raw backend data for the UI, handling 
+  // missing fields with sensible defaults or calculated values.
   const counselorName = counselor.name || "Counselor";
   const counselorTitle = counselor.speciality || "Wellness Counselor";
+  
+  // REAL-TIME RATING CALCULATION:
+  // We average all student reviews fetched from the API to display an 
+  // accurate quality score. If no reviews exist, we fall back to the 
+  // baseline rating stored in the counselor profile.
   const counselorRating = feedbacks.length > 0 
     ? (feedbacks.reduce((acc, curr) => acc + curr.rating, 0) / feedbacks.length).toFixed(1)
     : (counselor.rating || 0);
+    
   const counselorBio = counselor.bio || "This counselor has not added a bio yet.";
   const counselorAvatar = counselor.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(counselorName)}&background=e0f2fe&color=0284c7&size=150`;
+  
+  // Format education and credentials from newline-separated strings to arrays
   const specialtiesList = Array.isArray(counselor.specialities) && counselor.specialities.length > 0
     ? counselor.specialities
     : [counselorTitle];
@@ -613,7 +638,14 @@ export function CounselorProfile() {
                 </button>
               </Link>
 
-              {/* Send Message Button */}
+              {/* --- MESSAGING INTERACTION --- */}
+              {/* 
+                CONVERSATION INITIATION:
+                When a student clicks 'Send Message', we first check for an 
+                existing conversation via a POST request. If none exists, 
+                the backend creates one, and we redirect the student to 
+                the main messaging hub.
+              */}
               {currentUser && (
                 <button
                   onClick={async () => {

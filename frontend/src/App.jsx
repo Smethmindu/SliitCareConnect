@@ -1,30 +1,28 @@
+/**
+ * MAIN ROUTING COMPONENT
+ * This file defines all the URL paths (routes) for the application and
+ * connects them to their respective page components.
+ */
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+// --- MEMBER 1: AUTH & ADMIN PAGES ---
 import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
-import { ContactPage } from "./pages/ContactPage";
-import { MessagesPage } from "./pages/MessagesPage";
 import { UsersPage } from "./pages/UsersPage";
 import { ProfileSettings } from "./pages/ProfileSettings";
 import { AdminPage } from "./pages/AdminPage";
-import { FeedbackReviews } from "./pages/FeedbackReviews";
-import { StudentProfile } from "./pages/StudentProfile";
 import { AMainLayout } from "./components/layout/AMainLayout.jsx";
 import { ADashboardLayout } from "./components/layout/ADashboardLayout.jsx";
 
-// Core Pages (Block 2)
+// --- MEMBER 3: BOOKING & APPOINTMENTS ---
 import { BookAppointment } from "./pages/BookAppointment";
-// import { AppointmentDetails } from "./pages/AppointmentDetails";
 import { MyAppointments } from "./pages/MyAppointments";
 
-// Core Pages (Block 3)
+// --- MEMBER 2: LANDING & COUNSELOR PAGES ---
 import { MainLayout } from "./components/layout/MainLayout";
 import { DashboardLayout } from "./components/layout/DashboardLayout";
-
-// Core Pages
 import { LandingPage } from "./pages/LandingPage";
 import { AboutUs } from "./pages/AboutUs";
-
-// Counselor Pages
+import { ContactPage } from "./pages/ContactPage";
 import { CounselorListing } from "./pages/CounselorListing";
 import { CounselorProfile } from "./pages/CounselorProfile";
 import { CounselorDashboard } from "./pages/CounselorDashboard";
@@ -34,7 +32,10 @@ import { CounselorSettings } from "./pages/CounselorSettings";
 import { CounselorMessages } from "./pages/CounselorMessages";
 import { CounselorResources } from "./pages/CounselorResources";
 
-// Feature Pages
+// --- MEMBER 4: RESOURCES, FEEDBACK & QUIZ ---
+import { MessagesPage } from "./pages/MessagesPage";
+import { FeedbackReviews } from "./pages/FeedbackReviews";
+import { StudentProfile } from "./pages/StudentProfile";
 import Resources from "./pages/Resources";
 import AdminResources from "./pages/AdminResources";
 import Quiz from "./pages/Quiz";
@@ -44,20 +45,30 @@ export function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public / Auth Routes */}
+        {/* 
+          AUTH ROUTES 
+          Wrapped in AMainLayout (simplified header/footer for login/register)
+        */}
         <Route element={<AMainLayout />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
         </Route>
 
-        {/* Public Routes */}
+        {/* 
+          PUBLIC ROUTES 
+          Accessible to everyone (Landing, About Us, etc.)
+          Wrapped in MainLayout (standard header/footer)
+        */}
         <Route element={<MainLayout />}>
           <Route path="/" element={<LandingPage />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/contact" element={<ContactPage />} />
         </Route>
 
-        {/* Dashboard Routes / Student View */}
+        {/* 
+          STUDENT DASHBOARD ROUTES 
+          Wrapped in DashboardLayout (Sidebar + Content area)
+        */}
         <Route element={<DashboardLayout />}>
           <Route path="/counselors" element={<CounselorListing />} />
           <Route path="/counselors/:id" element={<CounselorProfile />} />
@@ -73,7 +84,10 @@ export function App() {
           <Route path="/profile" element={<StudentProfile />} />
         </Route>
 
-        {/* Counselor specific Routes / Counselor View */}
+        {/* 
+          COUNSELOR ROUTES 
+          Standalone routes for the Counselor's internal portal
+        */}
         <Route path="/counselor-dashboard" element={<CounselorDashboard />} />
         <Route path="/counselor-appointments" element={<CounselorAppointments />} />
         <Route path="/counselor-availability" element={<CounselorAvailability />} />
@@ -81,7 +95,10 @@ export function App() {
         <Route path="/counselor-messages" element={<CounselorMessages />} />
         <Route path="/counselor-resources" element={<CounselorResources />} />
 
-        {/* Dashboard Routes / Admin View */}
+        {/* 
+          ADMIN DASHBOARD ROUTES 
+          Wrapped in ADashboardLayout (Admin-specific sidebar)
+        */}
         <Route element={<ADashboardLayout />}>
           <Route path="/users" element={<UsersPage />} />
           <Route path="/asettings" element={<ProfileSettings />} />

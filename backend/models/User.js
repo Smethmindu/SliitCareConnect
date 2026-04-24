@@ -1,6 +1,13 @@
+/**
+ * MEMBER 1: Auth & User Management
+ * USER MODEL
+ * This file defines the structure of a user in the database, including validation and security.
+ */
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
+// --- SCHEMA DEFINITION ---
+// Defines the fields for Students, Counselors, and Admins
 const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
@@ -74,14 +81,18 @@ const userSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Hash password before saving
+// --- MIDDLEWARE & HOOKS ---
+
+// Automatically hash the password before saving it to the database
 userSchema.pre('save', async function () {
   if (!this.isModified('password')) return;
   const salt = await bcrypt.genSalt(12);
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-// Compare password method
+// --- INSTANCE METHODS ---
+
+// Compare a provided password with the hashed password in the DB
 userSchema.methods.comparePassword = async function (candidatePassword) {
   const stored = this.password ?? '';
   const looksHashed = typeof stored === 'string' && /^\$2[aby]\$\d{2}\$/.test(stored);
@@ -89,7 +100,10 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
   if (!looksHashed) {
     const isMatch = String(candidatePassword) === String(stored);
     if (isMatch) {
-      // Auto-upgrade legacy/plaintext passwords to bcrypt hash on successful login.
+      // --- SECURITY UPGRADE ---
+      // If the user logs in with a plaintext password (legacy), 
+      // we automatically hash it and save the update to bring 
+      // the account up to modern security standards.
       this.password = candidatePassword;
       await this.save();
     }
@@ -99,7 +113,7 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, stored);
 };
 
-// Get user profile without sensitive data
+// Helper to return only non-sensitive data to the frontend
 userSchema.methods.getProfile = function() {
   return {
     id: this._id,

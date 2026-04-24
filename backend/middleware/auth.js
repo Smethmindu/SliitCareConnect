@@ -1,14 +1,26 @@
+/**
+ * MEMBER 1: Auth & User Management
+ * AUTH MIDDLEWARE
+ * This file provides security functions to protect routes and verify user identities.
+ */
 import jwt from 'jsonwebtoken';
 import { User } from '../models/User.js';
 
-// Generate JWT token
+/**
+ * GENERATE JWT TOKEN
+ * Creates a signed token containing the user's ID, valid for 7 days.
+ */
 export const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET || 'your-secret-key', {
     expiresIn: process.env.JWT_EXPIRES_IN || '7d'
   });
 };
 
-// Verify JWT token and authenticate user
+/**
+ * AUTHENTICATE MIDDLEWARE
+ * Intercepts requests to check for a valid JWT in the 'Authorization' header.
+ * If valid, it attaches the user object to the request (req.user).
+ */
 export const authenticate = async (req, res, next) => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '');
@@ -61,7 +73,11 @@ export const authenticate = async (req, res, next) => {
   }
 };
 
-// Role-based access control
+/**
+ * AUTHORIZE MIDDLEWARE (RBAC)
+ * Restricts access to specific roles (e.g., only 'admin' or 'counselor').
+ * Must be used after the 'authenticate' middleware.
+ */
 export const authorize = (...roles) => {
   return (req, res, next) => {
     if (!req.user) {

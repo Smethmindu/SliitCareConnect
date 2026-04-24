@@ -1,3 +1,9 @@
+/**
+ * CORE UI COMPONENT
+ * DASHBOARD LAYOUT
+ * This component provides the persistent Sidebar and Header for authenticated student pages.
+ * It uses React Router's <Outlet /> to render child pages within the content area.
+ */
 import { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import {
@@ -15,8 +21,10 @@ import {
 import { NotificationBell } from "../NotificationBell";
 
 export function DashboardLayout() {
+  // --- USER SESSION MANAGEMENT ---
   const [currentUser, setCurrentUser] = useState(null);
 
+  // Effect: Retrieve the logged-in user from storage on mount
   useEffect(() => {
     const stored = localStorage.getItem('user') || sessionStorage.getItem('user');
     if (stored) {
@@ -47,6 +55,10 @@ export function DashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  /**
+   * HANDLE LOGOUT
+   * Clears all tokens and user data from the browser, then redirects to the landing page.
+   */
   const handleLogout = (e) => {
     e.preventDefault();
     localStorage.removeItem('user');
@@ -103,6 +115,8 @@ export function DashboardLayout() {
     height: "4rem",
   };
 
+  // --- NAVIGATION CONFIGURATION ---
+  // Defines the links shown in the sidebar
   const navItems = [
     { icon: HomeIcon, label: "Home", path: "/" },
     ...(currentUser ? [{ icon: LayoutDashboardIcon, label: "Dashboard", path: "/profile" }] : []),
@@ -350,6 +364,8 @@ export function DashboardLayout() {
           )}
         </aside>
 
+        {/* MAIN CONTENT AREA */}
+        {/* Child routes from App.jsx are rendered here inside the <Outlet /> */}
         <main style={mainStyle}>
           <div style={innerMainStyle}>
             <Outlet />

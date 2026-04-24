@@ -1,3 +1,8 @@
+/**
+ * MEMBER 2: Counselor and Public Pages
+ * CONTACT US PAGE
+ * This page provides physical and digital contact information for the campus wellness center.
+ */
 import { motion } from "framer-motion";
 import { MailIcon, PhoneIcon, MapPinIcon } from "lucide-react";
 
@@ -54,6 +59,12 @@ export function ContactPage() {
             alignItems: "start",
           }}
         >
+          {/* --- CAMPUS LOCATION: GOOGLE MAPS --- */}
+          {/* 
+            ORIENTATION:
+            We embed a live Google Map of the Malabe campus to help students 
+            physically locate the wellness center for in-person sessions.
+          */}
           <div
             style={{
               borderRadius: "1rem",
@@ -74,6 +85,7 @@ export function ContactPage() {
             />
           </div>
 
+          {/* --- CONTACT METHODS: EMAIL, PHONE, ADDRESS --- */}
           <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
             <div
               style={{

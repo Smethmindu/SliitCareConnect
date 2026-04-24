@@ -1,3 +1,11 @@
+/**
+ * MEMBER 4: Resources, Quizzes & Feedback
+ * ADMIN RESOURCES MANAGEMENT
+ * This page serves as a moderation hub for content. Admins can:
+ * 1. Review and approve/reject counselor-uploaded resources.
+ * 2. Upload resources directly (which are auto-approved).
+ * 3. Repair data integrity (moving unreviewed counselor content back to pending).
+ */
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
@@ -119,6 +127,14 @@ export default function AdminResources() {
     }
   };
 
+  /**
+   * APPROVE RESOURCE
+   * 1. PATCH request to /api/resources/:id/approve.
+   * 2. This sets the resource status to 'approved'.
+   * 3. Once approved, the resource becomes visible to all students in the 
+   *    main wellness library (Resources.jsx).
+   * This human-in-the-loop validation ensures all content is high quality.
+   */
   const handleApprove = async (id) => {
     try {
       await axios.patch(`${API}/${id}/approve`, {}, {
@@ -131,6 +147,11 @@ export default function AdminResources() {
     }
   };
 
+  /**
+   * REJECT RESOURCE
+   * Updates the status to 'rejected' and stores an optional reason 
+   * to inform the counselor why their content wasn't published.
+   */
   const handleRejectSubmit = async (id) => {
     try {
       await axios.patch(`${API}/${id}/reject`, { reason: rejectReason }, {
@@ -159,6 +180,11 @@ export default function AdminResources() {
     }
   };
 
+  /**
+   * DATA INTEGRITY FIX
+   * A cleanup utility that identifies counselor-uploaded resources that 
+   * may have bypassed the pending queue and forces them back for review.
+   */
   const handleFixData = async () => {
     if (!window.confirm("This will move all counselor-uploaded resources (that were never reviewed) back to 'pending' status. Continue?")) return;
     try {

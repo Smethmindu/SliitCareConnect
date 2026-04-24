@@ -1,3 +1,9 @@
+/**
+ * MEMBER 1: Auth & User Management (Student Messaging)
+ * STUDENT MESSAGES PAGE
+ * This component allows students to chat with counselors or other staff.
+ * It features real-time-like updates via 3-second polling and an optimistic UI.
+ */
 import { useState, useEffect, useRef, useCallback } from "react";
 import {
   SearchIcon,
@@ -50,15 +56,16 @@ export function MessagesPage() {
   const userName = user ? `${user.firstName || ""} ${user.lastName || ""}`.trim() : "Student";
   const userRole = user?.role || "student";
 
-  const [conversations, setConversations] = useState([]);
-  const [activeConv, setActiveConv] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState("");
+  // --- MESSAGING STATE ---
+  const [conversations, setConversations] = useState([]); // All active chats for the student
+  const [activeConv, setActiveConv] = useState(null); // The chat currently open
+  const [messages, setMessages] = useState([]); // List of messages in the open chat
+  const [newMessage, setNewMessage] = useState(""); // Input field state
   const [searchQuery, setSearchQuery] = useState("");
   const [loadingConvs, setLoadingConvs] = useState(true);
 
-  const messagesEndRef = useRef(null);
-  const pollRef = useRef(null);
+  const messagesEndRef = useRef(null); // Used for auto-scrolling to latest message
+  const pollRef = useRef(null); // Interval ID for polling
 
   // Fetch conversations
   const fetchConversations = useCallback(async () => {
@@ -110,6 +117,13 @@ export function MessagesPage() {
   }, [fetchConversations]);
 
   // Polling for new data
+  /**
+   * POLLING SYSTEM (Real-time Simulation)
+   * This application uses a polling architecture rather than WebSockets.
+   * Every 3 seconds, it re-fetches data. This ensures the student 
+   * sees new counselor replies even if they don't refresh the page, 
+   * and handles multi-device synchronization (syncing read counts).
+   */
   useEffect(() => {
     pollRef.current = setInterval(() => {
       fetchConversations();
@@ -137,6 +151,12 @@ export function MessagesPage() {
     setActiveConv(conv);
   };
 
+  /**
+   * HANDLE SEND
+   * 1. Updates the UI with the new message immediately (Optimistic).
+   * 2. Saves to database via API.
+   * 3. Triggers a refresh to confirm delivery.
+   */
   const handleSend = async (e) => {
     e.preventDefault();
     if (!newMessage.trim() || !activeConv) return;
@@ -144,7 +164,7 @@ export function MessagesPage() {
     const text = newMessage.trim();
     setNewMessage("");
 
-    // Optimistic update
+    // --- OPTIMISTIC UI ---
     const optimistic = {
       _id: "temp-" + Date.now(),
       conversationId: activeConv._id,
@@ -169,7 +189,7 @@ export function MessagesPage() {
           text,
         }),
       });
-      // Refresh
+      // Refresh to confirm delivery
       fetchMessages(activeConv._id);
       fetchConversations();
     } catch (err) {

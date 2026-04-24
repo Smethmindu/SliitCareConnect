@@ -1,3 +1,9 @@
+/**
+ * MEMBER 1: Auth & User Management
+ * STUDENT PROFILE PAGE
+ * This page displays the authenticated student's personal details, 
+ * retrieved from browser storage after a successful login.
+ */
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { MailIcon, UserIcon, CreditCardIcon as IdCardIcon, ShieldCheckIcon } from 'lucide-react';
@@ -5,6 +11,12 @@ import { MailIcon, UserIcon, CreditCardIcon as IdCardIcon, ShieldCheckIcon } fro
 export function StudentProfile() {
   const [user, setUser] = useState(null);
 
+  /**
+   * INITIAL LOAD
+   * We pull the user object from localStorage (or sessionStorage) 
+   * to display current account details without an extra API call.
+   * This ensures the profile loads instantly for a better user experience.
+   */
   useEffect(() => {
     const stored = localStorage.getItem('user') || sessionStorage.getItem('user');
     if (stored) {
@@ -139,6 +151,8 @@ export function StudentProfile() {
             </div>
           </motion.div>
 
+          {/* --- CONDITIONAL: STUDENT ID --- */}
+          {/* Only display the Student ID field if the user role is 'student' */}
           {user.role === 'student' && (
             <motion.div variants={itemVariants} style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <div style={{ width: '3rem', height: '3rem', borderRadius: '50%', backgroundColor: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4b5563' }}>

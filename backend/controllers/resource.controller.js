@@ -1,8 +1,19 @@
+/**
+ * MEMBER 4: Resources, Quizzes & Feedback
+ * RESOURCE CONTROLLER
+ * This file manages educational materials (Videos, Audio, PDFs). 
+ * It includes an approval workflow where counselor uploads must be verified by admins.
+ */
 import Resource from "../models/Resource.js";
 import Notification from "../models/Notification.js";
 import { User } from "../models/User.js";
 
-// ✅ UPLOAD RESOURCE (Admin = auto-approved, Counselor = pending)
+/**
+ * UPLOAD RESOURCE
+ * Handles file uploads and sets status:
+ * - Admin uploads are "approved" instantly.
+ * - Counselor uploads are "pending" until reviewed.
+ */
 export const uploadResource = async (req, res) => {
   try {
     const { title, description, type } = req.body;
@@ -70,7 +81,10 @@ export const uploadResource = async (req, res) => {
   }
 };
 
-// ✅ GET APPROVED RESOURCES (public / student view) + SEARCH + FILTER
+/**
+ * GET APPROVED RESOURCES
+ * Public endpoint for students to browse validated educational content.
+ */
 export const getResources = async (req, res) => {
   try {
     const { type, search } = req.query;
@@ -129,7 +143,10 @@ export const getCounselorResources = async (req, res) => {
   }
 };
 
-// ✅ APPROVE RESOURCE (admin only)
+/**
+ * APPROVE RESOURCE (Admin Only)
+ * Transitions a resource from "pending" to "approved" and notifies students.
+ */
 export const approveResource = async (req, res) => {
   try {
     const resource = await Resource.findById(req.params.id);
@@ -231,8 +248,11 @@ export const deleteResource = async (req, res) => {
   }
 };
 
-// ✅ FIX: Migration endpoint to correct resources uploaded by counselors
-// that were incorrectly set to "approved" due to stale credentials
+/**
+ * DATA MAINTENANCE: FIX COUNSELOR STATUS
+ * A special utility endpoint to revert resources that bypassed approval
+ * due to previous logic errors.
+ */
 export const fixCounselorResourceStatus = async (req, res) => {
   try {
     // Find all users with role "counselor"

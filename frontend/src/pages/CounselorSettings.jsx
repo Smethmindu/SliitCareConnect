@@ -1,3 +1,9 @@
+/**
+ * MEMBER 2: Counselor & Public Pages (Counselor View)
+ * COUNSELOR SETTINGS PAGE
+ * This page allows counselors to manage their professional profile, 
+ * including their bio, specialties, and education details.
+ */
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
@@ -21,8 +27,9 @@ import {
 import { NotificationBell } from "../components/NotificationBell";
 
 export function CounselorSettings() {
+  // --- STATE MANAGEMENT ---
   const location = useLocation();
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(false); // Toggles between read-only and form view
   const [counselorId, setCounselorId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -49,6 +56,10 @@ export function CounselorSettings() {
   const [successMsg, setSuccessMsg] = useState("");
 
   // Fetch the logged-in counselor's profile from the backend
+  /**
+   * LOAD COUNSELOR PROFILE
+   * Fetches the counselor's specific details using their User ID from local storage.
+   */
   useEffect(() => {
     const loadCounselorProfile = async () => {
       try {
@@ -95,6 +106,13 @@ export function CounselorSettings() {
     loadCounselorProfile();
   }, []);
 
+  /**
+   * FIELD VALIDATION
+   * Enforces business rules:
+   * - Counselors must be 18+ years old.
+   * - Bio must be substantial (20+ chars).
+   * - Names must be alphabetic.
+   */
   const validateField = (name, value) => {
     let error = null;
     switch (name) {
@@ -115,6 +133,8 @@ export function CounselorSettings() {
           const today = new Date();
           const birthDate = new Date(value);
           let age = today.getFullYear() - birthDate.getFullYear();
+          // --- AGE VALIDATION BUSINESS RULE ---
+          // Counselors must be at least 18 years old to provide services on the platform.
           if (age < 18) error = "Counselor must be at least 18 years old.";
           if (birthDate > today) error = "Date of Birth cannot be in the future.";
         }
@@ -158,6 +178,11 @@ export function CounselorSettings() {
     setErrors((prev) => ({ ...prev, [name]: error }));
   };
 
+  /**
+   * HANDLE SUBMIT
+   * Sends the updated profile data to the backend.
+   * Converts the comma-separated specialty string into a clean array before sending.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateAll()) return;
@@ -173,6 +198,7 @@ export function CounselorSettings() {
     }
 
     try {
+      // Split specialties string into an array for the backend
       const specialitiesArr = formData.specialitiesTags
         .split(",")
         .map(s => s.trim())

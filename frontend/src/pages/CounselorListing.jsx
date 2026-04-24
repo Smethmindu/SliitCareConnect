@@ -1,7 +1,12 @@
+/**
+ * MEMBER 2: Counselor & Public Pages
+ * COUNSELOR LISTING PAGE
+ * This component displays a searchable and filterable list of all counselors.
+ */
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { SearchIcon, StarIcon, MapPinIcon, VideoIcon } from "lucide-react";
+import { SearchIcon, StarIcon, MapPinIcon, VideoIcon } from "lucide-center";
 
 
 
@@ -15,25 +20,25 @@ const filters = [
 ];
 
 export function CounselorListing() {
-  const [counselors, setCounselors] = useState([]);
-  const [activeFilter, setActiveFilter] = useState("All");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState("Highest Rated");
-  const [isLoading, setIsLoading] = useState(true);
-  const [ratings, setRatings] = useState({});
+  // --- STATE MANAGEMENT ---
+  // --- STATE MANAGEMENT ---
+  const [counselors, setCounselors] = useState([]); // Array of counselor objects from backend
+  const [activeFilter, setActiveFilter] = useState("All"); // Category filter (Anxiety, Stress, etc.)
+  const [searchQuery, setSearchQuery] = useState(""); // User search input
+  const [sortBy, setSortBy] = useState("Highest Rated"); // Sorting preference
+  const [isLoading, setIsLoading] = useState(true); // Loading spinner state
+  const [ratings, setRatings] = useState({}); // Map of counselor IDs to their real-time average ratings
 
-  // Fetch real data from backend
+  // EFFECT: Fetch the main list of counselors on component mount
   useEffect(() => {
     const fetchCounselors = async () => {
       try {
         const response = await fetch("http://localhost:3000/api/counselors");
         if (response.ok) {
           const data = await response.json();
-          // Backend returns { status, data: { counselors: [...] } }
+          // Extract counselor array from response object
           const fetchedData = data.data?.counselors || data.data || data;
           setCounselors(Array.isArray(fetchedData) ? fetchedData : []);
-        } else {
-          console.error("Failed to fetch counselors");
         }
       } catch (error) {
         console.error("Error fetching counselors:", error);
@@ -44,6 +49,12 @@ export function CounselorListing() {
     fetchCounselors();
   }, []);
 
+  /**
+   * FETCH RATINGS
+   * Once counselors are loaded, we fetch the average rating for each one 
+   * from the feedback API to ensure the display is up-to-date.
+   * This ensures that students see the most recent quality scores.
+   */
   useEffect(() => {
     if (counselors.length > 0) {
       const fetchRatings = async () => {
@@ -80,16 +91,24 @@ export function CounselorListing() {
     transition: { duration: 0.4 },
   };
 
+  /**
+   * FILTERING & SORTING LOGIC
+   * 1. Multi-field Search: Checks both the counselor's name and their specialties list.
+   * 2. Category Filter: Restricts view to specific areas (e.g., Stress, Relationships).
+   * 3. Sort Logic: Orders results either alphabetically or by the ratings map.
+   */
   const filteredCounselors = counselors
     .filter((counselor) => {
       const specialtiesList = Array.isArray(counselor.specialities) ? counselor.specialities : [];
 
+      // Check if search query matches name or specialties
       const matchesSearch =
         (counselor.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
         specialtiesList.some((s) =>
           (s || "").toLowerCase().includes(searchQuery.toLowerCase())
         );
 
+      // Check if category filter matches
       let matchesFilter = true;
       if (activeFilter !== "All") {
         matchesFilter = specialtiesList.some((s) =>
@@ -103,7 +122,7 @@ export function CounselorListing() {
       if (sortBy === "Name (A-Z)") {
         return (a.name || "").localeCompare(b.name || "");
       }
-      // Highest Rated
+      // Default: Highest Rated (calculated from fetched ratings map)
       const ratingA = parseFloat(ratings[a._id || a.id]) || parseFloat(a.rating) || 0;
       const ratingB = parseFloat(ratings[b._id || b.id]) || parseFloat(b.rating) || 0;
       return ratingB - ratingA;

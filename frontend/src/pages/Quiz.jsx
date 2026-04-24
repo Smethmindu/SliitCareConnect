@@ -1,28 +1,40 @@
+/**
+ * MEMBER 4: Resources, Quizzes & Feedback
+ * SELF-ASSESSMENT QUIZ
+ * This component provides an interactive assessment for students to measure stress/anxiety.
+ * It includes real-time charting (Recharts) and PDF generation (jsPDF).
+ */
 import { useEffect, useState, useRef } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 export default function Quiz() {
-  const [questions, setQuestions] = useState([]);
-  const [answers, setAnswers] = useState([]);
-  const [started, setStarted] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [result, setResult] = useState(null);
+  // --- STATE MANAGEMENT ---
+  const [questions, setQuestions] = useState([]); // Questions fetched from backend
+  const [answers, setAnswers] = useState([]); // User's selected answers
+  const [started, setStarted] = useState(false); // Toggle between welcome screen and quiz
+  const [currentIndex, setCurrentIndex] = useState(0); // Current question index
+  const [result, setResult] = useState(null); // Assessment result from backend after submission
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
-  const dashboardRef = useRef(null);
+  const dashboardRef = useRef(null); // Ref used for PDF generation
   const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
     fetchQuestions();
   }, []);
 
+  /**
+   * FETCH QUESTIONS
+   * Loads the standardized mental health questions from the backend.
+   */
   const fetchQuestions = async () => {
     try {
       const res = await fetch("http://localhost:3000/api/quiz/questions");
       const data = await res.json();
       const questionList = data.questions || [];
       setQuestions(questionList);
+      // Initialize answers array with nulls
       setAnswers(Array(questionList.length).fill(null));
     } catch (err) {
       console.error("Failed to fetch quiz questions:", err);
@@ -38,6 +50,10 @@ export default function Quiz() {
     setAnswers(updated);
   };
 
+  /**
+   * SUBMIT QUIZ
+   * Sends the answers array to the backend for scoring and categorization.
+   */
   const nextQuestion = async () => {
     setErrorMsg("");
     if (answers[currentIndex] === null) {
@@ -60,7 +76,7 @@ export default function Quiz() {
       });
 
       const data = await res.json();
-      setResult(data);
+      setResult(data); // Display the results dashboard
     } catch (err) {
       console.error("Quiz submission failed:", err);
       setErrorMsg("Failed to submit quiz. Please try again.");
@@ -78,6 +94,13 @@ export default function Quiz() {
     restartQuiz();
   };
 
+  /**
+   * DOWNLOAD PDF REPORT
+   * This function uses a "Screen-to-PDF" strategy:
+   * 1. html2canvas: Captures the 'dashboardRef' DOM element as a high-resolution image.
+   * 2. jsPDF: Embeds that image into an A4 document and triggers a browser download.
+   * This allows students to save their results for future professional consultation.
+   */
   const downloadPDF = async () => {
     if (!dashboardRef.current) return;
     setIsDownloading(true);
@@ -94,7 +117,6 @@ export default function Quiz() {
       pdf.save("SliitCareConnect_Quiz_Results.pdf");
     } catch (error) {
       console.error("Failed to generate PDF", error);
-      setErrorMsg("Failed to download PDF. Please try again.");
     } finally {
       setIsDownloading(false);
     }
@@ -103,7 +125,13 @@ export default function Quiz() {
   // Helper arrays for charts
   const COLORS = ["#0ea5e9", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899"];
   let chartData = [];
-  if (result) {
+    // --- DATA PROCESSING FOR CHARTS ---
+    // REVERSE SCORING LOGIC:
+    // To ensure the charts represent mental health dimensions accurately, 
+    // some questions (11, 12, 13, 14) are reverse-scored. 
+    // Example: If a question is "I feel capable", a low score actually 
+    // indicates high stress, so we flip the value (3 - val) to align 
+    // it with other stress indicators.
     const reverseIndexes = [11, 12, 13, 14];
     const processed = answers.map((val, idx) => reverseIndexes.includes(idx) ? 3 - val : val);
     chartData = [
@@ -114,7 +142,6 @@ export default function Quiz() {
       { name: "Focus", value: processed[7] },
       { name: "Coping & Support", value: processed[11] + processed[12] + processed[13] }
     ];
-  }
 
   if (loading) {
     return <p className="empty-text">Loading quiz assessment...</p>;

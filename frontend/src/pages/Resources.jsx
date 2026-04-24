@@ -1,3 +1,8 @@
+/**
+ * MEMBER 4: Resources, Quizzes & Feedback
+ * RESOURCES PAGE
+ * This component displays educational content (Videos, Audio, Guides) and provides access to the Self-Assessment Quiz.
+ */
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRightIcon, BookOpenIcon, HeadphonesIcon, ImageIcon, PlayCircleIcon, SearchIcon, PhoneIcon } from "lucide-react";
@@ -9,15 +14,24 @@ import BookImg from "../assets/images/BOOK.jpg";
 import ImageFallBackImg from "../assets/images/IMAGE.jpg";
 
 export default function Resources() {
-  const [resources, setResources] = useState([]);
+  // --- STATE MANAGEMENT ---
+  const [resources, setResources] = useState([]); // List of resources from backend
   const [loading, setLoading] = useState(true);
-  const [activeTopic, setActiveTopic] = useState("All");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [activeTab, setActiveTab] = useState("Library");
+  const [activeTopic, setActiveTopic] = useState("All"); // Filter for categories like Anxiety, Stress
+  const [searchQuery, setSearchQuery] = useState(""); // Search term tracker
+  const [activeTab, setActiveTab] = useState("Library"); // Toggle between 'Library' and 'Quiz'
 
-  const topics = ["All", "Anxiety", "Depression", "Academic Stress", "Mindfulness", "Relationships"];
-  const categories = ["VIDEO", "AUDIO", "BOOK", "IMAGE"];
-
+  /**
+   * SEARCH DEBOUNCING
+   * To prevent the application from sending a network request on every single 
+   * keystroke (which would overload the server and cause flickering UI), 
+   * we use a 300ms timeout.
+   * 
+   * WORKFLOW:
+   * 1. User types a character -> Timer starts.
+   * 2. User types another character before 300ms -> Old timer is cleared, new one starts.
+   * 3. User stops typing for >300ms -> API request is finally executed.
+   */
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       fetchResources(searchQuery);
@@ -26,11 +40,16 @@ export default function Resources() {
     return () => clearTimeout(delayDebounceFn);
   }, [searchQuery]);
 
+  /**
+   * FETCH RESOURCES
+   * Calls the backend API to get approved resources based on search query.
+   */
   const fetchResources = async (query = "") => {
     try {
       setLoading(true);
       const res = await fetch(`http://localhost:3000/api/resources?search=${encodeURIComponent(query)}`);
       const data = await res.json();
+      // Ensure we always have an array even if backend returns null
       setResources(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Failed to fetch resources:", err);
@@ -54,6 +73,10 @@ export default function Resources() {
     window.open(url, "_blank");
   };
 
+  /**
+   * FILTERING LOGIC
+   * Memoized filter to separate resources by selected topic (Anxiety, Stress, etc.)
+   */
   const filteredResources = useMemo(() => {
     return resources.filter((r) => {
       let matchesTopic = true;
@@ -61,6 +84,7 @@ export default function Resources() {
         const title = r.title?.toLowerCase() || "";
         const description = r.description?.toLowerCase() || "";
         const t = activeTopic.toLowerCase();
+        // Check if the topic keyword exists in title, description, or topic field
         matchesTopic = title.includes(t) || description.includes(t) || (r.topic && r.topic.toLowerCase() === t);
       }
       return matchesTopic;
@@ -72,6 +96,10 @@ export default function Resources() {
     filteredResources.find((r) => r.type === "VIDEO") ||
     filteredResources[0];
 
+  /**
+   * HELPER: UI MAPPING
+   * Maps resource types (VIDEO, AUDIO, BOOK) to specific labels and Lucide icons.
+   */
   const getTypeLabel = (type) => {
     if (type === "VIDEO") return "Video";
     if (type === "AUDIO") return "Audio";

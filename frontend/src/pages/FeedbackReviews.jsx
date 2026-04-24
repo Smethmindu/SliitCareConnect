@@ -29,6 +29,13 @@ export function FeedbackReviews() {
     fetchFeedbacks();
   }, []);
 
+  /**
+   * DATA AGGREGATION LOGIC
+   * 1. Average Rating: Arithmetic mean of all numerical ratings.
+   * 2. Rating Distribution: Count of each star level (1-5) for bar charts.
+   * 3. Category Stats: Maps feedback tags/reasons to counts for pie chart breakdown.
+   * 4. Monthly Trend: Aggregates ratings by month to show performance over time.
+   */
   const calculateStats = () => {
     const totalReviews = feedbacks.length;
     let avgRating = "0.0";

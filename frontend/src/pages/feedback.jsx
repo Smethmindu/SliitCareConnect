@@ -1,3 +1,9 @@
+/**
+ * MEMBER 4: Resources, Quizzes & Feedback
+ * FEEDBACK PAGE
+ * This component allows students to rate their sessions, provide qualitative 
+ * tags, and leave detailed comments for counselors.
+ */
 import { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -85,6 +91,13 @@ export default function FeedbackPage() {
     }
   }, [editId]);
 
+  /**
+   * HANDLE SUBMISSION
+   * 1. Validates that a rating is selected.
+   * 2. Checks for existing authentication token.
+   * 3. Sends POST (new) or PUT (edit) request to the feedback API.
+   * 4. Handles the "one feedback per session" restriction enforced by the backend.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (rating > 0) {
@@ -98,10 +111,10 @@ export default function FeedbackPage() {
         const payload = {
           counselorId,
           bookingId,
-          rating,
-          tags: selectedTags,
+          rating, // Quantitative Metric: 1-5 star scale for statistical analysis.
+          tags: selectedTags, // Qualitative Metrics: Pre-defined tokens (Supportive, Helpful, etc.).
           comment,
-          isAnonymous
+          isAnonymous // Privacy Toggle: Ensures student identity is stripped in counselor-facing views.
         };
 
         const response = await fetch(`http://localhost:3000/api/feedback${editId ? `/${editId}` : ''}`, {
@@ -117,6 +130,7 @@ export default function FeedbackPage() {
           setIsSubmitted(true);
         } else {
           const data = await response.json();
+          // Backend prevents double-submissions for the same booking ID
           alert(data.message || "Failed to submit feedback. You might have already submitted feedback for this session or counselor.");
         }
       } catch (error) {
@@ -359,6 +373,8 @@ export default function FeedbackPage() {
             >
               How was your session?
             </h2>
+            {/* --- STAR RATING --- */}
+            {/* Features interactive hover states and dynamic labels (Poor -> Excellent) */}
             <div
               style={{
                 display: "flex",
@@ -563,6 +579,11 @@ export default function FeedbackPage() {
             </button>
           </div>
 
+          {/* SUBMISSION LOGIC:
+              - rating: Quantitative metric (1-5 stars)
+              - selectedTags: Qualitative metrics (Helpful, Supportive, etc.)
+              - isAnonymous: Privacy toggle that strips student identity from the counselor-facing report.
+          */}
           <button
             type="submit"
             disabled={rating === 0}

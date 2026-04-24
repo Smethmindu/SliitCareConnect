@@ -1,3 +1,9 @@
+/**
+ * MEMBER 3: Booking & Notifications (Counselor View)
+ * COUNSELOR APPOINTMENTS PAGE
+ * This component allows counselors to view their schedule of confirmed sessions
+ * and mark them as completed once the session is over.
+ */
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
@@ -15,12 +21,13 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { NotificationBell } from "../components/NotificationBell";
 
 export function CounselorAppointments() {
+  // --- STATE MANAGEMENT ---
   const location = useLocation();
   const navigate = useNavigate();
-  const [currentUser, setCurrentUser] = useState(null);
-  const [appointments, setAppointments] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null); // Authenticated counselor info
+  const [appointments, setAppointments] = useState([]); // List of confirmed bookings
   const [loading, setLoading] = useState(true);
-  const [expandedId, setExpandedId] = useState(null);
+  const [expandedId, setExpandedId] = useState(null); // Tracks which card is showing details
 
   useEffect(() => {
     const userStr = localStorage.getItem("user") || sessionStorage.getItem("user");
@@ -58,6 +65,13 @@ export function CounselorAppointments() {
     ? currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1) 
     : "Counselor";
 
+  /**
+   * FETCH APPOINTMENTS
+   * 1. Resolves the Counselor ID based on the logged-in User ID (cross-collection ref).
+   * 2. Fetches all bookings associated with that Counselor ID.
+   * 3. DATA FILTER: Strictly filters for "confirmed" sessions. "Pending" requests 
+   *    are handled exclusively on the Dashboard.
+   */
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
@@ -70,14 +84,14 @@ export function CounselorAppointments() {
 
         const user = JSON.parse(storedUser);
         
-        // 1. Fetch Counselor ID using User ID
+        // Step 1: Find Counselor profile
         const profileRes = await fetch(`http://localhost:3000/api/counselors/user/${user.id}`);
         if (!profileRes.ok) throw new Error("Counselor profile not found");
         const profileData = await profileRes.json();
         const counselorId = profileData.data?.counselor?._id;
 
         if (counselorId) {
-          // 2. Fetch Bookings for this counselor
+          // Step 2: Get bookings
           const bookingsRes = await fetch(`http://localhost:3000/api/bookings/counselor/${counselorId}`, {
             headers: {
               "Authorization": `Bearer ${storedToken}`
@@ -87,30 +101,21 @@ export function CounselorAppointments() {
           if (bookingsRes.ok) {
             const bookingsData = await bookingsRes.json();
             
-            let fetchedBookings = [];
-            if (Array.isArray(bookingsData.data)) fetchedBookings = bookingsData.data;
-            else if (Array.isArray(bookingsData.data?.bookings)) fetchedBookings = bookingsData.data.bookings;
-            else if (Array.isArray(bookingsData.bookings)) fetchedBookings = bookingsData.bookings;
+            let fetchedBookings = Array.isArray(bookingsData.data) ? bookingsData.data : (bookingsData.data?.bookings || []);
             
-            // Show only approved (confirmed) appointments
+            // Step 3: Filter for approved sessions only
             const activeBookings = fetchedBookings
               .filter(b => b.status === "confirmed")
-              .map(b => {
-                 let typeDisplay = "Video Call";
-                 if (b.sessionType === "in-person") typeDisplay = "In-Person";
-                 if (b.sessionType === "phone") typeDisplay = "Phone Call";
-
-                 return {
-                    id: b._id,
-                    date: b.date, 
-                    type: typeDisplay,
-                    patient: b.studentName || "Student",
-                    time: b.time,
-                    status: b.status || "pending",
-                    notes: b.notes || "No additional notes.",
-                    avatar: "https://i.pravatar.cc/150?u=" + b.studentId,
-                 };
-              });
+              .map(b => ({
+                id: b._id,
+                date: b.date, 
+                type: b.sessionType === "in-person" ? "In-Person" : (b.sessionType === "phone" ? "Phone Call" : "Video Call"),
+                patient: b.studentName || "Student",
+                time: b.time,
+                status: b.status || "pending",
+                notes: b.notes || "No additional notes.",
+                avatar: "https://i.pravatar.cc/150?u=" + b.studentId,
+              }));
               
             setAppointments(activeBookings);
           }
@@ -124,6 +129,14 @@ export function CounselorAppointments() {
     fetchAppointments();
   }, []);
 
+  /**
+   * MARK COMPLETED
+   * Updates the status of the booking to "completed". 
+   * This is a critical workflow step: 
+   * 1. It updates the database record.
+   * 2. It triggers the visibility of the "Leave Feedback" button for 
+   *    the student on their 'MyAppointments' page.
+   */
   const handleMarkCompleted = async (appId) => {
     try {
       const storedToken = localStorage.getItem("token") || sessionStorage.getItem("token");
@@ -136,14 +149,12 @@ export function CounselorAppointments() {
         body: JSON.stringify({ status: 'completed' })
       });
       if (response.ok) {
+        // Remove from local state once updated in DB
         setAppointments(prev => prev.filter(app => app.id !== appId));
         alert('Session marked as completed.');
-      } else {
-        alert('Failed to mark session as completed.');
       }
     } catch (err) {
       console.error(err);
-      alert('An error occurred.');
     }
   };
 

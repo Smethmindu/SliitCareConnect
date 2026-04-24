@@ -1,3 +1,9 @@
+/**
+ * MEMBER 4: Resources, Quizzes & Feedback (Counselor View)
+ * COUNSELOR RESOURCES PAGE
+ * This page allows counselors to upload educational materials (Video, Audio, Books).
+ * All uploads go into a "Pending" state until an admin approves them.
+ */
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -20,11 +26,12 @@ function getAuth() {
 }
 
 export function CounselorResources() {
+  // --- STATE MANAGEMENT ---
   const location = useLocation();
   const navigate = useNavigate();
   const { token, user } = getAuth();
 
-  const [activeTab, setActiveTab] = useState("upload");
+  const [activeTab, setActiveTab] = useState("upload"); // Toggle between "upload" and "submissions"
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [type, setType] = useState("VIDEO");
@@ -32,7 +39,7 @@ export function CounselorResources() {
   const [uploading, setUploading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
-  const [myResources, setMyResources] = useState([]);
+  const [myResources, setMyResources] = useState([]); // List of counselor's own uploads
   const [loadingRes, setLoadingRes] = useState(true);
 
   const navItems = [
@@ -44,6 +51,10 @@ export function CounselorResources() {
 
   useEffect(() => { fetchMyResources(); }, []);
 
+  /**
+   * FETCH MY RESOURCES
+   * Loads all resources previously uploaded by this counselor to track their status.
+   */
   const fetchMyResources = async () => {
     try {
       setLoadingRes(true);
@@ -61,6 +72,15 @@ export function CounselorResources() {
     }
   };
 
+  /**
+   * HANDLE RESOURCE UPLOAD
+   * 1. PRE-CHECK: Ensures all mandatory fields (Title, Desc, Type, File) are present.
+   * 2. MULTIPART FORM DATA: Because we are sending a binary file (PDF/Video) 
+   *    along with text, we use the 'FormData' API to package the request.
+   *    This tells the browser to use 'multipart/form-data' encoding.
+   * 3. BACKEND ROUTE: POST to /api/resources. The server saves the file and 
+   *    creates a database record with status: "pending".
+   */
   const handleUpload = async (e) => {
     e.preventDefault();
     setSuccessMsg(""); setErrorMsg("");
@@ -84,6 +104,7 @@ export function CounselorResources() {
       const data = await res.json();
       if (res.ok) {
         setSuccessMsg(data.message || "Resource submitted for approval!");
+        // Reset form after success
         setTitle(""); setDescription(""); setType("VIDEO"); setFile(null);
         fetchMyResources();
         setTimeout(() => setSuccessMsg(""), 5000);
@@ -123,6 +144,10 @@ export function CounselorResources() {
     return <ImageIcon style={{ width: size, height: size }} />;
   };
 
+  /**
+   * STATUS BADGE MAPPING
+   * Visual indicator of the review lifecycle (Pending -> Approved/Rejected).
+   */
   const getStatusBadge = (status) => {
     const map = {
       pending: { bg: "#fef3c7", color: "#92400e", icon: <ClockIcon style={{ width: 14, height: 14 }} />, label: "Pending" },

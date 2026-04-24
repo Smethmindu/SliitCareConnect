@@ -1,6 +1,12 @@
+/**
+ * MEMBER 1: Auth & User Management (AI Chatbot feature)
+ * CHATBOT CONTROLLER
+ * This file connects the site to Google Gemini AI to provide a supportive assistant for students.
+ */
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const SYSTEM_PROMPT = `You are the SliitCareConnect Assistant — an AI chatbot for a university student counseling platform at SLIIT (Sri Lanka Institute of Information Technology).
+// --- SYSTEM PROMPT ---
+// This instruction tells the AI how to behave, what its goals are, and what its limits are.
 
 Your role:
 - Help students navigate the platform: booking appointments, finding counselors, accessing mental health resources, and taking self-assessment quizzes.
@@ -14,8 +20,10 @@ Your role:
 // Model priority list — try lighter models first to avoid quota issues on free tier
 const MODELS = ["gemini-2.0-flash-lite", "gemini-2.0-flash", "gemini-2.5-flash"];
 
-// Reuse a single SDK instance for performance
-let genAIInstance = null;
+/**
+ * GET GEN AI INSTANCE
+ * Initializes the SDK using the GEMINI_API_KEY from environment variables.
+ */
 
 function getGenAI() {
   if (!genAIInstance) {
@@ -27,7 +35,9 @@ function getGenAI() {
 }
 
 /**
- * Attempt to generate a response, trying fallback models on transient errors.
+ * GENERATE WITH FALLBACK
+ * Logic to handle AI response generation. If one model fails (e.g. 503 or 429), 
+ * it automatically tries the next one in the MODELS list.
  */
 async function generateWithFallback(genAI, chatHistory, userMessage) {
   let lastError = null;
@@ -65,6 +75,11 @@ async function generateWithFallback(genAI, chatHistory, userMessage) {
   throw lastError;
 }
 
+/**
+ * HANDLE CHAT REQUEST
+ * The main endpoint function that receives user messages, processes history, 
+ * and returns the AI's response.
+ */
 export const handleChat = async (req, res) => {
   try {
     const { message, history } = req.body;

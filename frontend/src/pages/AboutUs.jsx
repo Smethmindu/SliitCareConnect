@@ -1,7 +1,11 @@
+// MEMBER 2: Counselor and Public Pages
+// This component renders the 'About Us' page, showcasing the mission and values of the site.
 import { motion } from "framer-motion";
 import { UsersIcon, TargetIcon, SparklesIcon } from "lucide-react";
 
 export function AboutUs() {
+  // --- STYLING DEFINITIONS ---
+  // Main container style with background and font settings
   const containerStyle = {
     minHeight: "calc(100vh - 4rem)",
     backgroundColor: "#fdfbf7",
@@ -9,12 +13,14 @@ export function AboutUs() {
     padding: "4rem 2rem",
   };
 
+  // Header section style for the title and subtitle
   const headerStyle = {
     textAlign: "center",
     maxWidth: "800px",
     margin: "0 auto 4rem",
   };
 
+  // Grid layout for the value cards
   const valuesGridStyle = {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
@@ -23,6 +29,7 @@ export function AboutUs() {
     margin: "0 auto",
   };
 
+  // Individual card style with shadow and border
   const cardStyle = {
     backgroundColor: "white",
     padding: "2.5rem",
@@ -35,6 +42,12 @@ export function AboutUs() {
 
   return (
     <div style={containerStyle}>
+      {/* --- PAGE HEADER --- */}
+      {/* 
+        ENTRANCE ANIMATIONS:
+        We use 'framer-motion' to create a subtle upward fade effect. 
+        This makes the "Mission Statement" feel more impactful as it appears on screen.
+      */}
       <div style={headerStyle}>
         <motion.h1 
           initial={{ opacity: 0, y: 20 }}
@@ -53,7 +66,9 @@ export function AboutUs() {
         </motion.p>
       </div>
 
+      {/* --- CORE VALUES GRID --- */}
       <div style={valuesGridStyle}>
+        {/* Card 1: Community */}
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}

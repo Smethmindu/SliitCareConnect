@@ -1,3 +1,8 @@
+/**
+ * MEMBER 1: Auth & User Management
+ * LOGIN PAGE COMPONENT
+ * This page handles user authentication, JWT storage, and role-based redirection.
+ */
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -7,12 +12,18 @@ const API_BASE_URL = "/api";
 
 export function LoginPage() {
   const navigate = useNavigate();
+  
+  // State for form fields
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
+
+  // State for UI feedback (loading spinner, error messages)
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  
+  // State for persistent login preference
   const [rememberMe, setRememberMe] = useState(false);
 
   const handleInputChange = (e) => {
@@ -23,12 +34,17 @@ export function LoginPage() {
     }));
   };
 
+  /**
+   * HANDLE LOGIN SUBMISSION
+   * Sends credentials to the backend and handles the response.
+   */
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
+      // POST request to the auth/login endpoint
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
@@ -60,22 +76,21 @@ export function LoginPage() {
           return;
         }
 
-        console.log('👤 User data:', user);
-        console.log('🎭 User role:', user.role);
-        
-        // Store token and user data
-        // IMPORTANT: Always clear BOTH storages first to prevent stale credentials
+        // --- CREDENTIAL STORAGE ---
+        // We clear existing storage to prevent mixing old session data
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         sessionStorage.removeItem('token');
         sessionStorage.removeItem('user');
 
+        // --- PERSISTENT LOGIN LOGIC ---
+        // We decide where to store the token based on the 'Remember Me' checkbox:
+        // 1. localStorage: Remains after browser restart (persistent).
+        // 2. sessionStorage: Deleted when tab/browser is closed (volatile).
         if (rememberMe) {
-          console.log('💾 Storing in localStorage');
           localStorage.setItem('token', token);
           localStorage.setItem('user', JSON.stringify(user));
         } else {
-          console.log('💾 Storing in sessionStorage');
           sessionStorage.setItem('token', token);
           sessionStorage.setItem('user', JSON.stringify(user));
         }
@@ -87,21 +102,17 @@ export function LoginPage() {
           return;
         }
         
-        // Redirect based on role
+        // --- ROLE-BASED REDIRECTION ---
+        // Redirect user to their specific dashboard based on their role
         const userRole = data.data.user.role;
-        console.log('Redirecting based on role:', userRole);
         
         if (userRole === 'admin') {
-          console.log('Navigating to /admin');
           navigate('/admin');
         } else if (userRole === 'counselor') {
-          console.log('Navigating to /counselor-dashboard');
           navigate('/counselor-dashboard');
         } else if (userRole === 'student') {
-          console.log('Navigating to / (Home)');
           navigate('/');
         } else {
-          console.log('Navigating to /messages (default)');
           navigate('/messages');
         }
       } else {

@@ -1,3 +1,8 @@
+/**
+ * MEMBER 3: Booking & Notifications
+ * BOOK APPOINTMENT PAGE
+ * This component provides a multi-step form for students to schedule sessions with counselors.
+ */
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -16,7 +21,8 @@ import {
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { sendBookingEmail } from "../utils/emailService.js";
 
-// ── Tiny inline calendar ─────────────────────────────────────────────────────
+// --- SUB-COMPONENT: INLINE CALENDAR ---
+// Handles date selection logic and visual representation of available days.
 function InlineCalendar({ selectedDate, onChange, availability }) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -142,6 +148,10 @@ const navBtnStyle = {
 };
 
 // ── Format date for display ──────────────────────────────────────────────────
+/**
+ * FORMAT DATE DISPLAY
+ * Converts a YYYY-MM-DD string into a human-readable format like "Monday, October 24, 2024".
+ */
 function formatDateDisplay(isoDate) {
   if (!isoDate) return "";
   const [y, m, d] = isoDate.split("-").map(Number);
@@ -154,11 +164,12 @@ export function BookAppointment() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // --- STATE INITIALIZATION ---
   // Counselor info passed via Link state from CounselorProfile
   const counselorId = location.state?.counselorId || "demo-counselor-1";
   const counselorName = location.state?.counselorName || "Dr. Emily Chen";
 
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(1); // Multi-step form tracker
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [selectedType, setSelectedType] = useState("video");
@@ -170,7 +181,9 @@ export function BookAppointment() {
   const [counselorAvailability, setCounselorAvailability] = useState(null);
   const [bookedSlots, setBookedSlots] = useState([]);
 
-  // Fetch counselor availability when page loads
+  // --- API DATA FETCHING ---
+  
+  // 1. Fetch counselor availability (what days/hours they work)
   useEffect(() => {
     if (counselorId === "demo-counselor-1") return;
 
@@ -188,7 +201,7 @@ export function BookAppointment() {
     fetchAvailability();
   }, [counselorId]);
 
-  // Fetch already-booked slots when a date is selected
+  // 2. Fetch already-booked slots (to prevent double-booking)
   useEffect(() => {
     if (!selectedDate || counselorId === "demo-counselor-1") {
       setBookedSlots([]);
@@ -213,7 +226,15 @@ export function BookAppointment() {
     fetchBookedSlots();
   }, [selectedDate, counselorId]);
 
-  // Compute available times based on selected date
+  /**
+   * COMPUTE AVAILABLE TIMES
+   * 1. Maps the selected date to a day of the week (e.g., 'monday').
+   * 2. Checks the counselor's defined working hours for that day.
+   * 3. SLOT CONFLICT CHECKING: 
+   *    We iterate through the counselor's working hours and check each slot 
+   *    against the 'bookedSlots' array. Only free slots are displayed.
+   *    This ensures students can NEVER double-book a counselor.
+   */
   const availableTimes = (() => {
     if (!selectedDate || !counselorAvailability) {
       // Fallback times if no date is picked yet or if using dummy counselor
@@ -238,7 +259,8 @@ export function BookAppointment() {
       if (displayHour === 0) displayHour = 12;
       const fHour = String(displayHour).padStart(2, "0");
       const timeStr = `${fHour}:00 ${ampm}`;
-      // Only include if not already booked
+      
+      // EXCLUSION LOGIC: Only include if not already booked
       if (!bookedSlots.includes(timeStr)) {
         slots.push(timeStr);
       }
@@ -252,6 +274,11 @@ export function BookAppointment() {
   const handleNext = () => setStep((prev) => Math.min(prev + 1, 4));
   const handleBack = () => setStep((prev) => Math.max(prev - 1, 1));
 
+  /**
+   * HANDLE BOOKING CONFIRMATION
+   * 1. Submits the final booking details to the backend API.
+   * 2. Triggers an automated email to the counselor via emailService.
+   */
   const handleConfirm = async () => {
     setLoading(true);
     setError(null);
@@ -286,7 +313,9 @@ export function BookAppointment() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Booking failed.");
       
-      // Send email notification to counselor
+      // --- NOTIFICATION SYSTEM ---
+      // Triggers an automated email to the counselor to alert them of the 
+      // new pending request, ensuring quick response times.
       try {
         await sendBookingEmail({
           counselorName,

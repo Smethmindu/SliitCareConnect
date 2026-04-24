@@ -1,3 +1,9 @@
+/**
+ * MEMBER 2: Counselor & Public Pages
+ * LANDING PAGE
+ * This is the main entry page of the site. It features the Hero section,
+ * service highlights, and the entry point to the AI Chatbot.
+ */
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -5,7 +11,6 @@ import {
   CalendarIcon,
   MessageSquareIcon,
   ArrowRightIcon,
-  BrainCircuitIcon,
 } from "lucide-react";
 import heroImg from "../assets/counselors.png";
 import { Chatbot } from "../components/Chatbot";
@@ -23,7 +28,13 @@ export function LandingPage() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
-      {/* Hero Section */}
+      {/* 
+        HERO SECTION 
+        The first thing users see. Contains:
+        1. Emotional Title: "Book Appointment With Trusted Counselors"
+        2. Social Proof: Avatars of community members.
+        3. Primary CTA: Direct link to counselor discovery.
+      */}
       <section
         style={{
           backgroundColor: "#5a6af0",
@@ -142,7 +153,10 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* About Us Preview Section */}
+      {/* 
+        ABOUT US PREVIEW 
+        A short snippet about the platform's mission with a link to the full About page.
+      */}
       <section style={{ padding: "4rem 0", backgroundColor: "#f9fafb" }}>
         <div style={{ maxWidth: "80rem", margin: "0 auto", padding: "0 1rem", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
           <h2 style={{ fontSize: "2rem", fontFamily: "sans-serif", fontWeight: "bold", color: "#1c1917", marginBottom: "1rem", marginTop: 0 }}>
@@ -159,7 +173,10 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* 
+        FEATURES SECTION 
+        Highlighting the key benefits of using SliitCareConnect (Security, Ease of Use, Messaging).
+      */}
       <section style={{ padding: "6rem 0", backgroundColor: "white" }}>
         <div
           style={{
@@ -362,6 +379,11 @@ export function LandingPage() {
           </div>
         </div>
       </section>
+      </section>
+      {/* 
+        AI CHATBOT (MEMBER 1)
+        This floating component allows students to ask questions to the AI assistant.
+      */}
       <Chatbot />
     </div>
   );

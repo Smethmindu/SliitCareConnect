@@ -107,6 +107,11 @@ export function AdminPage() {
     return () => controller.abort();
   }, [search, roleFilter, refreshNonce]);
 
+  // --- USER FILTERING LOGIC ---
+  // statusFilter maps frontend categories to technical database fields:
+  // - active: user.isActive is true (account is not suspended)
+  // - suspended: user.isActive is false
+  // - pending: user.isEmailVerified is false (email not yet confirmed)
   const displayedUsers = users.filter((user) => {
     if (statusFilter === "all") return true;
     if (statusFilter === "active") return user.isActive === true;
@@ -260,6 +265,14 @@ export function AdminPage() {
   const [broadcastTarget, setBroadcastTarget] = useState("all");
   const [broadcastSending, setBroadcastSending] = useState(false);
 
+  /**
+   * BROADCAST NOTIFICATION SYSTEM
+   * Allows admins to send a push-style notification to:
+   * 1. All Users
+   * 2. Only Students
+   * 3. Only Counselors
+   * This is useful for system maintenance alerts or campus-wide announcements.
+   */
   const handleSendBroadcast = async () => {
     if (!broadcastMsg.trim()) return;
     setBroadcastSending(true);

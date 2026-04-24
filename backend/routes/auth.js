@@ -1,15 +1,20 @@
+/**
+ * MEMBER 1: Auth & User Management
+ * AUTHENTICATION ROUTES
+ * Defines endpoints for user registration, login, and token verification.
+ */
 import express from 'express';
 import { register, login, verifyToken } from '../controllers/authController.js';
 
 const router = express.Router();
 
-// Register new user
+// POST /api/auth/register - Create a new user account
 router.post('/register', register);
 
-// Login user
+// POST /api/auth/login - Authenticate user and return a JWT token
 router.post('/login', login);
 
-// Verify token (for frontend to check if user is logged in)
+// GET /api/auth/verify - Validate an existing JWT token to maintain session
 router.get('/verify', verifyToken);
 
 export default router;

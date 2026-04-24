@@ -1,3 +1,9 @@
+/**
+ * MEMBER 2: Counselor & Public Pages (Counselor View)
+ * COUNSELOR DASHBOARD
+ * This is the central hub for counselors to see their daily schedule, 
+ * manage appointment requests, and view practice analytics.
+ */
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
@@ -61,11 +67,22 @@ export function CounselorDashboard() {
     : "Counselor";
 
 
-  const [todaySessions, setTodaySessions] = useState([]);
-  const [pendingRequests, setPendingRequests] = useState([]);
-  const [allBookings, setAllBookings] = useState([]);
+  // --- STATE MANAGEMENT ---
+  const [todaySessions, setTodaySessions] = useState([]); // Sessions for "Today's Schedule"
+  const [pendingRequests, setPendingRequests] = useState([]); // Requests waiting for approval
+  const [allBookings, setAllBookings] = useState([]); // Used for calculating practice stats
   const [loading, setLoading] = useState(true);
 
+  /**
+   * FETCH DASHBOARD DATA
+   * Aggregates all necessary data:
+   * 1. Finds the Counselor profile based on User ID.
+   * 2. Fetches all bookings for that Counselor.
+   * 3. Categorizes bookings into Today's Sessions vs. Pending Requests.
+   * 
+   * NOTE: Date comparison for 'Today's Schedule' uses local date strings to 
+   * avoid UTC timezone shifts that often misalign appointment days.
+   */
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
@@ -78,14 +95,14 @@ export function CounselorDashboard() {
 
         const user = JSON.parse(storedUser);
         
-        // 1. Fetch Counselor ID using User ID
+        // 1. Fetch Counselor ID using User ID (Cross-reference logic)
         const profileRes = await fetch(`http://localhost:3000/api/counselors/user/${user.id}`);
         if (!profileRes.ok) throw new Error("Counselor profile not found");
         const profileData = await profileRes.json();
         const counselorId = profileData.data?.counselor?._id;
 
         if (counselorId) {
-          // 2. Fetch Bookings for this counselor
+          // 2. Fetch Bookings for this specific counselor
           const bookingsRes = await fetch(`http://localhost:3000/api/bookings/counselor/${counselorId}`, {
             headers: {
               "Authorization": `Bearer ${storedToken}`
@@ -103,15 +120,17 @@ export function CounselorDashboard() {
             // Store all bookings for stat calculations
             setAllBookings(bookings);
             
-            // Filter TODAY's confirmed sessions only for "Today's Schedule"
-            // Filter TODAY's confirmed sessions only for "Today's Schedule"
-            // Use local date string comparison to avoid UTC timezone offset issues causing wrong days
+            // DATE-SAFE STRING GENERATION:
+            // We use 'en-US' locale with long weekday to match the storage 
+            // format in the database. This prevents timezone misalignments.
             const todayStr = new Date().toLocaleDateString("en-US", { 
               weekday: "long", 
               year: "numeric", 
               month: "long", 
               day: "numeric" 
             });
+
+            // Filter TODAY's confirmed sessions
             const todayConfirmed = bookings
               .filter(b => {
                 if (b.status !== "confirmed") return false;
@@ -128,6 +147,7 @@ export function CounselorDashboard() {
               
             setTodaySessions(todayConfirmed);
             
+            // Filter pending requests waiting for review
             const pending = bookings
               .filter(b => b.status === "pending")
               .map(b => ({
@@ -151,6 +171,10 @@ export function CounselorDashboard() {
     fetchDashboardData();
   }, []);
 
+  /**
+   * UPDATE BOOKING STATUS
+   * Allows the counselor to Approve (confirm) or Decline a pending request.
+   */
   const handleUpdateStatus = async (bookingId, newStatus) => {
     try {
       const storedToken = localStorage.getItem("token") || sessionStorage.getItem("token");

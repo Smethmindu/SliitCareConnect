@@ -1,9 +1,17 @@
+/**
+ * MEMBER 1: Auth & User Management
+ * AUTH CONTROLLER
+ * This file contains the logic for user registration, login, and token verification.
+ */
 import { User } from '../models/User.js';
 import { generateToken } from '../middleware/auth.js';
 import jwt from 'jsonwebtoken';
 import Notification from '../models/Notification.js';
 
-// Register new user
+/**
+ * REGISTER NEW USER
+ * Creates a new student account, hashes the password, and notifies admins.
+ */
 export const register = async (req, res) => {
   try {
     console.log('Registration request body:', req.body);
@@ -96,7 +104,10 @@ export const register = async (req, res) => {
   }
 };
 
-// Login user
+/**
+ * LOGIN USER
+ * Authenticates a user by email/password and returns a JWT token for future requests.
+ */
 export const login = async (req, res) => {
   try {
     console.log('🔐 Login request received');
@@ -153,6 +164,10 @@ export const login = async (req, res) => {
     user.lastLogin = new Date();
     await user.save();
 
+    // --- JWT TOKEN GENERATION ---
+    // We sign a token containing the user's ID. 
+    // This token is then sent back to the client and stored in localStorage.
+    // It must be included in the 'Authorization' header for all protected API calls.
     const token = generateToken(user._id);
 
     return res.json({
@@ -172,7 +187,11 @@ export const login = async (req, res) => {
   }
 };
 
-// Verify token (for frontend to check if user is logged in)
+/**
+ * VERIFY TOKEN
+ * Checks if a provided JWT token is valid and returns the user's profile.
+ * Used by the frontend to maintain a logged-in state after page refresh.
+ */
 export const verifyToken = async (req, res) => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '');

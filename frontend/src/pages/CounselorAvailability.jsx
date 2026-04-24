@@ -1,3 +1,9 @@
+/**
+ * MEMBER 2: Counselor & Public Pages (Counselor View)
+ * COUNSELOR AVAILABILITY SETTINGS
+ * This page allows counselors to define which days and hours they are available for bookings.
+ * This data is used on the "Book Appointment" calendar for students.
+ */
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
@@ -7,6 +13,8 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+// --- CONFIGURATION ---
+// Default working hours if no custom availability is set.
 const defaultSchedule = {
   monday: { enabled: true, start: "09:00", end: "17:00" },
   tuesday: { enabled: true, start: "09:00", end: "17:00" },
@@ -18,14 +26,25 @@ const defaultSchedule = {
 };
 
 export function CounselorAvailability() {
+  // --- STATE MANAGEMENT ---
   const navigate = useNavigate();
-  const [schedule, setSchedule] = useState(defaultSchedule);
+  const [schedule, setSchedule] = useState(defaultSchedule); // Current availability map
   const [counselorId, setCounselorId] = useState(null);
   const [loadingData, setLoadingData] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [saveStatus, setSaveStatus] = useState(null); // 'success' | 'error' | null
+  const [saveStatus, setSaveStatus] = useState(null); // Feedback for the user
 
   // Load counselor ID and existing availability on mount
+  /**
+   * LOAD AVAILABILITY
+   * 1. Fetches Counselor ID via the User ID cross-reference.
+   * 2. Retrieves specific availability JSON.
+   * 3. MERGE LOGIC: 
+   *    We combine the saved availability from the database with the 
+   *    'defaultSchedule'. This ensures that if the database is missing 
+   *    data for a specific day (e.g., a newly added day of the week), 
+   *    the UI still renders correctly with fallback values.
+   */
   useEffect(() => {
     const loadAvailability = async () => {
       try {
@@ -60,7 +79,7 @@ export function CounselorAvailability() {
           const availData = await availRes.json();
           const existingAvailability = availData.data?.availability;
           if (existingAvailability) {
-            // Merge with defaults to ensure all days exist
+            // Merge existing data into the UI state
             setSchedule((prev) => ({
               ...prev,
               ...Object.fromEntries(
@@ -95,6 +114,10 @@ export function CounselorAvailability() {
     }));
   };
 
+  /**
+   * HANDLE SAVE
+   * Sends the updated availability map to the backend.
+   */
   const handleSave = async () => {
     if (!counselorId) {
       setSaveStatus("error");

@@ -1,3 +1,9 @@
+/**
+ * MEMBER 1: Auth & User Management (Messaging feature)
+ * COUNSELOR MESSAGES PAGE
+ * This component provides a real-time chat interface for counselors to communicate with students.
+ * It uses HTTP polling to check for new messages and optimistic updates for a snappy UI.
+ */
 import { useState, useEffect, useRef, useCallback } from "react";
 import {
   SearchIcon,
@@ -88,16 +94,21 @@ export function CounselorMessages() {
   ];
 
   // ─── Messaging state ───
-  const [conversations, setConversations] = useState([]);
-  const [activeConv, setActiveConv] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState("");
+  const [conversations, setConversations] = useState([]); // List of active chats
+  const [activeConv, setActiveConv] = useState(null); // The currently selected chat
+  const [messages, setMessages] = useState([]); // Messages within the active chat
+  const [newMessage, setNewMessage] = useState(""); // Current text in the input box
   const [searchQuery, setSearchQuery] = useState("");
   const [loadingConvs, setLoadingConvs] = useState(true);
 
   const messagesEndRef = useRef(null);
   const pollRef = useRef(null);
 
+  /**
+   * FETCH CONVERSATIONS
+   * Loads the list of people the counselor has chatted with, 
+   * including unread counts and the last message preview.
+   */
   const fetchConversations = useCallback(async () => {
     if (!userId) return;
     try {
@@ -141,6 +152,15 @@ export function CounselorMessages() {
 
   useEffect(() => { fetchConversations(); }, [fetchConversations]);
 
+  /**
+   * POLLING SYSTEM (Real-time Simulation)
+   * This application uses a polling architecture rather than WebSockets.
+   * Every 3 seconds, it triggers a background fetch to check for:
+   * 1. Updates to the conversation list (new messages/unread counts).
+   * 2. New messages in the currently active chat thread.
+   * This provides a "near real-time" experience while maintaining 
+   * simpler stateless backend architecture.
+   */
   useEffect(() => {
     pollRef.current = setInterval(() => {
       fetchConversations();
@@ -160,12 +180,22 @@ export function CounselorMessages() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  /**
+   * HANDLE SEND
+   * 1. Updates the UI immediately (Optimistic Update) so the user doesn't wait.
+   * 2. Sends the message to the backend.
+   * 3. Refreshes the message list to confirm the message was saved.
+   */
   const handleSend = async (e) => {
     e.preventDefault();
     if (!newMessage.trim() || !activeConv) return;
     const text = newMessage.trim();
     setNewMessage("");
 
+    // --- OPTIMISTIC UI UPDATE ---
+    // We immediately append the message to the state with a temporary ID.
+    // This removes perceived network latency for the user, making the 
+    // chat feel instantaneous while the server request processes.
     const optimistic = {
       _id: "temp-" + Date.now(),
       conversationId: activeConv._id,

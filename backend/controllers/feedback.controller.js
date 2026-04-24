@@ -1,6 +1,16 @@
+/**
+ * MEMBER 4: Resources, Quizzes & Feedback
+ * FEEDBACK CONTROLLER
+ * This file manages the student-to-counselor rating system and feedback summarization.
+ */
 import Feedback from "../models/Feedback.js";
 import Booking from "../models/Booking.js";
 
+/**
+ * CHECK ELIGIBILITY
+ * Ensures a student can only leave feedback if they had a completed session
+ * and haven't already submitted feedback for it.
+ */
 export const checkEligibility = async (req, res) => {
   try {
     const { bookingId } = req.params;
@@ -39,6 +49,10 @@ export const checkEligibility = async (req, res) => {
   }
 };
 
+/**
+ * CREATE FEEDBACK
+ * Saves a new rating and comment. Supports anonymous submissions.
+ */
 export const createFeedback = async (req, res) => {
   try {
     const userId = req.user._id.toString();
@@ -114,6 +128,11 @@ export const getFeedbackByCounselor = async (req, res) => {
   }
 };
 
+/**
+ * GET AVERAGE RATING
+ * Uses MongoDB Aggregation to calculate the mean score for a specific counselor.
+ * Used for the "Top Rated" sections and counselor profiles.
+ */
 export const getAverageRating = async (req, res) => {
   try {
     const { counselorId } = req.params;
@@ -192,6 +211,10 @@ export const deleteFeedback = async (req, res) => {
   }
 };
 
+/**
+ * GET ALL FEEDBACK (ADMIN)
+ * Provides a summarized view of all site feedback with counselor/student names resolved.
+ */
 export const getAllFeedbackAdmin = async (req, res) => {
   try {
     const role = req.user.role;

@@ -1,3 +1,9 @@
+/**
+ * MEMBER 3: Booking & Appointment Management
+ * APPOINTMENT DETAILS PAGE
+ * This page provides a deep dive into a specific session, showing 
+ * patient notes, history, and communication options.
+ */
 import { motion } from "framer-motion";
 import {
   CalendarIcon,
@@ -19,6 +25,11 @@ export function AppointmentDetails() {
     transition: { duration: 0.4 },
   };
 
+  // --- DATA ARCHITECTURE ---
+  // In this current version, appointment details are demonstrated with 
+  // static objects. In a fully integrated production build, this block 
+  // would be replaced by a 'useEffect' hook fetching data from:
+  // http://localhost:3000/api/bookings/:id
   const appointment = {
     id: "APT-8923",
     patientName: "Sarah Jenkins",
@@ -235,6 +246,7 @@ export function AppointmentDetails() {
               </div>
             </div>
 
+            {/* ACTION: JOIN CALL */}
             <div
               style={{
                 borderTop: "1px solid #f5f5f4",

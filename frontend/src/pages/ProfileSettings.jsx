@@ -1,3 +1,9 @@
+/**
+ * MEMBER 1: Auth & User Management
+ * PROFILE SETTINGS PAGE
+ * This page allows students and counselors to manage their personal information, 
+ * notification preferences, and account security.
+ */
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { CameraIcon, LockIcon } from "lucide-react";
@@ -138,6 +144,9 @@ export function ProfileSettings() {
             >
               {currentUser?.email || "Loading..."}
             </p>
+            {/* --- ROLE BADGE --- */}
+            {/* Color-coded based on user role: Admin (Red), Counselor (Blue), Student (Green).
+                This provides immediate visual context for the account type. */}
             <span
               style={{
                 display: "inline-flex",
@@ -274,6 +283,8 @@ export function ProfileSettings() {
                   }}
                 />
               </div>
+              {/* --- READ-ONLY EMAIL --- */}
+              {/* Email is used as a primary identifier and cannot be changed here for security. */}
               <div style={{ display: "flex", flexDirection: "column" }}>
                 <label
                   style={{
